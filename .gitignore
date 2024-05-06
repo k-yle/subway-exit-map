@@ -3,3 +3,4 @@ dist
 .wrangler
 *.overpassql.txt
 *.local.*
+.yarn*

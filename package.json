@@ -9,6 +9,7 @@
     "test": "vitest",
     "lint": "tsc && tsc -p functions/tsconfig.json && eslint --ignore-path .gitignore ."
   },
+  "packageManager": "yarn@4.2.1",
   "resolutions": {
     "@types/node": "18.15.3"
   },
