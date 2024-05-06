@@ -1,0 +1,173 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Open Sans',
+    'Helvetica Neue',
+    sans-serif;
+  scrollbar-width: thin;
+}
+
+.italics {
+  font-style: italic;
+}
+
+dialog {
+  max-width: max(50%, 400px);
+  margin: auto;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #999a;
+  &::backdrop {
+    background: #0009;
+  }
+  & > button:first-child {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+  }
+}
+
+time {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+a {
+  text-decoration: none;
+  color: #1e90ff;
+}
+
+section {
+  overflow-x: auto;
+  margin-top: 32px;
+  border-top: 1px solid #ddd;
+}
+
+table {
+  width: 100%;
+  min-width: 600px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  & > tbody > tr:first-child > td:is(:first-child, :last-child) {
+    width: 100px;
+  }
+}
+td {
+  /* border: 1px solid green; */
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: clip;
+}
+td.platform {
+  background: #555;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+div.carriage,
+div.loco {
+  margin: 2px;
+  background: #1e90ff;
+  color: #fff;
+  border-radius: 2px;
+  position: relative;
+  &.loco:before {
+    /* chop out the drivers cab */
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    border-left: 13px solid #1e90ff;
+    border-top: 13px solid #fff;
+    content: '';
+  }
+  &.loco.flipped:before {
+    right: unset;
+    border-left: unset;
+    left: 0;
+    border-right: 13px solid #1e90ff;
+  }
+}
+
+div.best {
+  background: #4caf50;
+  &.loco:before {
+    border-left-color: #4caf50;
+  }
+  &.loco.flipped:before {
+    border-left-color: unset;
+    border-right-color: #4caf50;
+  }
+}
+.green-preview {
+  color: #4caf50;
+}
+
+svg.icon {
+  height: 2rem;
+}
+
+body {
+  margin: 8px;
+}
+
+select {
+  margin: 16px 0;
+  width: 100%;
+  font-size: 30px;
+  & > option {
+    font-size: 16px;
+  }
+}
+
+.exitRef {
+  padding: 4px 0;
+  & > span {
+    background: #4a5255;
+    color: white;
+    padding: 2px 4px;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+}
+
+/* non-empty cells that span multiple columns */
+tr.destinationRow > td[colSpan]:not([colSpan='1']):not(:empty) {
+  border-bottom: 1px dashed grey;
+}
+tr.exitSymbolRow > td {
+  vertical-align: bottom;
+}
+
+.shield {
+  padding: 2px 4px;
+  font-family: monospace;
+  font-style: normal;
+  border-radius: 4px;
+  min-width: 8px;
+  display: inline-block;
+  text-align: center;
+  margin: 2px 4px;
+  line-height: 100%;
+  &.circle {
+    border-radius: 100%;
+  }
+  &.diamond {
+    border-radius: 0;
+    transform: rotate(45deg);
+    & > span {
+      display: inline-block;
+      transform: rotate(-45deg);
+      font-family: monospace;
+    }
+  }
+}

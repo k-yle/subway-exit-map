@@ -1,0 +1,192 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import { useMemo, useState } from 'react';
+import clsx from 'clsx';
+import TimeAgo from 'react-timeago-i18n';
+import type { Station, Stop } from '../types.def';
+import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
+import { formatList } from '../helpers/i18n';
+import { Arrow, Icon } from './Icon';
+import { RenderAdjacentStops } from './RenderAdjacentStops';
+import { Modal } from './Modal';
+import { PlatformName } from './PlatformName';
+// eslint-disable-next-line import/extensions
+import notAccessible from './icons/NotAccessible.svg';
+
+export const RenderDiagram: React.FC<{
+  station: Station;
+  stop: Stop;
+}> = ({ station, stop }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const carriages = stop.flip ? stop.carriages : [...stop.carriages].reverse();
+  const cars = carriages.length;
+
+  const colSpans = useMemo(
+    () =>
+      countAdjacentEqual(
+        carriages.map((x) =>
+          x.type === 'ellipsis' ? '' : `${x.exitNumber}${x.exitTo}`,
+        ),
+      ),
+    [carriages],
+  );
+
+  const from = <RenderAdjacentStops label="From" stops={stop.lastStop} />;
+  const to = <RenderAdjacentStops label="To" stops={stop.nextStop} />;
+
+  return (
+    <>
+      {isModalOpen && (
+        <Modal isOpen onClose={() => setIsModalOpen(false)}>
+          <strong>
+            {stop.platform ? (
+              `Platform ${stop.platform} `
+            ) : (
+              <>
+                The <PlatformName stop={stop} includeDestinations={false} />{' '}
+                Platform
+              </>
+            )}
+          </strong>{' '}
+          at <strong>{station.name}</strong> was last edited{' '}
+          <TimeAgo date={stop.lastUpdate.date} /> by{' '}
+          <a
+            href={`https://osm.org/user/${stop.lastUpdate.user}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {stop.lastUpdate.user}
+          </a>
+          <br />
+          <br />
+          <a
+            href={`https://osm.org/node/${stop.nodeId}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View on OpenStreetMap
+          </a>
+        </Modal>
+      )}
+      {stop.exitSide && (
+        <>
+          Exit on the <strong>{stop.exitSide}</strong>
+        </>
+      )}
+      <table>
+        <tbody>
+          {/* first row - the exit numbers */}
+          <tr>
+            <td />
+            {carriages.map((carriage, index) => {
+              const colSpan = colSpans[index];
+              if (carriage.type === 'ellipsis' || !colSpan) return null;
+
+              return (
+                <td key={carriage.ref} className="exitRef" colSpan={colSpan}>
+                  {carriage.unavailable && 'No exit at'}
+                  {carriage.exitNumber && (
+                    <span>Exit {formatList(carriage.exitNumber)}</span>
+                  )}
+                </td>
+              );
+            })}
+            <td />
+          </tr>
+
+          {/* second row - the exit names */}
+          <tr className="destinationRow">
+            <td />
+            {carriages.map((carriage, index) => {
+              const colSpan = colSpans[index];
+              if (carriage.type === 'ellipsis' || !colSpan) return null;
+
+              return (
+                <td key={carriage.ref} colSpan={colSpan}>
+                  {carriage.unavailable && 'this station'}
+                  {carriage.exitTo && <>to {formatList(carriage.exitTo)}</>}
+                </td>
+              );
+            })}
+            <td />
+          </tr>
+
+          {/* third row - the exit types */}
+          <tr className="exitSymbolRow">
+            <td />
+            {carriages.map((carriage) => {
+              if (carriage.type === 'ellipsis') {
+                return <td key={carriage.ref} />;
+              }
+              return (
+                <td key={carriage.ref}>
+                  {carriage.unavailable && '🚫'}
+                  {carriage.exitType && (
+                    <>
+                      {carriage.exitType.map((type) => (
+                        <Icon key={type} type={type} />
+                      ))}
+                    </>
+                  )}
+                </td>
+              );
+            })}
+            <td />
+          </tr>
+
+          {/* fourth row - the train */}
+          <tr>
+            <td>{stop.flip && <Arrow flip />}</td>
+            {carriages.map((carriage) => {
+              return (
+                <td key={carriage.ref}>
+                  <div
+                    className={clsx(
+                      carriage.type,
+                      'isBest' in carriage && carriage.isBest && 'best',
+                      stop.flip && 'flipped',
+                    )}
+                  >
+                    {carriage.type === 'ellipsis' ? '…' : carriage.ref}
+                  </div>
+                  {/* TODO: render elipsis */}
+                </td>
+              );
+            })}
+            <td>{!stop.flip && <Arrow />}</td>
+          </tr>
+
+          {/* fifth row - the platform */}
+          <tr>
+            <td>{stop.flip ? to : from}</td>
+            <td
+              colSpan={cars}
+              className="platform"
+              tabIndex={0}
+              role="button"
+              onClick={(event) => {
+                event.preventDefault();
+                setIsModalOpen(true);
+              }}
+            >
+              {stop.platform
+                ? `${station.name}, Platform ${stop.platform}`
+                : station.name}{' '}
+              {stop.description && `(${stop.description}) `}
+              {stop.inaccessible && (
+                <img
+                  alt="Platform is not wheelchair accessible"
+                  src={notAccessible}
+                  style={{ height: '1.2rem', verticalAlign: 'bottom' }}
+                />
+              )}
+              <br />
+              <PlatformName stop={stop} includeDestinations />
+            </td>
+            <td>{stop.flip ? from : to}</td>
+          </tr>
+        </tbody>
+      </table>
+    </>
+  );
+};

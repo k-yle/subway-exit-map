@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Best train carriage</title>
+    <meta name="author" content="Kyle Hensel" />
+    <meta
+      name="description"
+      content="Map of the best train carriage to sit in"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    />
+  </head>
+  <body>
+    <main></main>
+    <script type="module">
+      import { createElement } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { App } from './src/App';
+      import '@arco-design/web-react/dist/css/arco.css';
+
+      createRoot(document.querySelector('main')).render(createElement(App));
+    </script>
+  </body>
+</html>

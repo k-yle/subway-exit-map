@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "cp functions/_logic/query.overpassql functions/_logic/query.overpassql.txt",
+    "start": "wrangler pages dev --port 7002 --proxy 7001 -- npm run start-only-client",
+    "start-only-client": "vite",
+    "build": "vite build",
+    "test": "vitest",
+    "lint": "tsc && tsc -p functions/tsconfig.json && eslint --ignore-path .gitignore ."
+  },
+  "resolutions": {
+    "@types/node": "18.15.3"
+  },
+  "dependencies": {
+    "@arco-design/web-react": "^2.61.2",
+    "clsx": "^2.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-timeago-i18n": "^2.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240502.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.56.0",
+    "eslint-config-kyle": "^17.6.0",
+    "osm-api": "^2.0.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.12",
+    "vitest": "^1.2.2",
+    "wrangler": "^3.53.1"
+  },
+  "eslintConfig": {
+    "settings": {
+      "jest": {
+        "version": 29
+      }
+    },
+    "extends": "kyle"
+  },
+  "prettier": "eslint-config-kyle/prettier"
+}

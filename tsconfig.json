@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2023"],
+    "typeRoots": ["./src/global.d.ts"],
+    "strict": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "jsx": "react-jsx"
+  },
+  "exclude": ["functions/**/*"],
+  "include": ["src"]
+}
