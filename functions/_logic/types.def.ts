@@ -39,7 +39,7 @@ export type RouteThatStopsHere = {
   shape: string;
   /** @internal */
   to?: string[];
-  doNotBoard?: boolean;
+  type: 'to' | 'from' | 'both';
 };
 
 export type Stop = {

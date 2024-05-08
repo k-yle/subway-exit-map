@@ -22,12 +22,15 @@ export const PlatformName: React.FC<{
   return (
     <>
       {Object.entries(stop.routes).map(([to, routes]) => (
-        <small key={to} className={clsx(routes[0].doNotBoard && 'italics')}>
-          {routes[0].doNotBoard && 'Drop-off only: '}
+        <small
+          key={to}
+          className={clsx(routes[0].type === 'from' && 'italics')}
+        >
+          {routes[0].type === 'from' && 'Drop-off only: '}
           {routes.map((route) => (
             <RouteShield key={JSON.stringify(route)} route={route} />
           ))}
-          {routes[0].doNotBoard ? ' from ' : ' to '}
+          {{ to: ' to ', from: ' from ', both: ' to/from ' }[routes[0].type]}
           {to}
           <br />
         </small>

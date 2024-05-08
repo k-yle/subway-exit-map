@@ -23,3 +23,12 @@ export const groupBy = <T, K extends string | number>(
   }
   return output;
 };
+
+export const omit = <T>(object: T, keys: (keyof T)[]): Omit<T, keyof T> => {
+  const output = { ...object };
+  for (const key of keys) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete output[key];
+  }
+  return output;
+};
