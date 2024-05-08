@@ -32,7 +32,22 @@ export const RenderDiagram: React.FC<{
     [carriages],
   );
 
-  const from = <RenderAdjacentStops label="From" stops={stop.lastStop} />;
+  const from = (
+    <RenderAdjacentStops
+      label={
+        {
+          regular: 'To',
+          occasional: (
+            <>
+              From<sup>†</sup>
+            </>
+          ),
+          no: 'From',
+        }[stop.biDiMode || 'no']
+      }
+      stops={stop.lastStop}
+    />
+  );
   const to = <RenderAdjacentStops label="To" stops={stop.nextStop} />;
 
   return (
@@ -162,7 +177,9 @@ export const RenderDiagram: React.FC<{
 
           {/* fifth row - the train */}
           <tr>
-            <td>{stop.flip && <Arrow flip />}</td>
+            <td>
+              {(stop.flip || stop.biDiMode === 'regular') && <Arrow flip />}
+            </td>
             {carriages.map((carriage) => {
               return (
                 <td key={carriage.ref}>
@@ -170,7 +187,6 @@ export const RenderDiagram: React.FC<{
                     className={clsx(
                       carriage.type,
                       'isBest' in carriage && carriage.isBest && 'best',
-                      stop.flip && 'flipped',
                     )}
                   >
                     {carriage.type === 'ellipsis' ? '…' : carriage.ref}
@@ -179,7 +195,7 @@ export const RenderDiagram: React.FC<{
                 </td>
               );
             })}
-            <td>{!stop.flip && <Arrow />}</td>
+            <td>{(!stop.flip || stop.biDiMode === 'regular') && <Arrow />}</td>
           </tr>
 
           {/* sixth row - the platform */}

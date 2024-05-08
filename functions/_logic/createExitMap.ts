@@ -8,6 +8,7 @@ import type {
   FwdBwdBoth,
   Stop,
 } from './types.def.js';
+import { getBiDiMode } from './getBiDiMode.js';
 
 const EXIT_HIERACHY: ExitType[] = ['escalator', 'flat', 'ramp', 'stairs'];
 
@@ -26,7 +27,7 @@ const noToUndefined = <T extends string>(
 export function createExitMap(
   node: OsmNode,
   allData: OsmFeature[],
-): Pick<Stop, 'exitSide' | 'carriages' | 'direction'> {
+): Pick<Stop, 'exitSide' | 'carriages' | 'direction' | 'biDiMode'> {
   const tags = node.tags!;
 
   const suffix = tags['exit:carriages:forward']
@@ -69,6 +70,22 @@ export function createExitMap(
   const allExitTypes = new Set(exitType.flatMap((types) => types.split(';')));
   const bestExitType = EXIT_HIERACHY.find((exit) => allExitTypes.has(exit));
 
+  // there could be 0-2, but we don't care which
+  // one we pick if there are multiple - because we
+  // assume they must have the same direction, since
+  // bidi operation starts/ends at a signal node, not
+  // a stop position node.
+  const track = allData.find(
+    (m): m is OsmWay => m.type === 'way' && m.nodes.includes(node.id),
+  );
+  if (!track) {
+    throw new Error('Node is not part of a track');
+  }
+  const biDiMode = getBiDiMode(track, allData);
+
+  const trackDirection = getTrackDirection(track.tags);
+  const direction = <FwdBwdBoth>suffix?.slice(1) || trackDirection;
+
   const carriages: Carriage[] = [];
   for (let index = 0; index < exitType.length; index++) {
     const isElipsis = exitType[index] === '...';
@@ -83,7 +100,11 @@ export function createExitMap(
       const unavailable = FALSY.has(available[index]?.toLowerCase());
 
       const carriage: Carriage = {
-        type: index ? 'carriage' : 'loco',
+        type:
+          index === 0 ||
+          (index === exitType.length - 1 && biDiMode === 'regular')
+            ? 'loco'
+            : 'carriage',
         ref: index + 1,
       };
 
@@ -102,24 +123,10 @@ export function createExitMap(
     }
   }
 
-  // there could be 0-2, but we don't care which
-  // one we pick if there are multiple - because we
-  // assume they must have the same direction, since
-  // bidi operation starts/ends at a signal node, not
-  // a stop position node.
-  const track = allData.find(
-    (m): m is OsmWay => m.type === 'way' && m.nodes.includes(node.id),
-  );
-  if (!track) {
-    throw new Error('Node is not part of a track');
-  }
-
-  const direction =
-    <FwdBwdBoth>suffix?.slice(1) || getTrackDirection(track.tags);
-
   return {
     exitSide: <ExitSide>tags[`side${suffix}`],
     carriages,
     direction,
+    biDiMode,
   };
 }

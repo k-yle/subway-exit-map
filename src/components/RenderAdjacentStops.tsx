@@ -4,7 +4,7 @@ import type { AdjacentStop } from '../types.def';
 import { orFormatter } from '../helpers/i18n';
 
 export const RenderAdjacentStops: React.FC<{
-  label: string;
+  label: React.ReactNode;
   stops: AdjacentStop[];
 }> = ({ label, stops }) => {
   const navigateTo = useContext(RouterContext);

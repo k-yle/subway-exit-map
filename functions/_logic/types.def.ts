@@ -60,6 +60,18 @@ export type Stop = {
   nextStop: AdjacentStop[];
   /** if true, invert front/rear of platform */
   flip?: boolean;
+  /**
+   * - `regular` means the track has `railway:bidirectional=regular`,
+   *   or there are PTv2 relations that travels in both directions
+   *   past this node.
+   *
+   * - `occasional` means the track supports bidirectional operation,
+   *   but there PTv2 relations only travel in one direction, or the
+   *   track has `railway:bidirectional=possible`
+   *
+   * - `undefined` means unidirectional.
+   */
+  biDiMode?: 'regular' | 'occasional';
   lastUpdate: {
     user: string;
     date: string;

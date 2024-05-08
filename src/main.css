@@ -90,11 +90,19 @@ div.loco {
     border-top: 13px solid #fff;
     content: '';
   }
-  &.loco.flipped:before {
+}
+
+/* flip the loco on the left end of the train (if any) */
+tr > td:nth-child(2) > .loco {
+  &:before {
     right: unset;
     border-left: unset;
     left: 0;
     border-right: 13px solid #1e90ff;
+  }
+  &.best:before {
+    border-left-color: unset;
+    border-right-color: #4caf50;
   }
 }
 
@@ -102,10 +110,6 @@ div.best {
   background: #4caf50;
   &.loco:before {
     border-left-color: #4caf50;
-  }
-  &.loco.flipped:before {
-    border-left-color: unset;
-    border-right-color: #4caf50;
   }
 }
 .green-preview {
