@@ -12,7 +12,7 @@ export const PlatformName: React.FC<{
       <small>
         {uniqBy(Object.values(stop.routes).flat(), (route) => route.ref).map(
           (route) => (
-            <RouteShield key={JSON.stringify(route)} route={route} />
+            <RouteShield key={route.ref} route={route} />
           ),
         )}
       </small>

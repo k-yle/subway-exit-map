@@ -74,24 +74,19 @@ export type Station = {
   name: string;
   networks: string[];
   fareGates: boolean | undefined;
-  stops: {
-    [id: string]: Stop;
-  };
+  stops: Stop[];
   flipAlgorithm?: string;
 };
 
 export type Data = {
-  stations: {
-    [id: string]: Station;
-  };
+  stations: Station[];
   networks: {
-    [qId: string]: {
-      name: string;
-      logoUrl?: string;
-      wikipedia?: string;
-    };
-  };
-  sizeMb: number;
+    qId: string;
+    name: string;
+    logoUrl?: string;
+    wikipedia?: string;
+  }[];
+  lastGenerated: string;
   lastUpdated: string;
 };
 

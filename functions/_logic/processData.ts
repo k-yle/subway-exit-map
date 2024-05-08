@@ -16,14 +16,14 @@ import { flipFunctions } from './flipping/index.js';
 const cleanName = (name: string) => name.split(',')[0].replace(/ \d+$/, '');
 
 export function processData(
-  { osm: data, wikidata }: RawInput,
+  { osm: data, wikidata, lastUpdated }: RawInput,
   languages: string[],
   API_BASE_URL: string,
 ): {
   imageUrls: Record<string, string>;
   toClient: Data;
 } {
-  const stations: Data['stations'] = {};
+  const stations: Station[] = [];
 
   // find all stop_area relations first
   for (const relation of data) {
@@ -46,21 +46,25 @@ export function processData(
         continue;
       }
 
-      const gtfsId = trainStationFeature.tags.ref || relation.id;
+      const gtfsId = trainStationFeature.tags.ref || `_${relation.id}`;
 
-      const station: Station = stations[gtfsId] || {
-        relationId: relation.id,
-        gtfsId,
-        name: trainStationFeature.tags.name,
-        fareGates:
-          trainStationFeature.tags.fare_gates === 'yes'
-            ? true
-            : trainStationFeature.tags.fare_gates === 'no'
-              ? false
-              : undefined,
-        networks: [],
-        stops: {},
-      };
+      let station = stations.find((s) => s.gtfsId === gtfsId);
+      if (!station) {
+        station = {
+          relationId: relation.id,
+          gtfsId,
+          name: trainStationFeature.tags.name,
+          fareGates:
+            trainStationFeature.tags.fare_gates === 'yes'
+              ? true
+              : trainStationFeature.tags.fare_gates === 'no'
+                ? false
+                : undefined,
+          networks: [],
+          stops: [],
+        };
+        stations.push(station);
+      }
 
       for (const member of relation.members) {
         if (member.type === 'node' && member.role.startsWith('stop')) {
@@ -117,7 +121,7 @@ export function processData(
               }
             }
 
-            station.stops[node.id] = {
+            station.stops.push({
               nodeId: node.id,
               gtfsId: node.tags?.ref || `${node.id}`,
               platform: node.tags?.local_ref,
@@ -138,7 +142,7 @@ export function processData(
               // typecast is a hack, we fix this later
               lastStop: <never[]>[...lastStops],
               nextStop: <never[]>[...nextStops],
-            };
+            });
           } else {
             // we haven't downloaded this node
             // because no routes (from our network) stop here
@@ -146,13 +150,27 @@ export function processData(
         }
       }
 
-      stations[gtfsId] = station;
+      // sort the platforms in a way that handles number, letters,
+      // a mix of numbers+letters (e.g. 14A), or names (e.g. NYC).
+      const getPlatform = (stop: Stop) =>
+        stop.platform || stop.description || '';
+
+      let longestPlatform = 0;
+      for (const stop of station.stops) {
+        longestPlatform = Math.max(longestPlatform, getPlatform(stop).length);
+      }
+
+      station.stops.sort((stopA, stopB) => {
+        const a = getPlatform(stopA).padStart(longestPlatform, '0');
+        const b = getPlatform(stopB).padStart(longestPlatform, '0');
+        return a.localeCompare(b);
+      });
     }
   }
 
   const stationsByStopId: Record<number, [Station, Stop]> = {};
-  for (const station of Object.values(stations)) {
-    for (const stop of Object.values(station.stops)) {
+  for (const station of stations) {
+    for (const stop of station.stops) {
       stationsByStopId[stop.nodeId] = [station, stop];
     }
   }
@@ -184,8 +202,8 @@ export function processData(
       platform: stop.platform,
     };
   };
-  for (const station of Object.values(stations)) {
-    for (const stop of Object.values(station.stops)) {
+  for (const station of stations) {
+    for (const stop of station.stops) {
       stop.lastStop = stop.lastStop
         .map((id) => nIdToObject(<never>id))
         .filter(isTruthy);
@@ -194,7 +212,7 @@ export function processData(
         .filter(isTruthy);
     }
 
-    const stopsArray = Object.values(station.stops);
+    const stopsArray = station.stops;
     // nothing to flip at stations with only 1 platform
     if (stopsArray.length > 1) {
       // try several different algorithms to figure out
@@ -212,56 +230,55 @@ export function processData(
     }
   }
 
-  const allNetworks = Object.values(stations)
+  const imageUrls: { [qId: string]: string } = {};
+
+  const networkMetadata: Data['networks'] = stations
     .flatMap((station) => station.networks)
     .filter(uniq)
-    .sort((a, b) => a.localeCompare(b));
+    .map((qId) => {
+      if (!wikidata[qId]) {
+        throw new Error(`No wikidata info for ${qId}`);
+      }
+      const firstSupportedLanguage =
+        languages.find((lang) => wikidata[qId].labels[lang]) || 'en';
 
-  const imageUrls: { [qId: string]: string } = {};
-  const networkMetadata: Data['networks'] = {};
+      const wikipediaPage =
+        wikidata[qId].sitelinks[`${firstSupportedLanguage}wiki`]?.title;
 
-  for (const qId of allNetworks) {
-    if (!wikidata[qId]) {
-      throw new Error(`No wikidata info for ${qId}`);
-    }
-    const firstSupportedLanguage =
-      languages.find((lang) => wikidata[qId].labels[lang]) || 'en';
+      const bestLogo = (wikidata[qId].claims.P8972 || wikidata[qId].claims.P154)
+        ?.filter((claim) => claim.mainsnak.datatype === 'commonsMedia')
+        .sort(sortByRank)[0]?.mainsnak.datavalue?.value;
 
-    const wikipediaPage =
-      wikidata[qId].sitelinks[`${firstSupportedLanguage}wiki`]?.title;
+      const fbUsername =
+        wikidata[qId].claims.P2013?.sort(sortByRank)[0]?.mainsnak.datavalue
+          ?.value;
 
-    const bestLogo = (wikidata[qId].claims.P8972 || wikidata[qId].claims.P154)
-      ?.filter((claim) => claim.mainsnak.datatype === 'commonsMedia')
-      .sort(sortByRank)[0]?.mainsnak.datavalue?.value;
+      const logoUrl = bestLogo
+        ? `http://commons.wikimedia.org/wiki/Special:FilePath/${bestLogo}`
+        : fbUsername
+          ? `https://graph.facebook.com/${fbUsername}/picture?type=large`
+          : undefined;
 
-    const fbUsername =
-      wikidata[qId].claims.P2013?.sort(sortByRank)[0]?.mainsnak.datavalue
-        ?.value;
+      if (logoUrl) imageUrls[qId] = logoUrl;
 
-    const logoUrl = bestLogo
-      ? `http://commons.wikimedia.org/wiki/Special:FilePath/${bestLogo}`
-      : fbUsername
-        ? `https://graph.facebook.com/${fbUsername}/picture?type=large`
-        : undefined;
-
-    if (logoUrl) imageUrls[qId] = logoUrl;
-
-    networkMetadata[qId] = {
-      name: wikidata[qId].labels[firstSupportedLanguage]?.value,
-      wikipedia: wikipediaPage
-        ? `https://${firstSupportedLanguage}.wikipedia.org/wiki/${wikipediaPage.replaceAll(' ', '_')}`
-        : undefined,
-      logoUrl: logoUrl && `${API_BASE_URL}/logo?qId=${qId}`,
-    };
-  }
+      return {
+        qId,
+        name: wikidata[qId].labels[firstSupportedLanguage]?.value,
+        wikipedia: wikipediaPage
+          ? `https://${firstSupportedLanguage}.wikipedia.org/wiki/${wikipediaPage.replaceAll(' ', '_')}`
+          : undefined,
+        logoUrl: logoUrl && `${API_BASE_URL}/logo?qId=${qId}`,
+      };
+    })
+    .sort((a, b) => b.name.localeCompare(a.name));
 
   return {
     imageUrls,
     toClient: {
-      stations,
+      stations: stations.sort((a, b) => a.name.localeCompare(b.name)),
       networks: networkMetadata,
-      sizeMb: +(JSON.stringify(data).length / 1024 / 1024).toFixed(1),
-      lastUpdated: new Date().toISOString(),
+      lastGenerated: new Date().toISOString(),
+      lastUpdated,
     },
   };
 }

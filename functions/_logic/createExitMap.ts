@@ -9,7 +9,7 @@ import type {
   Stop,
 } from './types.def.js';
 
-const EXIT_HIERACHY: ExitType[] = ['escalator', 'stairs', 'flat'];
+const EXIT_HIERACHY: ExitType[] = ['escalator', 'flat', 'ramp', 'stairs'];
 
 const FALSY = new Set(['', 'no', 'none', 'emergency']);
 
@@ -62,7 +62,8 @@ export function createExitMap(
 
   // at this point we know all arrays have the same length
 
-  const bestExitType = EXIT_HIERACHY.find((exit) => exitType.includes(exit));
+  const allExitTypes = new Set(exitType.flatMap((types) => types.split(';')));
+  const bestExitType = EXIT_HIERACHY.find((exit) => allExitTypes.has(exit));
 
   const carriages: Carriage[] = [];
   for (let index = 0; index < exitType.length; index++) {

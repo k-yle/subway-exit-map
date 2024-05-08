@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Timeago from 'react-timeago-i18n';
 import { Avatar, Select } from '@arco-design/web-react';
 import { useData } from './useData';
@@ -6,6 +6,8 @@ import type { Station } from './types.def';
 import './main.css';
 import { RenderDiagram } from './components/RenderDiagram';
 import { RouterContext } from './context';
+
+const empty = <div style={{ padding: '2px 8px' }}>No results</div>;
 
 const Router: React.FC<{
   station: Station | undefined;
@@ -30,19 +32,17 @@ const Router: React.FC<{
           fare gates.
         </>
       )}
-      {Object.values(station.stops)
-        .sort((a, b) => +(a.platform ?? 0) - +(b.platform ?? 0))
-        .map((stop) => (
-          <section key={stop.nodeId}>
-            <RenderDiagram station={station} stop={stop} />
-          </section>
-        ))}
+      {station.stops.map((stop) => (
+        <section key={stop.nodeId}>
+          <RenderDiagram station={station} stop={stop} />
+        </section>
+      ))}
     </>
   );
 };
 
 export const App: React.FC = () => {
-  const [data, error, isLoading, refreshData] = useData();
+  const [data, error] = useData();
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [selectedId, setSelectedId] = useState(
     window.location.hash.slice(1) || '',
@@ -52,23 +52,18 @@ export const App: React.FC = () => {
     // if there is no network, set it to the network of the current stop
     // or default to the first network (alphabetically)
     if (data && !selectedNetwork) {
-      setSelectedNetwork(
-        selectedId
-          ? data.stations[selectedId].networks[0]
-          : Object.keys(data.networks)[0],
-      );
+      const station = data.stations.find((s) => s.gtfsId === selectedId);
+      setSelectedNetwork(station ? station.networks[0] : data.networks[0].qId);
     }
   }, [data, selectedNetwork, selectedId]);
 
   useEffect(() => {
     // keep the network in sync if the current station changes
-    if (
-      data &&
-      selectedId &&
-      selectedNetwork &&
-      !data.stations[selectedId].networks.includes(selectedNetwork)
-    ) {
-      setSelectedNetwork(data.stations[selectedId].networks[0]);
+    if (data && selectedId && selectedNetwork) {
+      const station = data.stations.find((s) => s.gtfsId === selectedId);
+      if (station && !station.networks.includes(selectedNetwork)) {
+        setSelectedNetwork(station.networks[0]);
+      }
     }
   }, [data, selectedNetwork, selectedId]);
 
@@ -88,13 +83,13 @@ export const App: React.FC = () => {
           setSelectedId('');
           setSelectedNetwork(newValue);
         }}
-        notFoundContent="No results"
+        notFoundContent={empty}
       >
         {selectedNetwork === '' && (
           <Select.Option value="">Choose a network</Select.Option>
         )}
-        {Object.entries(data.networks).map(([qId, network]) => (
-          <Select.Option key={qId} value={qId}>
+        {data.networks.map((network) => (
+          <Select.Option key={network.qId} value={network.qId}>
             {network.logoUrl && (
               <Avatar size={24}>
                 <img alt={network.name} src={network.logoUrl} />
@@ -116,12 +111,11 @@ export const App: React.FC = () => {
         value={selectedId}
         onChange={(newValue) => setSelectedId(newValue)}
         style={{ marginTop: 8 }}
-        notFoundContent="No results"
+        notFoundContent={empty}
       >
         <Select.Option value="">Choose a station</Select.Option>
-        {Object.values(data.stations)
+        {data.stations
           .filter((station) => station.networks.includes(selectedNetwork))
-          .sort((a, b) => a.name.localeCompare(b.name))
           .map((station) => (
             <Select.Option
               key={station.gtfsId}
@@ -135,7 +129,9 @@ export const App: React.FC = () => {
       <br />
       {!!selectedId && (
         <RouterContext.Provider value={setSelectedId}>
-          <Router station={data.stations[selectedId]} />
+          <Router
+            station={data.stations.find((s) => s.gtfsId === selectedId)}
+          />
         </RouterContext.Provider>
       )}
       <br />
@@ -143,10 +139,7 @@ export const App: React.FC = () => {
       <br />
       <br />
       <hr />
-      Last updated: <Timeago date={data.lastUpdated} hideSeconds />.{' '}
-      <button type="button" onClick={refreshData} disabled={isLoading}>
-        {isLoading ? 'Loading…' : `Refresh (${data.sizeMb} MB)`}
-      </button>
+      Last updated: <Timeago date={data.lastUpdated} hideSeconds />.
       <br />
       <small>
         Data copyright &copy;{' '}
