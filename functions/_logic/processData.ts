@@ -78,6 +78,16 @@ export function processData(
           );
 
           if (node && hasData) {
+            // find a platform in the same stop_area with a matching local_ref
+            const platformFeature = relation.members
+              .filter((m) => m.role === 'platform')
+              .map((m) => data.find((d) => d.type === m.type && d.id === m.ref))
+              .find(
+                (feature) =>
+                  node.tags?.local_ref &&
+                  node.tags?.local_ref === feature?.tags?.local_ref,
+              );
+
             const routesThatStopHere = data.filter(
               (feature): feature is OsmRelation =>
                 feature.type === 'relation' &&
@@ -129,7 +139,9 @@ export function processData(
                 (node.tags?.description?.length ?? 99) < 20
                   ? node.tags!.description
                   : undefined,
-              inaccessible: node.tags?.wheelchair === 'no',
+              inaccessible:
+                node.tags?.wheelchair === 'no' ||
+                platformFeature?.tags?.wheelchair === 'no',
               lat: node.lat,
               lon: node.lon,
               ...createExitMap(node, data),
