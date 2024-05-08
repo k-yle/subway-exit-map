@@ -24,6 +24,7 @@ export type Carriage =
       unavailable?: true;
       exitType?: ExitType[];
       exitNumber?: string[];
+      exitSymbols?: string[];
       exitTo?: string[];
     };
 
@@ -79,6 +80,7 @@ export type Station = {
 };
 
 export type Data = {
+  warnings: string[];
   stations: Station[];
   networks: {
     qId: string;
@@ -86,6 +88,9 @@ export type Data = {
     logoUrl?: string;
     wikipedia?: string;
   }[];
+  supportedSymbols: {
+    [symbol: string]: string;
+  };
   lastGenerated: string;
   lastUpdated: string;
 };

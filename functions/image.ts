@@ -1,3 +1,4 @@
+import { ICONS } from './_helpers/override.js';
 import type { Handler, Images } from './_logic/types.def.js';
 
 export const onRequest: Handler = async (context) => {
@@ -7,8 +8,9 @@ export const onRequest: Handler = async (context) => {
   );
 
   const apiUrl = new URL(context.request.url);
-  const qId = apiUrl.searchParams.get('qId') || '';
-  const imageUrl = images?.[qId];
+  const imageUrl =
+    images?.[apiUrl.searchParams.get('qId') || ''] ||
+    ICONS[apiUrl.searchParams.get('symbol') || ''];
 
   if (!imageUrl) return new Response(undefined, { status: 404 });
 

@@ -35,10 +35,13 @@ export function createExitMap(
       ? ':backward'
       : '';
 
-  const exitType = tags[`exit:carriages${suffix}`]?.split('|') || [];
+  const exitType =
+    tags[`exit:carriages${suffix}`]?.split('\n')[0].split('|') || [];
   const exitTo = tags[`destination:carriages${suffix}`]?.split('|') || [];
   const exitNumber =
     tags[`destination:ref:carriages${suffix}`]?.split('|') || [];
+  const exitSymbols =
+    tags[`destination:symbol:carriages${suffix}`]?.split('|') || [];
   const available = tags[`access:carriages${suffix}`]?.split('|') || [];
 
   if (!exitType.length) {
@@ -50,6 +53,7 @@ export function createExitMap(
     exitType.length,
     exitTo.length,
     exitNumber.length,
+    exitSymbols.length,
     available.length,
   ]);
   lengths.delete(0);
@@ -75,6 +79,7 @@ export function createExitMap(
       const exitType1 = noToUndefined(<ExitType[]>exitType[index].split(';'));
       const exitTo1 = noToUndefined(exitTo[index]?.split(';'));
       const exitNumber1 = noToUndefined(exitNumber[index]?.split(';'));
+      const exitSymbols1 = noToUndefined(exitSymbols[index]?.split(';'));
       const unavailable = FALSY.has(available[index]?.toLowerCase());
 
       const carriage: Carriage = {
@@ -90,6 +95,7 @@ export function createExitMap(
       if (exitType1) carriage.exitType = exitType1;
       if (exitTo1) carriage.exitTo = exitTo1;
       if (exitNumber1) carriage.exitNumber = exitNumber1;
+      if (exitSymbols1) carriage.exitSymbols = exitSymbols1;
       if (unavailable) carriage.unavailable = unavailable;
 
       carriages.push(carriage);

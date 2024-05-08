@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Timeago from 'react-timeago-i18n';
 import { Avatar, Select } from '@arco-design/web-react';
 import { useData } from './useData';
-import type { Station } from './types.def';
+import type { Data, Station } from './types.def';
 import './main.css';
 import { RenderDiagram } from './components/RenderDiagram';
 import { RouterContext } from './context';
@@ -11,7 +11,8 @@ const empty = <div style={{ padding: '2px 8px' }}>No results</div>;
 
 const Router: React.FC<{
   station: Station | undefined;
-}> = ({ station }) => {
+  data: Data;
+}> = ({ data, station }) => {
   if (!station) return null;
 
   return (
@@ -34,7 +35,7 @@ const Router: React.FC<{
       )}
       {station.stops.map((stop) => (
         <section key={stop.nodeId}>
-          <RenderDiagram station={station} stop={stop} />
+          <RenderDiagram data={data} station={station} stop={stop} />
         </section>
       ))}
     </>
@@ -130,6 +131,7 @@ export const App: React.FC = () => {
       {!!selectedId && (
         <RouterContext.Provider value={setSelectedId}>
           <Router
+            data={data}
             station={data.stations.find((s) => s.gtfsId === selectedId)}
           />
         </RouterContext.Provider>

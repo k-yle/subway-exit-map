@@ -1,6 +1,7 @@
 import type { OsmNode, OsmRelation } from 'osm-api';
 import { isTruthy, uniq } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
+import { ICONS } from '../_helpers/override.js';
 import type {
   AdjacentStop,
   Data,
@@ -280,7 +281,7 @@ export function processData(
         wikipedia: wikipediaPage
           ? `https://${firstSupportedLanguage}.wikipedia.org/wiki/${wikipediaPage.replaceAll(' ', '_')}`
           : undefined,
-        logoUrl: logoUrl && `${API_BASE_URL}/logo?qId=${qId}`,
+        logoUrl: logoUrl && `${API_BASE_URL}/image?qId=${qId}`,
       };
     })
     .sort((a, b) => b.name.localeCompare(a.name));
@@ -288,8 +289,15 @@ export function processData(
   return {
     imageUrls,
     toClient: {
+      warnings,
       stations: stations.sort((a, b) => a.name.localeCompare(b.name)),
       networks: networkMetadata,
+      supportedSymbols: Object.fromEntries(
+        Object.keys(ICONS).map((symbol) => [
+          symbol,
+          `${API_BASE_URL}/image?symbol=${symbol}`,
+        ]),
+      ),
       lastGenerated: new Date().toISOString(),
       lastUpdated,
     },

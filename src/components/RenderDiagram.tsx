@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago-i18n';
-import type { Station, Stop } from '../types.def';
+import type { Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { formatList } from '../helpers/i18n';
 import { Arrow, Icon } from './Icon';
@@ -13,9 +13,10 @@ import { PlatformName } from './PlatformName';
 import notAccessible from './icons/NotAccessible.svg';
 
 export const RenderDiagram: React.FC<{
+  data: Data;
   station: Station;
   stop: Stop;
-}> = ({ station, stop }) => {
+}> = ({ data, station, stop }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const carriages = stop.flip ? stop.carriages : [...stop.carriages].reverse();
@@ -84,7 +85,6 @@ export const RenderDiagram: React.FC<{
 
               return (
                 <td key={carriage.ref} className="exitRef" colSpan={colSpan}>
-                  {carriage.unavailable && 'No exit at'}
                   {carriage.exitNumber && (
                     <span>Exit {formatList(carriage.exitNumber)}</span>
                   )}
@@ -94,7 +94,33 @@ export const RenderDiagram: React.FC<{
             <td />
           </tr>
 
-          {/* second row - the exit names */}
+          {/* second row - the exit symbols */}
+          <tr>
+            <td />
+            {carriages.map((carriage, index) => {
+              const colSpan = colSpans[index];
+              if (carriage.type === 'ellipsis' || !colSpan) return null;
+
+              return (
+                <td key={carriage.ref} colSpan={colSpan}>
+                  {carriage.exitSymbols
+                    ?.filter((symbol) => data.supportedSymbols[symbol])
+                    .map((symbol) => (
+                      <img
+                        key={symbol}
+                        src={data.supportedSymbols[symbol]}
+                        alt={symbol}
+                        style={{ width: 20, height: 20 }}
+                      />
+                    ))}
+                  {carriage.unavailable && 'No exit at'}
+                </td>
+              );
+            })}
+            <td />
+          </tr>
+
+          {/* third row - the exit names */}
           <tr className="destinationRow">
             <td />
             {carriages.map((carriage, index) => {
@@ -111,7 +137,7 @@ export const RenderDiagram: React.FC<{
             <td />
           </tr>
 
-          {/* third row - the exit types */}
+          {/* fourth row - the exit types */}
           <tr className="exitSymbolRow">
             <td />
             {carriages.map((carriage) => {
@@ -134,7 +160,7 @@ export const RenderDiagram: React.FC<{
             <td />
           </tr>
 
-          {/* fourth row - the train */}
+          {/* fifth row - the train */}
           <tr>
             <td>{stop.flip && <Arrow flip />}</td>
             {carriages.map((carriage) => {
@@ -156,7 +182,7 @@ export const RenderDiagram: React.FC<{
             <td>{!stop.flip && <Arrow />}</td>
           </tr>
 
-          {/* fifth row - the platform */}
+          {/* sixth row - the platform */}
           <tr>
             <td>{stop.flip ? to : from}</td>
             <td
