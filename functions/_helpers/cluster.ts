@@ -28,6 +28,12 @@ export function kMeanCluster(bearings: number[]): number[][] {
 
 /** clusters a series of number, then returns true/false for each value */
 export function splitInHalf(bearings: number[]): boolean[] {
+  // exception: if all angles with within 10° of the first one,
+  // then treat it as a single cluster
+  if (bearings.every((bearing) => Math.abs(bearing - bearings[0]) < 10)) {
+    return bearings.map(() => true);
+  }
+
   const clusters = kMeanCluster(bearings);
   return bearings.map((bearing) => clusters[0].includes(bearing));
 }

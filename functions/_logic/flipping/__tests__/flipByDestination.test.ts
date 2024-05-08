@@ -71,7 +71,7 @@ describe('flipByDestination', () => {
         }),
       );
 
-      expect(flipByDestination(<Stop[]>stops, [], station)).toStrictEqual(
+      expect(flipByDestination(<Stop[]>stops, [], station, [])).toStrictEqual(
         output,
       );
     },

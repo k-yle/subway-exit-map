@@ -6,7 +6,12 @@ import {
 import { avg } from '../../_helpers/math.js';
 import type { FlipFunction } from './index.js';
 
-export const flipByStopLocation: FlipFunction = (stops, _, station) => {
+export const flipByStopLocation: FlipFunction = (
+  stops,
+  _,
+  station,
+  warnings,
+) => {
   const allLats = stops.map((element) => element.lat);
   const allLons = stops.map((element) => element.lon);
 
@@ -22,7 +27,7 @@ export const flipByStopLocation: FlipFunction = (stops, _, station) => {
   if (isAnyStopNearCentroid) {
     // one stop is 2 std deviations closer to the centroid,
     // which means the data is probably rubbish. So abort.
-    console.warn(`${station.name}: flipping failed`);
+    warnings.push(`${station.name}: flipping failed`);
     return undefined;
   }
 
@@ -30,7 +35,7 @@ export const flipByStopLocation: FlipFunction = (stops, _, station) => {
     getBearingBetweenCoords(centroid.lat, centroid.lon, stop.lat, stop.lon),
   );
 
-  console.warn(`${station.name}: using unsafe flipping algorithm`);
+  warnings.push(`${station.name}: using unsafe flipping algorithm`);
 
   return splitInHalf(bearings);
 };

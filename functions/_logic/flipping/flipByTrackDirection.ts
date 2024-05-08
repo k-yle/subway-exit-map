@@ -3,7 +3,12 @@ import { getBearingBetweenCoords } from '../../_helpers/geo.js';
 import { splitInHalf } from '../../_helpers/cluster.js';
 import type { FlipFunction } from './index.js';
 
-export const flipByTrackDirection: FlipFunction = (stops, allData, station) => {
+export const flipByTrackDirection: FlipFunction = (
+  stops,
+  allData,
+  station,
+  warnings,
+) => {
   const bearings: number[] = [];
 
   const anyBiDiWithNoPreferredDirection = stops.filter(
@@ -13,7 +18,7 @@ export const flipByTrackDirection: FlipFunction = (stops, allData, station) => {
     // to fix this, stop_positions on bidirectional tracks need
     // to have exit:carriages:[forward/backward] tagged. This
     // tells us what the preffered direction is.
-    console.warn(
+    warnings.push(
       `Ambiguous track direction at ${station.name} ${anyBiDiWithNoPreferredDirection.map((stop) => stop.nodeId)}`,
     );
     return undefined;
@@ -59,7 +64,7 @@ export const flipByTrackDirection: FlipFunction = (stops, allData, station) => {
     if (!nextNode && !lastNode) {
       // this should be impossible, since a way
       // must have at least 2 nodes.
-      console.warn(`Couldn't find next nor last node for n${stop.nodeId}`);
+      warnings.push(`Couldn't find next nor last node for n${stop.nodeId}`);
       return undefined;
     }
 

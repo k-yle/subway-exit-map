@@ -8,10 +8,11 @@ export type FlipFunction = (
   stops: Stop[],
   allData: OsmFeature[],
   station: Station,
+  warnings: string[],
 ) => boolean[] | undefined;
 
 export const flipFunctions: FlipFunction[] = [
-  flipByDestination,
   flipByTrackDirection,
+  flipByDestination,
   flipByStopLocation,
 ];

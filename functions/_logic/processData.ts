@@ -23,6 +23,7 @@ export function processData(
   imageUrls: Record<string, string>;
   toClient: Data;
 } {
+  const warnings: string[] = [];
   const stations: Station[] = [];
 
   // find all stop_area relations first
@@ -42,7 +43,7 @@ export function processData(
         .find(Boolean);
 
       if (!trainStationFeature?.tags) {
-        console.warn('No station found for', relation.tags.name);
+        warnings.push(`No station found for ${relation.id}`);
         continue;
       }
 
@@ -230,7 +231,7 @@ export function processData(
       // try several different algorithms to figure out
       // which stops (if any) should be flipped
       for (const f of flipFunctions) {
-        const stopsToFlip = f(stopsArray, data, station);
+        const stopsToFlip = f(stopsArray, data, station, warnings);
         if (stopsToFlip) {
           station.flipAlgorithm = f.name;
           for (const [index, stop] of stopsArray.entries()) {

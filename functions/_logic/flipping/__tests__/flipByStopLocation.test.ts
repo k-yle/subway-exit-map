@@ -30,6 +30,6 @@ describe('flipByStopLocation', () => {
     ],
   ])('can divide a series of stops', (mockStops, expected) => {
     const stops = mockStops.map(([lat, lon]) => <Stop>{ lat, lon });
-    expect(flipByStopLocation(stops, [], station)).toStrictEqual(expected);
+    expect(flipByStopLocation(stops, [], station, [])).toStrictEqual(expected);
   });
 });
