@@ -1,5 +1,5 @@
 import type { OsmFeature, OsmNode, OsmWay } from 'osm-api';
-import { getTrackDirection } from '../_helpers/osm.js';
+import { FALSY, getTrackDirection } from '../_helpers/osm.js';
 import { BEST_OVERRIDE } from '../_helpers/override.js';
 import type {
   Carriage,
@@ -9,10 +9,9 @@ import type {
   Stop,
 } from './types.def.js';
 import { getBiDiMode } from './getBiDiMode.js';
+import { fillBlanksForColSpan } from './fillBlanksForColSpan.js';
 
 const EXIT_HIERACHY: ExitType[] = ['escalator', 'flat', 'ramp', 'stairs'];
-
-const FALSY = new Set(['', 'no', 'none', 'emergency']);
 
 /** replaces OSM's string keywords with false */
 const noToUndefined = <T extends string>(
@@ -85,6 +84,11 @@ export function createExitMap(
 
   const trackDirection = getTrackDirection(track.tags);
   const direction = <FwdBwdBoth>suffix?.slice(1) || trackDirection;
+
+  // we do NOT copy exitType, since that would be wrong.
+  fillBlanksForColSpan(
+    [exitNumber, exitTo, exitSymbols].filter((row) => row?.length),
+  );
 
   const carriages: Carriage[] = [];
   for (let index = 0; index < exitType.length; index++) {

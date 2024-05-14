@@ -30,3 +30,5 @@ export const getTrackDirection = (tags: Tags | undefined): FwdBwdBoth => {
       .find(Boolean) || 'both_ways'
   );
 };
+
+export const FALSY = new Set(['', 'no', 'none', 'emergency']);
