@@ -15,6 +15,12 @@ way(bn.stops) -> .stationTrackWays;
 // and then get all nodes of those train tracks
 node(w.stationTrackWays) -> .stationTrackNodes;
 
+// now get any other train tracks that join the nodes of our existing
+// tracks. i.e. get the adjacent (prev and next) tracks for every track
+// that contain an stop node. Depending on how landuse is mapped, this
+// might redundantly include landuse/bridge areas/retaining walls etc.
+way(bn.stationTrackNodes) -> .stationTrackWaysIncludingAdjacent;
+
 // split out the stop_area relations
 rel.allRelations[public_transport=stop_area]->.stopAreas;
 
@@ -35,5 +41,5 @@ rel.allRelations["network:wikidata"]->.suburbanTrainRoutes;
 nwr(r.stopAreas)[public_transport=station]->.stations;
 
 // don't output every relation, just the ones we want
-(.stops; .stations; .stopAreas; .suburbanTrainRoutes; .stationTrackWays; .stationTrackNodes;);
+(.stops; .stations; .stopAreas; .suburbanTrainRoutes; .stationTrackWaysIncludingAdjacent; .stationTrackNodes;);
 out meta;

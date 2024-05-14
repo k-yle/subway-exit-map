@@ -1,4 +1,4 @@
-import type { OsmNode, OsmRelation } from 'osm-api';
+import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
 import { isTruthy, uniq } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS } from '../_helpers/override.js';
@@ -12,6 +12,7 @@ import type {
 import { createExitMap } from './createExitMap.js';
 import { groupRoutesThatStopHere } from './groupRoutesThatStopHere.js';
 import { flipFunctions } from './flipping/index.js';
+import { getTravellingDirection } from './getTravellingDirection.js';
 
 /** remove platform number from stop_position nodes */
 const cleanName = (name: string) => name.split(',')[0].replace(/ \d+$/, '');
@@ -102,6 +103,14 @@ export function processData(
                 ),
             );
 
+            // assume that a stop_position node is never at a 3-way junction,
+            // so we just find the first track that includes this node.
+            const track = data.find(
+              (feature): feature is OsmWay =>
+                feature.type === 'way' && feature.nodes.includes(node.id),
+            );
+            if (!track) throw new Error(`No track for n${node.id}`);
+
             // the OSM nodeId
             const lastStops = new Set<number>();
             const nextStops = new Set<number>();
@@ -119,12 +128,24 @@ export function processData(
 
               const lastStopId = stopsOnThisRoute[indexOfOurStop - 1] || -1;
               const nextStopId = stopsOnThisRoute[indexOfOurStop + 1] || -1;
-              const lastStop = data.find(
+              let lastStop = data.find(
                 (f) => f.type === 'node' && f.id === lastStopId,
               );
-              const nextStop = data.find(
+              let nextStop = data.find(
                 (f) => f.type === 'node' && f.id === nextStopId,
               );
+
+              const travellingDirectionAlongTrack = getTravellingDirection(
+                route,
+                track,
+                data,
+                warnings,
+              );
+
+              if (travellingDirectionAlongTrack === 'backward') {
+                [lastStop, nextStop] = [nextStop, lastStop];
+              }
+
               if (lastStop?.tags) {
                 lastStops.add(lastStop.id);
               }
