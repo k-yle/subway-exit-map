@@ -1,0 +1,51 @@
+{
+  "data_format": 1,
+  "data_url": "https://github.com/k-yle/subway-exit-map/raw/main/taginfo.json",
+  "data_updated": "20240515T000000Z",
+  "project": {
+    "name": "Subway Exit Map",
+    "description": "Used for rendering a map of exits on subway/train platforms",
+    "project_url": "https://exits.kyle.kiwi",
+    "doc_url": "https://osm.wiki/Key:exit:carriages",
+    "icon_url": "https://exits.kyle.kiwi/icon.png",
+    "contact_name": "Kyle Hensel",
+    "contact_email": "message @kylenz on OpenStreetMap"
+  },
+  "tags": [
+    { "key": "exit:carriages", "object_types": ["node"] },
+    { "key": "exit:carriages:forward", "object_types": ["node"] },
+    { "key": "exit:carriages:backward", "object_types": ["node"] },
+
+    { "key": "destination:carriages", "object_types": ["node"] },
+    { "key": "destination:carriages:forward", "object_types": ["node"] },
+    { "key": "destination:carriages:backward", "object_types": ["node"] },
+
+    { "key": "destination:ref:carriages", "object_types": ["node"] },
+    { "key": "destination:ref:carriages:forward", "object_types": ["node"] },
+    { "key": "destination:ref:carriages:backward", "object_types": ["node"] },
+
+    { "key": "destination:symbol:carriages", "object_types": ["node"] },
+    { "key": "destination:symbol:carriages:forward", "object_types": ["node"] },
+    {
+      "key": "destination:symbol:carriages:backward",
+      "object_types": ["node"]
+    },
+
+    { "key": "access:carriages", "object_types": ["node"] },
+    { "key": "access:carriages:forward", "object_types": ["node"] },
+    { "key": "access:carriages:backward", "object_types": ["node"] },
+
+    { "key": "railway:preferred_direction", "object_types": ["way"] },
+    { "key": "railway:bidirectional", "object_types": ["way"] },
+    { "key": "oneway", "object_types": ["way"] },
+
+    { "key": "local_ref", "object_types": ["node"] },
+
+    { "key": "ref", "object_types": ["node", "area"] },
+    { "key": "wheelchair", "object_types": ["node", "area"] },
+    { "key": "fare_gates", "object_types": ["node", "area"] },
+
+    { "key": "public_transport", "object_types": ["relation"] },
+    { "key": "network:wikidata", "object_types": ["relation"] }
+  ]
+}
