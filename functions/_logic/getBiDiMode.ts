@@ -17,6 +17,10 @@ export function getBiDiMode(
         relation.type === 'relation' &&
         relation.members.some((m) => m.type === 'way' && m.ref === track.id),
     );
+
+    // bidi & no regular service -> regular (for the rare cases when its used)
+    if (!routesThatUseThisTrack.length) return 'regular';
+
     // for every route, find the next way in the relation after this track
     const nextWays = routesThatUseThisTrack.map(
       (m) =>

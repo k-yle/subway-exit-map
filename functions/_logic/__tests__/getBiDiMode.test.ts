@@ -57,8 +57,8 @@ describe('getBiDiMode', () => {
     // occasional, beacuse routes pass in 1 direction
     [implicitTrack, [fwdRoute], 'occasional'],
 
-    // occasional, beacuse there are no routes using this track
-    [implicitTrack, [], 'occasional'],
+    // regular, beacuse there are no routes using this track
+    [implicitTrack, [], 'regular'],
 
     // no, beacuse the track is tagged as unidirectional
     [explicitNoTrack, [], undefined],
