@@ -1,5 +1,5 @@
 import { Fragment, useContext } from 'react';
-import { RouterContext } from '../context';
+import { RouterContext } from '../context/router';
 import type { AdjacentStop } from '../types.def';
 import { orFormatter } from '../helpers/i18n';
 

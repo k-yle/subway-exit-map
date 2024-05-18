@@ -5,7 +5,9 @@ import { useData } from './useData';
 import type { Data, Station } from './types.def';
 import './main.css';
 import { RenderDiagram } from './components/RenderDiagram';
-import { RouterContext } from './context';
+import { Settings } from './components/Settings';
+import { RouterContext } from './context/router';
+import { SettingsWrapper } from './context/settings';
 
 const empty = <div style={{ padding: '2px 8px' }}>No results</div>;
 
@@ -49,7 +51,7 @@ const Router: React.FC<{
   );
 };
 
-export const App: React.FC = () => {
+const Home: React.FC = () => {
   const [data, error] = useData();
   const [selectedNetwork, setSelectedNetwork] = useState('');
   const [selectedId, setSelectedId] = useState(
@@ -148,7 +150,8 @@ export const App: React.FC = () => {
       <br />
       <br />
       <hr />
-      Last updated: <Timeago date={data.lastUpdated} hideSeconds />.
+      Last updated: <Timeago date={data.lastUpdated} hideSeconds />.{' '}
+      <Settings />
       <br />
       <small>
         Data copyright &copy;{' '}
@@ -160,3 +163,9 @@ export const App: React.FC = () => {
     </main>
   );
 };
+
+export const App: React.FC = () => (
+  <SettingsWrapper>
+    <Home />
+  </SettingsWrapper>
+);
