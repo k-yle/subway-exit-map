@@ -8,6 +8,10 @@ export const BEST_OVERRIDE: Record<string, number[]> = {
   2000393: [2, 4, 5, 8], // SYD - Town Hall 3
 };
 
+export const NETWORK_OVERRIDE: Record<string, string> = {
+  Q6955406: 'Q7660181', // NSW TrainLink -> Sydney Trains
+};
+
 /**
  * Sydney is the only city that uses `destination:symbol:carriages`, so
  * for now these are hardcoded.

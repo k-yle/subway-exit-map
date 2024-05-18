@@ -175,3 +175,7 @@ tr.exitSymbolRow > td {
     }
   }
 }
+
+.strikeThrough > span {
+  text-decoration: line-through;
+}

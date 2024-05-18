@@ -34,10 +34,13 @@ export type AdjacentStop = {
   platform: string | undefined;
 };
 
-export type RouteThatStopsHere = {
+export type RouteShield = {
   ref: string;
   colour: { bg: string; fg: string };
   shape: string;
+};
+
+export type RouteThatStopsHere = RouteShield & {
   /** @internal */
   to?: string[];
   type: 'to' | 'from' | 'both';
@@ -79,6 +82,7 @@ export type Stop = {
   routes: {
     [to: string]: RouteThatStopsHere[];
   };
+  passThroughRoutes: RouteShield[] | undefined;
 };
 
 export type Station = {

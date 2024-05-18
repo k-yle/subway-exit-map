@@ -1,7 +1,7 @@
 import clsx from 'clsx';
-import type { RouteThatStopsHere } from '../types.def';
+import type { RouteShield as IRouteShield } from '../types.def';
 
-export const RouteShield: React.FC<{ route: RouteThatStopsHere }> = ({
+export const RouteShield: React.FC<{ route: IRouteShield }> = ({
   route: { colour, ref = '\u00A0', shape },
 }) => {
   return (

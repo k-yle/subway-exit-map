@@ -1,12 +1,16 @@
+import { useContext } from 'react';
 import clsx from 'clsx';
 import type { Stop } from '../types.def';
 import { uniqBy } from '../helpers/objects';
+import { SettingsContext } from '../context/settings';
 import { RouteShield } from './RouteShield';
 
 export const PlatformName: React.FC<{
   stop: Stop;
   includeDestinations: boolean;
 }> = ({ stop, includeDestinations }) => {
+  const { settings } = useContext(SettingsContext);
+
   if (!includeDestinations) {
     return (
       <small>
@@ -35,6 +39,14 @@ export const PlatformName: React.FC<{
           <br />
         </small>
       ))}
+      {settings.showPassThroughRoutes && stop.passThroughRoutes && (
+        <small className="strikeThrough">
+          {stop.passThroughRoutes.map((route) => (
+            <RouteShield key={JSON.stringify(route)} route={route} />
+          ))}
+          <em>does not stop here</em>
+        </small>
+      )}
     </>
   );
 };

@@ -2,7 +2,7 @@ import type { OsmNode, OsmRelation, Tags } from 'osm-api';
 import { groupBy, omit, uniq, uniqBy } from '../_helpers/objects.js';
 import { getConstrastingTextColour } from '../_helpers/style.js';
 import { formatList } from '../_helpers/i18n.js';
-import type { RouteThatStopsHere, Stop } from './types.def.js';
+import type { RouteShield, RouteThatStopsHere, Stop } from './types.def.js';
 
 /** most routes don't have a `shape` tag yet, so we can guess the shape */
 const inferShape = (tags: Tags) => {
@@ -10,6 +10,17 @@ const inferShape = (tags: Tags) => {
   if (tags.network?.includes('NYC')) return 'circle';
   return 'rectangular';
 };
+
+export function getRouteShield(tags: Tags): RouteShield {
+  return {
+    ref: tags!.ref,
+    colour: {
+      bg: tags!.colour,
+      fg: getConstrastingTextColour(tags!.colour.replace('#', '')),
+    },
+    shape: tags!.shape || inferShape(tags!),
+  };
+}
 
 export function groupRoutesThatStopHere(
   relations: OsmRelation[],
@@ -32,12 +43,7 @@ export function groupRoutesThatStopHere(
       const isTerminating = role === 'stop_exit_only' || !hasNextStop;
 
       const item: RouteThatStopsHere = {
-        ref: r.tags!.ref,
-        colour: {
-          bg: r.tags!.colour,
-          fg: getConstrastingTextColour(r.tags!.colour.replace('#', '')),
-        },
-        shape: r.tags!.shape || inferShape(r.tags!),
+        ...getRouteShield(r.tags!),
         to: [(isTerminating ? r.tags!.from : r.tags!.to) || 'Unknown'],
         type: isTerminating ? 'from' : 'to',
       };

@@ -1,7 +1,7 @@
 import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
-import { isTruthy, uniq } from '../_helpers/objects.js';
+import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
-import { ICONS } from '../_helpers/override.js';
+import { ICONS, NETWORK_OVERRIDE } from '../_helpers/override.js';
 import type {
   AdjacentStop,
   Data,
@@ -10,7 +10,10 @@ import type {
   Stop,
 } from './types.def.js';
 import { createExitMap } from './createExitMap.js';
-import { groupRoutesThatStopHere } from './groupRoutesThatStopHere.js';
+import {
+  getRouteShield,
+  groupRoutesThatStopHere,
+} from './groupRoutesThatStopHere.js';
 import { flipFunctions } from './flipping/index.js';
 import { getTravellingDirection } from './getTravellingDirection.js';
 
@@ -111,12 +114,32 @@ export function processData(
             );
             if (!track) throw new Error(`No track for n${node.id}`);
 
+            const routesThatPassThroughWithoutStopping = uniqBy(
+              data
+                .filter(
+                  (feature): feature is OsmRelation =>
+                    feature.type === 'relation' &&
+                    !!feature.tags?.route &&
+                    // check that it's not already in routesThatStopHere
+                    !routesThatStopHere.some((r) => r.id === feature.id) &&
+                    feature.members.some(
+                      (m) => m.type === 'way' && m.ref === track.id,
+                    ),
+                )
+                .map((r) => getRouteShield(r.tags!))
+                .sort((a, b) => (a.ref || '').localeCompare(b.ref || '')),
+              JSON.stringify,
+            );
+
             // the OSM nodeId
             const lastStops = new Set<number>();
             const nextStops = new Set<number>();
 
             for (const route of routesThatStopHere) {
-              const network = route.tags?.['network:wikidata'];
+              let network = route.tags?.['network:wikidata'];
+              if (network && NETWORK_OVERRIDE[network]) {
+                network = NETWORK_OVERRIDE[network];
+              }
               if (network && !station.networks.includes(network)) {
                 station.networks.push(network);
               }
@@ -173,6 +196,9 @@ export function processData(
                 user: node.user,
               },
               routes: groupRoutesThatStopHere(routesThatStopHere, node),
+              passThroughRoutes: routesThatPassThroughWithoutStopping.length
+                ? routesThatPassThroughWithoutStopping
+                : undefined,
 
               // typecast is a hack, we fix this later
               lastStop: <never[]>[...lastStops],
