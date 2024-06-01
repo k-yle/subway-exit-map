@@ -1,5 +1,6 @@
 import type { OsmFeature, OsmRelation, OsmWay } from 'osm-api';
 import { getTrackDirection } from '../_helpers/osm.js';
+import { isTruthy } from '../_helpers/objects.js';
 import type { Stop } from './types.def.js';
 
 export function getBiDiMode(
@@ -22,13 +23,18 @@ export function getBiDiMode(
     if (!routesThatUseThisTrack.length) return 'regular';
 
     // for every route, find the next way in the relation after this track
-    const nextWays = routesThatUseThisTrack.map(
-      (m) =>
-        m.members.find((_, index) => {
-          const previous = m.members[index + 1];
-          return previous.type === 'way' && previous.ref === track.id;
-        })?.ref,
-    );
+    const nextWays = routesThatUseThisTrack
+      .map(
+        (route) =>
+          route.members
+            .filter((m) => m?.type === 'way' && !m.role)
+            .find((_, index, array) => {
+              const next = array[index + 1];
+              return next?.ref === track.id;
+            })?.ref,
+      )
+      .filter(isTruthy); // if there is no nextWay, don't count this route
+
     if (new Set(nextWays).size > 1) {
       // there are multiple next ways, this means
       // this track is used in both directions by PTv2 routes
