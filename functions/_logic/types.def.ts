@@ -18,7 +18,7 @@ export type ExitType =
 export type Carriage =
   | { type: 'ellipsis'; ref: number }
   | {
-      type: 'carriage' | 'loco';
+      type: 'first' | 'middle' | 'last' | 'gap';
       ref: number;
       isBest?: true;
       unavailable?: true;

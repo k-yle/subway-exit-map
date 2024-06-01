@@ -73,14 +73,31 @@ td.platform {
   cursor: pointer;
 }
 
-div.carriage,
-div.loco {
+div.gap {
+  margin: 2px;
+  background: #e8e8e8;
+  border-radius: 2px;
+}
+
+div.first,
+div.middle,
+div.last {
   margin: 2px;
   background: #1e90ff;
   color: #fff;
   border-radius: 2px;
   position: relative;
-  &.loco:before {
+  &.first:before {
+    /* chop out the drivers cab */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    border-right: 13px solid #1e90ff;
+    border-top: 13px solid #fff;
+    content: '';
+  }
+  &.last:before {
     /* chop out the drivers cab */
     position: absolute;
     top: 0;
@@ -92,23 +109,12 @@ div.loco {
   }
 }
 
-/* flip the loco on the left end of the train (if any) */
-tr > td:nth-child(2) > .loco {
-  &:before {
-    right: unset;
-    border-left: unset;
-    left: 0;
-    border-right: 13px solid #1e90ff;
-  }
-  &.best:before {
-    border-left-color: unset;
+div.best:not(.gap) {
+  background: #4caf50;
+  &.first:before {
     border-right-color: #4caf50;
   }
-}
-
-div.best {
-  background: #4caf50;
-  &.loco:before {
+  &.last:before {
     border-left-color: #4caf50;
   }
 }

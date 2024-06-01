@@ -91,25 +91,32 @@ export function createExitMap(
   );
 
   const carriages: Carriage[] = [];
+  const firstIndex = exitType.findIndex((car) => !car.endsWith('*'));
+
   for (let index = 0; index < exitType.length; index++) {
     const isElipsis = exitType[index] === '...';
+    const flag = exitType[index].endsWith('*');
     if (isElipsis && (!index || index === exitType.length - 1)) {
       // the train continues for an unspecified length
       carriages.push({ type: 'ellipsis', ref: index + 1 });
     } else {
-      const exitType1 = noToUndefined(<ExitType[]>exitType[index].split(';'));
+      const exitType1 = noToUndefined(
+        <ExitType[]>exitType[index].replace(/\*$/, '').split(';'),
+      );
       const exitTo1 = noToUndefined(exitTo[index]?.split(';'));
       const exitNumber1 = noToUndefined(exitNumber[index]?.split(';'));
       const exitSymbols1 = noToUndefined(exitSymbols[index]?.split(';'));
       const unavailable = FALSY.has(available[index]?.toLowerCase());
 
       const carriage: Carriage = {
-        type:
-          index === 0 ||
-          (index === exitType.length - 1 && biDiMode === 'regular')
-            ? 'loco'
-            : 'carriage',
-        ref: index + 1,
+        type: flag
+          ? 'gap'
+          : index === firstIndex
+            ? 'first'
+            : index === exitType.length - 1 && biDiMode === 'regular'
+              ? 'last'
+              : 'middle',
+        ref: index + 1 - firstIndex,
       };
 
       const isBest = BEST_OVERRIDE[node.id]

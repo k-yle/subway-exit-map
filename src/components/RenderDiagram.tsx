@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago-i18n';
-import type { Data, Station, Stop } from '../types.def';
+import type { Carriage, Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { formatList } from '../helpers/i18n';
 import { Arrow, Icon } from './Icon';
@@ -19,7 +19,13 @@ export const RenderDiagram: React.FC<{
 }> = ({ data, station, stop }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const carriages = stop.flip ? stop.carriages : [...stop.carriages].reverse();
+  const carriages = stop.flip
+    ? stop.carriages
+    : [...stop.carriages].reverse().map((car): Carriage => {
+        if (car.type === 'first') return { ...car, type: 'last' };
+        if (car.type === 'last') return { ...car, type: 'first' };
+        return car;
+      });
   const cars = carriages.length;
 
   const colSpans = useMemo(
@@ -189,7 +195,11 @@ export const RenderDiagram: React.FC<{
                       'isBest' in carriage && carriage.isBest && 'best',
                     )}
                   >
-                    {carriage.type === 'ellipsis' ? '…' : carriage.ref}
+                    {carriage.type === 'ellipsis'
+                      ? '…'
+                      : carriage.type === 'gap'
+                        ? '\u00A0'
+                        : carriage.ref}
                   </div>
                   {/* TODO: render elipsis */}
                 </td>
