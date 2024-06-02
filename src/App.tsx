@@ -33,13 +33,13 @@ const Router: React.FC<{
             </>
           )}{' '}
           fare gates.
+        </>
+      )}
+      {station.stops.some((stop) => stop.biDiMode === 'occasional') && (
+        <>
           <br />
-          {station.stops.some((stop) => stop.biDiMode === 'occasional') && (
-            <>
-              <sup>†</sup> = During disruptions, trains may travel in the
-              opposite direction at this platform.
-            </>
-          )}
+          <sup>†</sup> = During disruptions, trains may travel in the opposite
+          direction at this platform.
         </>
       )}
       {station.stops.map((stop) => (

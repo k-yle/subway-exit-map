@@ -69,7 +69,7 @@ export type Stop = {
    *   past this node.
    *
    * - `occasional` means the track supports bidirectional operation,
-   *   but there PTv2 relations only travel in one direction, or the
+   *   but the PTv2 relations only travel in one direction, or the
    *   track has `railway:bidirectional=possible`
    *
    * - `undefined` means unidirectional.
