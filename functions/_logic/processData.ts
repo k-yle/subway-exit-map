@@ -2,12 +2,13 @@ import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
 import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS, NETWORK_OVERRIDE } from '../_helpers/override.js';
-import type {
-  AdjacentStop,
-  Data,
-  RawInput,
-  Station,
-  Stop,
+import {
+  type AdjacentStop,
+  type Data,
+  FareGates,
+  type RawInput,
+  type Station,
+  type Stop,
 } from './types.def.js';
 import { createExitMap } from './createExitMap.js';
 import {
@@ -56,16 +57,13 @@ export function processData(
 
       let station = stations.find((s) => s.gtfsId === gtfsId);
       if (!station) {
+        const fareGates = trainStationFeature.tags.fare_gates;
         station = {
           relationId: relation.id,
           gtfsId,
           name: trainStationFeature.tags.name,
           fareGates:
-            trainStationFeature.tags.fare_gates === 'yes'
-              ? true
-              : trainStationFeature.tags.fare_gates === 'no'
-                ? false
-                : undefined,
+            fareGates in FareGates ? (fareGates as FareGates) : undefined,
           networks: [],
           stops: [],
         };

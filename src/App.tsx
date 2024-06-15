@@ -21,20 +21,27 @@ const Router: React.FC<{
     <>
       The best carriages are shown in{' '}
       <strong className="green-preview">green</strong>.
-      {typeof station.fareGates === 'boolean' && (
-        <>
-          <br />
-          This station{' '}
-          {station.fareGates ? (
-            <strong>has</strong>
-          ) : (
+      {station.fareGates &&
+        {
+          no: (
             <>
-              does <strong>not</strong> have
+              <br />
+              This station does <strong>not</strong> have fare gates.
             </>
-          )}{' '}
-          fare gates.
-        </>
-      )}
+          ),
+          yes: (
+            <>
+              <br />
+              This station <strong>has</strong> fare gates.
+            </>
+          ),
+          partial: (
+            <>
+              <br />
+              This station has fare gates at <strong>some entrances</strong>.
+            </>
+          ),
+        }[station.fareGates]}
       {station.stops.some((stop) => stop.biDiMode === 'occasional') && (
         <>
           <br />

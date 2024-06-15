@@ -85,12 +85,18 @@ export type Stop = {
   passThroughRoutes: RouteShield[] | undefined;
 };
 
+export enum FareGates {
+  yes = 'yes',
+  no = 'no',
+  partial = 'partial',
+}
+
 export type Station = {
   relationId: number;
   gtfsId: string;
   name: string;
   networks: string[];
-  fareGates: boolean | undefined;
+  fareGates: FareGates | undefined;
   stops: Stop[];
   flipAlgorithm?: string;
 };
