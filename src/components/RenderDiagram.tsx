@@ -30,11 +30,7 @@ export const RenderDiagram: React.FC<{
 
   const colSpans = useMemo(
     () =>
-      countAdjacentEqual(
-        carriages.map((x) =>
-          x.type === 'ellipsis' ? '' : `${x.exitNumber}${x.exitTo}`,
-        ),
-      ),
+      countAdjacentEqual(carriages.map((x) => `${x.exitNumber}${x.exitTo}`)),
     [carriages],
   );
 
@@ -102,7 +98,7 @@ export const RenderDiagram: React.FC<{
             <td />
             {carriages.map((carriage, index) => {
               const colSpan = colSpans[index];
-              if (carriage.type === 'ellipsis' || !colSpan) return null;
+              if (!colSpan) return null;
 
               return (
                 <td key={carriage.ref} className="exitRef" colSpan={colSpan}>
@@ -120,7 +116,7 @@ export const RenderDiagram: React.FC<{
             <td />
             {carriages.map((carriage, index) => {
               const colSpan = colSpans[index];
-              if (carriage.type === 'ellipsis' || !colSpan) return null;
+              if (!colSpan) return null;
 
               return (
                 <td key={carriage.ref} colSpan={colSpan}>
@@ -146,7 +142,7 @@ export const RenderDiagram: React.FC<{
             <td />
             {carriages.map((carriage, index) => {
               const colSpan = colSpans[index];
-              if (carriage.type === 'ellipsis' || !colSpan) return null;
+              if (!colSpan) return null;
 
               return (
                 <td key={carriage.ref} colSpan={colSpan}>
@@ -162,9 +158,6 @@ export const RenderDiagram: React.FC<{
           <tr className="exitSymbolRow">
             <td />
             {carriages.map((carriage) => {
-              if (carriage.type === 'ellipsis') {
-                return <td key={carriage.ref} />;
-              }
               return (
                 <td key={carriage.ref}>
                   {carriage.unavailable && '🚫'}
@@ -195,13 +188,8 @@ export const RenderDiagram: React.FC<{
                       'isBest' in carriage && carriage.isBest && 'best',
                     )}
                   >
-                    {carriage.type === 'ellipsis'
-                      ? '…'
-                      : carriage.type === 'gap'
-                        ? '\u00A0'
-                        : carriage.ref}
+                    {carriage.type === 'gap' ? '\u00A0' : carriage.ref}
                   </div>
-                  {/* TODO: render elipsis */}
                 </td>
               );
             })}

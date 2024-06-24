@@ -48,7 +48,6 @@ export function createExitMap(
     throw new Error(`No main tag for “${suffix}” of node ${node.id}`);
   }
 
-  const hasElipses = exitType[0] === '...' || exitType.at(-1) === '...';
   const lengths = new Set([
     exitType.length,
     exitTo.length,
@@ -58,7 +57,7 @@ export function createExitMap(
   ]);
   lengths.delete(0);
 
-  if (!hasElipses && lengths.size !== 1) {
+  if (lengths.size !== 1) {
     throw new Error(
       `mismatched number of cars at ${tags.name} ${tags.local_ref}: ${[...lengths]}`,
     );
@@ -94,12 +93,8 @@ export function createExitMap(
   const firstIndex = exitType.findIndex((car) => !car.endsWith('*'));
 
   for (let index = 0; index < exitType.length; index++) {
-    const isElipsis = exitType[index] === '...';
     const flag = exitType[index].endsWith('*');
-    if (isElipsis && (!index || index === exitType.length - 1)) {
-      // the train continues for an unspecified length
-      carriages.push({ type: 'ellipsis', ref: index + 1 });
-    } else {
+    {
       const exitType1 = noToUndefined(
         <ExitType[]>exitType[index].replace(/\*$/, '').split(';'),
       );

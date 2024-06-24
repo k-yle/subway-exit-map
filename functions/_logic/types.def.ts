@@ -15,18 +15,16 @@ export type ExitType =
   | 'flat'
   | 'yes';
 
-export type Carriage =
-  | { type: 'ellipsis'; ref: number }
-  | {
-      type: 'first' | 'middle' | 'last' | 'gap';
-      ref: number;
-      isBest?: true;
-      unavailable?: true;
-      exitType?: ExitType[];
-      exitNumber?: string[];
-      exitSymbols?: string[];
-      exitTo?: string[];
-    };
+export type Carriage = {
+  type: 'first' | 'middle' | 'last' | 'gap';
+  ref: number;
+  isBest?: true;
+  unavailable?: true;
+  exitType?: ExitType[];
+  exitNumber?: string[];
+  exitSymbols?: string[];
+  exitTo?: string[];
+};
 
 export type AdjacentStop = {
   gtfsId: string | undefined;
