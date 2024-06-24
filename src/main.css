@@ -73,12 +73,6 @@ td.platform {
   cursor: pointer;
 }
 
-div.gap {
-  margin: 2px;
-  background: #e8e8e8;
-  border-radius: 2px;
-}
-
 div.first,
 div.middle,
 div.last {
@@ -97,6 +91,10 @@ div.last {
     border-top: 13px solid #fff;
     content: '';
   }
+  &.first.unavailable:before {
+    border-right: 13px solid #e8e8e8;
+  }
+
   &.last:before {
     /* chop out the drivers cab */
     position: absolute;
@@ -107,6 +105,16 @@ div.last {
     border-top: 13px solid #fff;
     content: '';
   }
+  &.last.unavailable:before {
+    border-left: 13px solid #e8e8e8;
+  }
+}
+
+div.gap,
+div.unavailable {
+  margin: 2px;
+  background: #e8e8e8;
+  border-radius: 2px;
 }
 
 div.best:not(.gap) {

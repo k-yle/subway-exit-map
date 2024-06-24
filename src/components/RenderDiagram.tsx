@@ -26,13 +26,19 @@ export const RenderDiagram: React.FC<{
         if (car.type === 'last') return { ...car, type: 'first' };
         return car;
       });
-  const cars = carriages.length;
 
   const colSpans = useMemo(
     () =>
-      countAdjacentEqual(carriages.map((x) => `${x.exitNumber}${x.exitTo}`)),
+      countAdjacentEqual(
+        carriages.map((x) => `${x.exitNumber}${x.exitTo}${x.unavailable}`),
+      ),
     [carriages],
   );
+
+  const carsOffPlatformLeft = carriages.findIndex((car) => !car.unavailable);
+  const carsOffPlatformRight =
+    carriages.length - 1 - carriages.findLastIndex((car) => !car.unavailable);
+  const carsOnPlatform = carriages.filter((car) => !car.unavailable).length;
 
   const from = (
     <RenderAdjacentStops
@@ -130,7 +136,7 @@ export const RenderDiagram: React.FC<{
                         style={{ width: 20, height: 20 }}
                       />
                     ))}
-                  {carriage.unavailable && 'No exit at'}
+                  {carriage.unavailable && <strong>Short Platform!</strong>}
                 </td>
               );
             })}
@@ -146,7 +152,8 @@ export const RenderDiagram: React.FC<{
 
               return (
                 <td key={carriage.ref} colSpan={colSpan}>
-                  {carriage.unavailable && 'this station'}
+                  {carriage.unavailable &&
+                    'Doors will not open in these carriages'}
                   {carriage.exitTo && <>to {formatList(carriage.exitTo)}</>}
                 </td>
               );
@@ -186,6 +193,9 @@ export const RenderDiagram: React.FC<{
                     className={clsx(
                       carriage.type,
                       'isBest' in carriage && carriage.isBest && 'best',
+                      'unavailable' in carriage &&
+                        carriage.unavailable &&
+                        'unavailable',
                     )}
                   >
                     {carriage.type === 'gap' ? '\u00A0' : carriage.ref}
@@ -199,8 +209,9 @@ export const RenderDiagram: React.FC<{
           {/* sixth row - the platform */}
           <tr>
             <td>{stop.flip ? to : from}</td>
+            {!!carsOffPlatformLeft && <td colSpan={carsOffPlatformLeft} />}
             <td
-              colSpan={cars}
+              colSpan={carsOnPlatform}
               className="platform"
               tabIndex={0}
               role="button"
@@ -223,6 +234,7 @@ export const RenderDiagram: React.FC<{
               <br />
               <PlatformName stop={stop} includeDestinations />
             </td>
+            {!!carsOffPlatformRight && <td colSpan={carsOffPlatformRight} />}
             <td>{stop.flip ? from : to}</td>
           </tr>
         </tbody>

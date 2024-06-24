@@ -10,6 +10,7 @@ import type {
 } from './types.def.js';
 import { getBiDiMode } from './getBiDiMode.js';
 import { fillBlanksForColSpan } from './fillBlanksForColSpan.js';
+import { createShortPlatformMap } from './createShortPlatformMap.js';
 
 const EXIT_HIERACHY: ExitType[] = ['escalator', 'flat', 'ramp', 'stairs'];
 
@@ -42,7 +43,6 @@ export function createExitMap(
     tags[`destination:ref:carriages${suffix}`]?.split('|') || [];
   const exitSymbols =
     tags[`destination:symbol:carriages${suffix}`]?.split('|') || [];
-  const available = tags[`access:carriages${suffix}`]?.split('|') || [];
 
   if (!exitType.length) {
     throw new Error(`No main tag for “${suffix}” of node ${node.id}`);
@@ -53,7 +53,6 @@ export function createExitMap(
     exitTo.length,
     exitNumber.length,
     exitSymbols.length,
-    available.length,
   ]);
   lengths.delete(0);
 
@@ -62,6 +61,11 @@ export function createExitMap(
       `mismatched number of cars at ${tags.name} ${tags.local_ref}: ${[...lengths]}`,
     );
   }
+
+  const available = createShortPlatformMap(
+    tags[`access:carriages${suffix}`] || tags['access:carriages'],
+    exitType.length,
+  );
 
   // at this point we know all arrays have the same length
 
