@@ -80,7 +80,9 @@ export type Stop = {
   routes: {
     [to: string]: RouteThatStopsHere[];
   };
-  passThroughRoutes: RouteShield[] | undefined;
+  passThroughRoutes:
+    | (RouteShield & { isDuplicate?: { to?: string; from?: string } })[]
+    | undefined;
 };
 
 export enum FareGates {

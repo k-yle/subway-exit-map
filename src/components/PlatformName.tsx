@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import clsx from 'clsx';
 import type { Stop } from '../types.def';
 import { uniqBy } from '../helpers/objects';
@@ -41,9 +41,19 @@ export const PlatformName: React.FC<{
       ))}
       {settings.showPassThroughRoutes && stop.passThroughRoutes && (
         <small className="strikeThrough">
-          {stop.passThroughRoutes.map((route) => (
-            <RouteShield key={JSON.stringify(route)} route={route} />
-          ))}
+          {stop.passThroughRoutes.map((route) => {
+            return (
+              <Fragment key={JSON.stringify(route)}>
+                <RouteShield route={route} />
+                {route.isDuplicate?.from && (
+                  <em> (from {route.isDuplicate?.from}) </em>
+                )}
+                {route.isDuplicate?.to && (
+                  <em> (to {route.isDuplicate?.to}) </em>
+                )}
+              </Fragment>
+            );
+          })}
           <em>does not stop here</em>
         </small>
       )}

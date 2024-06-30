@@ -7,6 +7,7 @@ import {
   type Data,
   FareGates,
   type RawInput,
+  type RouteShield,
   type Station,
   type Stop,
 } from './types.def.js';
@@ -20,6 +21,9 @@ import { getTravellingDirection } from './getTravellingDirection.js';
 
 /** remove platform number from stop_position nodes */
 const cleanName = (name: string) => name.split(',')[0].replace(/ \d+$/, '');
+
+const getShieldKey = (shield: RouteShield) =>
+  shield.shape + shield.colour.bg + shield.colour.fg + shield.ref;
 
 export function processData(
   { osm: data, wikidata, lastUpdated }: RawInput,
@@ -112,6 +116,11 @@ export function processData(
             );
             if (!track) throw new Error(`No track for n${node.id}`);
 
+            const routes = groupRoutesThatStopHere(routesThatStopHere, node);
+            const shieldKeys = new Set(
+              Object.values(routes).flat().map(getShieldKey),
+            );
+
             const routesThatPassThroughWithoutStopping = uniqBy(
               data
                 .filter(
@@ -124,7 +133,23 @@ export function processData(
                       (m) => m.type === 'way' && m.ref === track.id,
                     ),
                 )
-                .map((r) => getRouteShield(r.tags!))
+                .map((r) => {
+                  const shield = getRouteShield(r.tags!);
+                  const key = getShieldKey(shield);
+                  if (shieldKeys.has(key)) {
+                    // if this non-stopping route has exactly the same ref
+                    // as a route that stops, then we need to disambiguate
+                    // them using the destination
+                    const { to, from } = r.tags!;
+                    return {
+                      ...shield,
+                      isDuplicate:
+                        !to || !from ? {} : routes[to] ? { from } : { to },
+                    };
+                  }
+                  // there is no route that stops here with the same shield
+                  return shield;
+                })
                 .sort((a, b) => (a.ref || '').localeCompare(b.ref || '')),
               JSON.stringify,
             );
@@ -193,7 +218,7 @@ export function processData(
                 date: node.timestamp,
                 user: node.user,
               },
-              routes: groupRoutesThatStopHere(routesThatStopHere, node),
+              routes,
               passThroughRoutes: routesThatPassThroughWithoutStopping.length
                 ? routesThatPassThroughWithoutStopping
                 : undefined,
