@@ -26,8 +26,12 @@ rel.allRelations[public_transport=stop_area]->.stopAreas;
 
 // filter out train routes with no `network:wikidata` tag, the idea
 // is to filter out regional trains that have 1000+ members and
-// aren't useful or relevant.
-rel.allRelations["network:wikidata"]->.suburbanTrainRoutes;
+// aren't useful or relevant. Also filter out inter-state trains based
+// on the service=* tag.
+(
+  rel.allRelations["network:wikidata"]; -
+  rel.allRelations["network:wikidata"][service~"^(long_distance|national)$"];
+)->.suburbanTrainRoutes;
 
 // get all stops from all suburban routes that pass
 // through a station with data, even if those stops
