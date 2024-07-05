@@ -51,7 +51,7 @@ section {
   border-top: 1px solid #ddd;
 }
 
-table {
+.table {
   width: 100%;
   min-width: 600px;
   table-layout: fixed;
@@ -59,18 +59,18 @@ table {
   & > tbody > tr:first-child > td:is(:first-child, :last-child) {
     width: 100px;
   }
-}
-td {
-  /* border: 1px solid green; */
-  text-align: center;
-  text-overflow: ellipsis;
-  overflow: clip;
-}
-td.platform {
-  background: #555;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
+  & td {
+    /* border: 1px solid green; */
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: clip;
+  }
+  & td.platform {
+    background: #555;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+  }
 }
 
 div.first,
@@ -134,7 +134,7 @@ svg.icon {
   height: 2rem;
 }
 
-body {
+.main {
   margin: 8px;
 }
 
@@ -192,4 +192,33 @@ tr.exitSymbolRow > td {
 
 .strikeThrough > span {
   text-decoration: line-through;
+}
+
+.arco-list-item {
+  padding: 0 !important;
+  & button,
+  .not-button {
+    padding: 12px;
+    width: 100%;
+    height: 100%;
+    text-align: left;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    &:not(.arco-typography-disabled) {
+      color: black !important;
+    }
+  }
+}
+
+.verticalCentre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-wrap: nowrap !important;
+  text-overflow: ellipsis;
+  & > * {
+    flex-shrink: 0;
+  }
 }

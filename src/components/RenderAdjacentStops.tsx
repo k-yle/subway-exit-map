@@ -1,5 +1,5 @@
-import { Fragment, useContext } from 'react';
-import { RouterContext } from '../context/router';
+import { Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { AdjacentStop } from '../types.def';
 import { orFormatter } from '../helpers/i18n';
 
@@ -7,11 +7,11 @@ export const RenderAdjacentStops: React.FC<{
   label: React.ReactNode;
   stops: AdjacentStop[];
 }> = ({ label, stops }) => {
-  const navigateTo = useContext(RouterContext);
+  const navigate = useNavigate();
 
   const onClick = (stop: AdjacentStop) => (event: React.MouseEvent) => {
     event.preventDefault();
-    navigateTo(stop.gtfsId!);
+    navigate(`/${stop.gtfsId!}`, { replace: true });
   };
 
   if (!stops.length) return null;

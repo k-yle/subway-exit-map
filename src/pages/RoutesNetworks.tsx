@@ -1,0 +1,33 @@
+import { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { Avatar, Button, List } from '@arco-design/web-react';
+import { DataContext } from '../context/data';
+
+export const RoutesNetworks: React.FC = () => {
+  const data = useContext(DataContext);
+
+  return (
+    <div className="main">
+      <Link to="/" replace>
+        Back
+      </Link>
+      <List
+        dataSource={data.networks}
+        render={(network) => {
+          return (
+            <List.Item key={network.qId}>
+              <Link to={`/routes/${network.qId}`} replace>
+                <Button type="text">
+                  <Avatar size={24}>
+                    <img alt={network.name} src={network.logoUrl} />
+                  </Avatar>
+                  {network.name}
+                </Button>
+              </Link>
+            </List.Item>
+          );
+        }}
+      />
+    </div>
+  );
+};

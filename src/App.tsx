@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Timeago from 'react-timeago-i18n';
-import { Avatar, Select } from '@arco-design/web-react';
-import { useData } from './useData';
+import { Avatar, Button, Select } from '@arco-design/web-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { Data, Station } from './types.def';
 import './main.css';
 import { RenderDiagram } from './components/RenderDiagram';
 import { Settings } from './components/Settings';
-import { RouterContext } from './context/router';
-import { SettingsWrapper } from './context/settings';
+import { DataContext } from './context/data';
 
 const empty = <div style={{ padding: '2px 8px' }}>No results</div>;
 
-const Router: React.FC<{
+const MainLayout: React.FC<{
   station: Station | undefined;
   data: Data;
 }> = ({ data, station }) => {
@@ -49,21 +48,24 @@ const Router: React.FC<{
           direction at this platform.
         </>
       )}
-      {station.stops.map((stop) => (
-        <section key={stop.nodeId}>
-          <RenderDiagram data={data} station={station} stop={stop} />
-        </section>
-      ))}
+      {station.stops
+        .filter((stop) => stop.carriages.length)
+        .map((stop) => (
+          <section key={stop.nodeId}>
+            <RenderDiagram data={data} station={station} stop={stop} />
+          </section>
+        ))}
     </>
   );
 };
 
-const Home: React.FC = () => {
-  const [data, error] = useData();
+export const Home: React.FC = () => {
   const [selectedNetwork, setSelectedNetwork] = useState('');
-  const [selectedId, setSelectedId] = useState(
-    window.location.hash.slice(1) || '',
-  );
+
+  const selectedId = useParams().stationId;
+  const navigate = useNavigate();
+
+  const data = useContext(DataContext);
 
   useEffect(() => {
     // if there is no network, set it to the network of the current stop
@@ -84,20 +86,12 @@ const Home: React.FC = () => {
     }
   }, [data, selectedNetwork, selectedId]);
 
-  useEffect(() => {
-    window.history.pushState(null, '', selectedId ? `#${selectedId}` : '#');
-  }, [selectedId]);
-
-  if (error) return <>Failed to download data :(</>;
-  if (!data) return <>Loading…</>;
-  console.log('data', data);
-
   return (
     <main style={{ margin: 16 }}>
       <Select
         value={selectedNetwork}
         onChange={(newValue) => {
-          setSelectedId('');
+          navigate('/', { replace: true });
           setSelectedNetwork(newValue);
         }}
         notFoundContent={empty}
@@ -126,7 +120,7 @@ const Home: React.FC = () => {
         }
         onSearch={(v) => v}
         value={selectedId}
-        onChange={(newValue) => setSelectedId(newValue)}
+        onChange={(newValue) => navigate(`/${newValue}`, { replace: true })}
         style={{ marginTop: 8 }}
         notFoundContent={empty}
       >
@@ -145,20 +139,25 @@ const Home: React.FC = () => {
       </Select>
       <br />
       {!!selectedId && (
-        <RouterContext.Provider value={setSelectedId}>
-          <Router
-            data={data}
-            station={data.stations.find((s) => s.gtfsId === selectedId)}
-          />
-        </RouterContext.Provider>
+        <MainLayout
+          data={data}
+          station={data.stations.find((s) => s.gtfsId === selectedId)}
+        />
       )}
       <br />
       <br />
       <br />
       <br />
       <hr />
-      Last updated: <Timeago date={data.lastUpdated} hideSeconds />.{' '}
+      Last updated: <Timeago date={data.lastUpdated} hideSeconds />
+      {' | '}
       <Settings />
+      {' | '}
+      <Link to="/routes">
+        <Button type="text" style={{ padding: 0 }}>
+          View Routes
+        </Button>
+      </Link>
       <br />
       <small>
         Data copyright &copy;{' '}
@@ -170,9 +169,3 @@ const Home: React.FC = () => {
     </main>
   );
 };
-
-export const App: React.FC = () => (
-  <SettingsWrapper>
-    <Home />
-  </SettingsWrapper>
-);

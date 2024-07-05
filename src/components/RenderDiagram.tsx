@@ -2,6 +2,8 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago-i18n';
+import { Button, List } from '@arco-design/web-react';
+import { Link } from 'react-router-dom';
 import type { Carriage, Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { formatList } from '../helpers/i18n';
@@ -11,6 +13,7 @@ import { Modal } from './Modal';
 import { PlatformName } from './PlatformName';
 // eslint-disable-next-line import/extensions
 import notAccessible from './icons/NotAccessible.svg';
+import { RouteShield } from './RouteShield';
 
 export const RenderDiagram: React.FC<{
   data: Data;
@@ -58,6 +61,8 @@ export const RenderDiagram: React.FC<{
   );
   const to = <RenderAdjacentStops label="To" stops={stop.nextStop} />;
 
+  const flatRoutes = Object.values(stop.routes).flat();
+
   return (
     <>
       {isModalOpen && (
@@ -82,7 +87,6 @@ export const RenderDiagram: React.FC<{
             {stop.lastUpdate.user}
           </a>
           <br />
-          <br />
           <a
             href={`https://osm.org/node/${stop.nodeId}`}
             target="_blank"
@@ -90,6 +94,24 @@ export const RenderDiagram: React.FC<{
           >
             View on OpenStreetMap
           </a>
+          <br />
+          <br />
+          {!!flatRoutes.length && (
+            <List
+              dataSource={flatRoutes}
+              render={(route, index) => (
+                <List.Item key={index}>
+                  <Link
+                    to={`/routes/${route.qId}/${route.shieldKey}/${route.osmId}`}
+                  >
+                    <Button type="text">
+                      <RouteShield route={route} /> to {route.to?.join(' & ')}
+                    </Button>
+                  </Link>
+                </List.Item>
+              )}
+            />
+          )}
         </Modal>
       )}
       {stop.exitSide && (
@@ -97,7 +119,7 @@ export const RenderDiagram: React.FC<{
           Exit on the <strong>{stop.exitSide}</strong>
         </>
       )}
-      <table>
+      <table className="table">
         <tbody>
           {/* first row - the exit numbers */}
           <tr>
