@@ -2,6 +2,8 @@ import type { OsmNode, OsmRelation, Tags } from 'osm-api';
 import { groupBy, omit, uniq, uniqBy } from '../_helpers/objects.js';
 import { getConstrastingTextColour } from '../_helpers/style.js';
 import { formatList } from '../_helpers/i18n.js';
+import { getShieldKey, getShieldKeyHashed } from '../_helpers/hash.js';
+import { getNetwork } from '../_helpers/override.js';
 import type { RouteShield, RouteThatStopsHere, Stop } from './types.def.js';
 
 /** most routes don't have a `shape` tag yet, so we can guess the shape */
@@ -22,34 +24,40 @@ export function getRouteShield(tags: Tags): RouteShield {
   };
 }
 
-export function groupRoutesThatStopHere(
+export async function groupRoutesThatStopHere(
   relations: OsmRelation[],
   node: OsmNode,
-): Stop['routes'] {
+): Promise<Stop['routes']> {
   const unique = uniqBy(
-    relations.map((r) => {
-      const memberIndex = r.members.findIndex(
-        (m) => m.type === 'node' && m.ref === node.id,
-      );
-      /**
-       * the last stop should have stop_exit_only,
-       * but if not we can figure out if it's the last.
-       */
-      const hasNextStop = r.members
-        .slice(memberIndex + 1)
-        .some((m) => m.role.startsWith('stop'));
+    await Promise.all(
+      relations.map(async (r) => {
+        const memberIndex = r.members.findIndex(
+          (m) => m.type === 'node' && m.ref === node.id,
+        );
+        /**
+         * the last stop should have stop_exit_only,
+         * but if not we can figure out if it's the last.
+         */
+        const hasNextStop = r.members
+          .slice(memberIndex + 1)
+          .some((m) => m.role.startsWith('stop'));
 
-      const { role } = r.members[memberIndex];
-      const isTerminating = role === 'stop_exit_only' || !hasNextStop;
+        const { role } = r.members[memberIndex];
+        const isTerminating = role === 'stop_exit_only' || !hasNextStop;
 
-      const item: RouteThatStopsHere = {
-        ...getRouteShield(r.tags!),
-        to: [(isTerminating ? r.tags!.from : r.tags!.to) || 'Unknown'],
-        type: isTerminating ? 'from' : 'to',
-      };
-      return item;
-    }),
-    JSON.stringify,
+        const shield = getRouteShield(r.tags!);
+        const item: RouteThatStopsHere = {
+          ...shield,
+          to: [(isTerminating ? r.tags!.from : r.tags!.to) || 'Unknown'],
+          type: isTerminating ? 'from' : 'to',
+          shieldKey: await getShieldKeyHashed(shield),
+          qId: getNetwork(r.tags!),
+          osmId: r.id,
+        };
+        return item;
+      }),
+    ),
+    (x) => `${getShieldKey(x)}${x.type}${x.to?.join('|')}`,
   );
 
   // if the route starts and ends here, merge the two entries

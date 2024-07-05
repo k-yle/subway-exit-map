@@ -41,6 +41,7 @@
 
     { "key": "local_ref", "object_types": ["node"] },
 
+    { "key": "side", "object_types": ["node"] },
     { "key": "ref", "object_types": ["node", "area"] },
     { "key": "wheelchair", "object_types": ["node", "area"] },
     { "key": "fare_gates", "object_types": ["node", "area"] },

@@ -1,3 +1,5 @@
+import type { Tags } from 'osm-api';
+
 /**
  * Override the source data for exceptional cases
  * where the data model is not flexible enough.
@@ -10,6 +12,11 @@ export const BEST_OVERRIDE: Record<string, number[]> = {
 
 export const NETWORK_OVERRIDE: Record<string, string> = {
   Q6955406: 'Q7660181', // NSW TrainLink -> Sydney Trains
+};
+
+export const getNetwork = (tags: Tags) => {
+  const qId = tags['network:wikidata'];
+  return NETWORK_OVERRIDE[qId] || qId;
 };
 
 /**

@@ -42,6 +42,9 @@ export type RouteThatStopsHere = RouteShield & {
   /** @internal */
   to?: string[];
   type: 'to' | 'from' | 'both';
+  qId: string;
+  shieldKey: string;
+  osmId: number;
 };
 
 export type Stop = {
@@ -110,6 +113,32 @@ export type Data = {
     logoUrl?: string;
     wikipedia?: string;
   }[];
+  routes: {
+    [network: string]: {
+      [shieldKey: string]: {
+        shield: RouteShield;
+        variants: {
+          [osmId: string]: {
+            from: string;
+            to: string;
+            via: string;
+            stops: {
+              /** undefined if we have no exit: data for this stop */
+              stationRelation: number | undefined;
+              stopNode: number;
+              restriction: 'entry_only' | 'exit_only' | undefined;
+              requestOnly: boolean | undefined;
+            }[];
+          };
+        };
+      };
+    };
+  };
+  nodesWithNoData: {
+    [nodeId: number]: Pick<Stop, 'exitSide' | 'platform'> & {
+      name: string | undefined;
+    };
+  };
   supportedSymbols: {
     [symbol: string]: string;
   };

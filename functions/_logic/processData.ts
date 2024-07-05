@@ -1,13 +1,15 @@
 import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
 import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
-import { ICONS, NETWORK_OVERRIDE } from '../_helpers/override.js';
+import { ICONS, getNetwork } from '../_helpers/override.js';
+import { getShieldKey, getShieldKeyHashed } from '../_helpers/hash.js';
+import { cleanName } from '../_helpers/osm.js';
 import {
   type AdjacentStop,
   type Data,
+  type ExitSide,
   FareGates,
   type RawInput,
-  type RouteShield,
   type Station,
   type Stop,
 } from './types.def.js';
@@ -19,20 +21,14 @@ import {
 import { flipFunctions } from './flipping/index.js';
 import { getTravellingDirection } from './getTravellingDirection.js';
 
-/** remove platform number from stop_position nodes */
-const cleanName = (name: string) => name.split(',')[0].replace(/ \d+$/, '');
-
-const getShieldKey = (shield: RouteShield) =>
-  shield.shape + shield.colour.bg + shield.colour.fg + shield.ref;
-
-export function processData(
+export async function processData(
   { osm: data, wikidata, lastUpdated }: RawInput,
   languages: string[],
   API_BASE_URL: string,
-): {
+): Promise<{
   imageUrls: Record<string, string>;
   toClient: Data;
-} {
+}> {
   const warnings: string[] = [];
   const stations: Station[] = [];
 
@@ -81,11 +77,7 @@ export function processData(
               feature.type === 'node' && feature.id === member.ref,
           );
 
-          const hasData = Object.keys(node?.tags || {}).some((key) =>
-            key.startsWith('exit:carriages'),
-          );
-
-          if (node && hasData) {
+          if (node) {
             // find a platform in the same stop_area with a matching local_ref
             const platformFeature = relation.members
               .filter((m) => m.role === 'platform')
@@ -114,43 +106,47 @@ export function processData(
               (feature): feature is OsmWay =>
                 feature.type === 'way' && feature.nodes.includes(node.id),
             );
-            if (!track) throw new Error(`No track for n${node.id}`);
 
-            const routes = groupRoutesThatStopHere(routesThatStopHere, node);
+            const routes = await groupRoutesThatStopHere(
+              routesThatStopHere,
+              node,
+            );
             const shieldKeys = new Set(
               Object.values(routes).flat().map(getShieldKey),
             );
 
             const routesThatPassThroughWithoutStopping = uniqBy(
-              data
-                .filter(
-                  (feature): feature is OsmRelation =>
-                    feature.type === 'relation' &&
-                    !!feature.tags?.route &&
-                    // check that it's not already in routesThatStopHere
-                    !routesThatStopHere.some((r) => r.id === feature.id) &&
-                    feature.members.some(
-                      (m) => m.type === 'way' && m.ref === track.id,
-                    ),
-                )
-                .map((r) => {
-                  const shield = getRouteShield(r.tags!);
-                  const key = getShieldKey(shield);
-                  if (shieldKeys.has(key)) {
-                    // if this non-stopping route has exactly the same ref
-                    // as a route that stops, then we need to disambiguate
-                    // them using the destination
-                    const { to, from } = r.tags!;
-                    return {
-                      ...shield,
-                      isDuplicate:
-                        !to || !from ? {} : routes[to] ? { from } : { to },
-                    };
-                  }
-                  // there is no route that stops here with the same shield
-                  return shield;
-                })
-                .sort((a, b) => (a.ref || '').localeCompare(b.ref || '')),
+              track
+                ? data
+                    .filter(
+                      (feature): feature is OsmRelation =>
+                        feature.type === 'relation' &&
+                        !!feature.tags?.route &&
+                        // check that it's not already in routesThatStopHere
+                        !routesThatStopHere.some((r) => r.id === feature.id) &&
+                        feature.members.some(
+                          (m) => m.type === 'way' && m.ref === track.id,
+                        ),
+                    )
+                    .map((r) => {
+                      const shield = getRouteShield(r.tags!);
+                      const key = getShieldKey(shield);
+                      if (shieldKeys.has(key)) {
+                        // if this non-stopping route has exactly the same ref
+                        // as a route that stops, then we need to disambiguate
+                        // them using the destination
+                        const { to, from } = r.tags!;
+                        return {
+                          ...shield,
+                          isDuplicate:
+                            !to || !from ? {} : routes[to] ? { from } : { to },
+                        };
+                      }
+                      // there is no route that stops here with the same shield
+                      return shield;
+                    })
+                    .sort((a, b) => (a.ref || '').localeCompare(b.ref || ''))
+                : [],
               JSON.stringify,
             );
 
@@ -159,10 +155,9 @@ export function processData(
             const nextStops = new Set<number>();
 
             for (const route of routesThatStopHere) {
-              let network = route.tags?.['network:wikidata'];
-              if (network && NETWORK_OVERRIDE[network]) {
-                network = NETWORK_OVERRIDE[network];
-              }
+              if (!track) continue;
+              const network = getNetwork(route.tags!);
+
               if (network && !station.networks.includes(network)) {
                 station.networks.push(network);
               }
@@ -356,12 +351,67 @@ export function processData(
     })
     .sort((a, b) => b.name.localeCompare(a.name));
 
+  const nodesWithNoData: Data['nodesWithNoData'] = {};
+  const routes: Data['routes'] = {};
+  for (const route of data) {
+    if (route.type !== 'relation' || !route.tags?.route) continue;
+
+    const network = getNetwork(route.tags);
+    const shield = getRouteShield(route.tags);
+    // eslint-disable-next-line unicorn/no-await-expression-member
+    const shieldKey = await getShieldKeyHashed(shield);
+    routes[network] ||= {};
+    routes[network][shieldKey] ||= {
+      shield,
+      variants: {},
+    };
+    routes[network][shieldKey].variants[route.id] = {
+      from: route.tags.from,
+      to: route.tags.to,
+      via: route.tags.via,
+      stops: route.members
+        .filter((m) => m.role.startsWith('stop') && m.type === 'node')
+        .map((member) => {
+          const stationRelation = stationsByStopId[member.ref]?.[0].relationId;
+
+          if (!stationRelation) {
+            const node = data.find(
+              (x): x is OsmNode => x.type === 'node' && x.id === member.ref,
+            );
+            if (node) {
+              nodesWithNoData[node.id] = {
+                name: cleanName(node.tags?.name),
+                // TODO: the side could be wrong, because we don't know
+                // which way the train travels down the track. Currently
+                // it assumes forwards.
+                exitSide: <ExitSide>node.tags?.side,
+                platform: node.tags?.local_ref,
+              };
+            }
+          }
+
+          return {
+            stationRelation,
+            stopNode: member.ref,
+            requestOnly: member.role.includes('_on_demand') || undefined,
+            restriction: member.role.includes('entry_only')
+              ? 'entry_only'
+              : member.role.includes('exit_only')
+                ? 'exit_only'
+                : undefined,
+          };
+        }),
+    };
+  }
+
   return {
     imageUrls,
     toClient: {
       warnings,
       stations: stations.sort((a, b) => a.name.localeCompare(b.name)),
       networks: networkMetadata,
+      routes,
+      nodesWithNoData,
       supportedSymbols: Object.fromEntries(
         Object.keys(ICONS).map((symbol) => [
           symbol,

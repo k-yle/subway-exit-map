@@ -12,7 +12,7 @@ export const flipByTrackDirection: FlipFunction = (
   const bearings: number[] = [];
 
   const anyBiDiWithNoPreferredDirection = stops.filter(
-    (stop) => stop.direction === 'both_ways',
+    (stop) => stop.direction === 'both_ways' && !!stop.carriages.length,
   );
   if (anyBiDiWithNoPreferredDirection.length) {
     // to fix this, stop_positions on bidirectional tracks need
@@ -25,6 +25,8 @@ export const flipByTrackDirection: FlipFunction = (
   }
 
   for (const stop of stops) {
+    if (!stop.carriages.length) continue;
+
     const stopNode = allData.find(
       (feature): feature is OsmNode =>
         feature.type === 'node' && feature.id === stop.nodeId,

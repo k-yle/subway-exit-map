@@ -32,3 +32,10 @@ export const getTrackDirection = (tags: Tags | undefined): FwdBwdBoth => {
 };
 
 export const FALSY = new Set(['', 'no', 'none', 'emergency']);
+
+/**
+ * remove platform number from stop_position nodes
+ * @deprecated TODO: we should never use the name from the stop_position
+ */
+export const cleanName = (name: string | undefined) =>
+  name?.split(',')[0].replace(/ *((platform|station).+)? *\d*$/i, '') || '';

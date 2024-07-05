@@ -45,7 +45,7 @@ export function createExitMap(
     tags[`destination:symbol:carriages${suffix}`]?.split('|') || [];
 
   if (!exitType.length) {
-    throw new Error(`No main tag for “${suffix}” of node ${node.id}`);
+    return { carriages: [], direction: 'both_ways', exitSide: undefined };
   }
 
   const lengths = new Set([
@@ -133,8 +133,15 @@ export function createExitMap(
     }
   }
 
+  let exitSide = <ExitSide>tags.side;
+  if (direction === 'both_ways' && biDiMode === 'regular') exitSide = undefined;
+  if (direction === 'backward') {
+    if (exitSide === 'left') exitSide = 'right';
+    if (exitSide === 'right') exitSide = 'left';
+  }
+
   return {
-    exitSide: <ExitSide>tags[`side${suffix}`],
+    exitSide,
     carriages,
     direction,
     biDiMode,
