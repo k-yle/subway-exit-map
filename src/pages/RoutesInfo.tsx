@@ -1,22 +1,16 @@
-import { useContext, useMemo } from 'react';
+import { Fragment, useContext, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import {
-  Avatar,
-  Button,
-  List,
-  Switch,
-  Tag,
-  Typography,
-} from '@arco-design/web-react';
-import {
-  IconCaretLeft,
-  IconCaretRight,
-  IconCheck,
-} from '@arco-design/web-react/icon';
+import { Avatar, Button, List, Tag, Typography } from '@arco-design/web-react';
+import { IconCaretLeft, IconCaretRight } from '@arco-design/web-react/icon';
+import TimeAgo from 'react-timeago-i18n';
+import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
 import notAccessibleBlack from '../components/icons/NotAccessibleBlack.svg';
 import { SettingsContext } from '../context/settings';
+import { Settings } from '../components/Settings';
+import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
+import { TrainsetInfo } from './TrainsetInfo';
 
 const inaccessible = (
   <img
@@ -27,12 +21,12 @@ const inaccessible = (
 );
 
 export const RoutesInfo: React.FC = () => {
-  const qId = useParams().qId!;
+  const qId = useParams<{ qId: ItemId }>().qId!;
   const shieldKey = useParams().shieldKey!;
   const relationId = useParams().relationId!;
 
   const data = useContext(DataContext);
-  const { settings, setSettings } = useContext(SettingsContext);
+  const { settings } = useContext(SettingsContext);
 
   const network = data.networks.find((n) => n.qId === qId);
   const route = data.routes[qId]?.[shieldKey];
@@ -85,17 +79,13 @@ export const RoutesInfo: React.FC = () => {
         <Avatar size={32}>
           <img alt={network.name} src={network.logoUrl} />
         </Avatar>
-        <RouteShield route={route.shield} />{' '}
-        <a
-          href={`https://osm.org/relation/${relationId}`}
-          target="_blank"
-          rel="noreferrer"
-          style={{ color: 'black' }}
-        >
-          {variant.from} to {variant.to}
-          {variant.via && ` via ${variant.via}`}
-        </a>
+        <RouteShield route={route.shield} /> {variant.tags.from} to{' '}
+        {variant.tags.to}
+        {variant.tags.via && ` via ${variant.tags.via}`}
       </Typography.Title>
+      {route.wikidata?.trainsets && (
+        <TrainsetInfo trainsets={route.wikidata.trainsets} />
+      )}
       <List
         dataSource={variant.stops}
         render={(stopMeta, index) => {
@@ -169,14 +159,15 @@ export const RoutesInfo: React.FC = () => {
                     {prefix}
                     {station.name}
                     {suffix}
+                    {stop.availableLabel && <Tag>{stop.availableLabel}</Tag>}
                     {{ yes: '🔒', no: '🔓', partial: '🔏' }[station.fareGates!]}
                     {stop.inaccessible && inaccessible}
-                    {/* TODO: show exit:carriages & access:carriages */}
                     <div>
                       {connectingRoutes.map(([key, shield]) => (
                         <RouteShield key={key} route={shield.shield} />
                       ))}
                     </div>
+                    <MiniTrainDiagram carriages={stop.carriages} />
                   </Button>
                 </Link>
               ) : null}
@@ -187,7 +178,7 @@ export const RoutesInfo: React.FC = () => {
       {!!legend.length && (
         <Typography.Title heading={6}>Legend</Typography.Title>
       )}
-      <table>
+      <table className="legend">
         <tbody>
           {legend
             .filter((item) => item.if)
@@ -200,15 +191,59 @@ export const RoutesInfo: React.FC = () => {
             ))}
         </tbody>
       </table>
-      <Typography.Title heading={6}>Settings</Typography.Title>
-      <Switch
-        checkedIcon={<IconCheck />}
-        checked={settings.showConnectingRoutes ?? false}
-        onChange={(newValue) =>
-          setSettings((c) => ({ ...c, showConnectingRoutes: newValue }))
-        }
-      />{' '}
-      Show connecting routes
+      <br />
+      <Settings />. Last edited <TimeAgo date={variant.lastUpdate.date} />
+      &nbsp;by{' '}
+      <a
+        href={`https://osm.org/user/${variant.lastUpdate.user}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {variant.lastUpdate.user}
+      </a>
+      .
+      <br />
+      View on{' '}
+      <a
+        href={`https://osm.org/relation/${relationId}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        OpenStreetMap
+      </a>
+      {route.wikidata?.qId && (
+        <>
+          {' | '}
+          <a
+            href={`https://www.wikidata.org/wiki/${route.wikidata.qId}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Wikidata
+          </a>
+        </>
+      )}
+      {route.wikidata?.wikipedia && (
+        <>
+          {' | '}
+          <a
+            href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Wikipedia
+          </a>
+        </>
+      )}
+      .
+      <br />
+      <small>
+        Data copyright &copy;{' '}
+        <a href="https://osm.org/copyright" target="_blank" rel="noreferrer">
+          OpenStreetMap contributors
+        </a>
+        .
+      </small>
     </div>
   );
 };

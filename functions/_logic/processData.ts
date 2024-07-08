@@ -1,13 +1,13 @@
 import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
+import type { Item, Site } from 'wikibase-sdk';
 import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS, getNetwork } from '../_helpers/override.js';
-import { getShieldKey, getShieldKeyHashed } from '../_helpers/hash.js';
+import { getShieldKey } from '../_helpers/hash.js';
 import { cleanName } from '../_helpers/osm.js';
 import {
   type AdjacentStop,
   type Data,
-  type ExitSide,
   FareGates,
   type RawInput,
   type Station,
@@ -20,6 +20,7 @@ import {
 } from './groupRoutesThatStopHere.js';
 import { flipFunctions } from './flipping/index.js';
 import { getTravellingDirection } from './getTravellingDirection.js';
+import { getAllRoutes } from './getAllRoutes.js';
 
 export async function processData(
   { osm: data, wikidata, lastUpdated }: RawInput,
@@ -315,22 +316,22 @@ export async function processData(
     .flatMap((station) => station.networks)
     .filter(uniq)
     .map((qId) => {
-      if (!wikidata[qId]) {
+      const item = <Item>wikidata[qId];
+      if (!item?.claims) {
         throw new Error(`No wikidata info for ${qId}`);
       }
       const firstSupportedLanguage =
-        languages.find((lang) => wikidata[qId].labels[lang]) || 'en';
+        languages.find((lang) => item.labels?.[lang]) || 'en';
 
       const wikipediaPage =
-        wikidata[qId].sitelinks[`${firstSupportedLanguage}wiki`]?.title;
+        item.sitelinks?.[<Site>`${firstSupportedLanguage}wiki`]?.title;
 
-      const bestLogo = (wikidata[qId].claims.P8972 || wikidata[qId].claims.P154)
+      const bestLogo = (item.claims.P8972 || item.claims.P154)
         ?.filter((claim) => claim.mainsnak.datatype === 'commonsMedia')
         .sort(sortByRank)[0]?.mainsnak.datavalue?.value;
 
       const fbUsername =
-        wikidata[qId].claims.P2013?.sort(sortByRank)[0]?.mainsnak.datavalue
-          ?.value;
+        item.claims.P2013?.sort(sortByRank)[0]?.mainsnak.datavalue?.value;
 
       const logoUrl = bestLogo
         ? `http://commons.wikimedia.org/wiki/Special:FilePath/${bestLogo}`
@@ -342,7 +343,7 @@ export async function processData(
 
       return {
         qId,
-        name: wikidata[qId].labels[firstSupportedLanguage]?.value,
+        name: item.labels?.[firstSupportedLanguage]?.value || '',
         wikipedia: wikipediaPage
           ? `https://${firstSupportedLanguage}.wikipedia.org/wiki/${wikipediaPage.replaceAll(' ', '_')}`
           : undefined,
@@ -351,58 +352,11 @@ export async function processData(
     })
     .sort((a, b) => b.name.localeCompare(a.name));
 
-  const nodesWithNoData: Data['nodesWithNoData'] = {};
-  const routes: Data['routes'] = {};
-  for (const route of data) {
-    if (route.type !== 'relation' || !route.tags?.route) continue;
-
-    const network = getNetwork(route.tags);
-    const shield = getRouteShield(route.tags);
-    // eslint-disable-next-line unicorn/no-await-expression-member
-    const shieldKey = await getShieldKeyHashed(shield);
-    routes[network] ||= {};
-    routes[network][shieldKey] ||= {
-      shield,
-      variants: {},
-    };
-    routes[network][shieldKey].variants[route.id] = {
-      from: route.tags.from,
-      to: route.tags.to,
-      via: route.tags.via,
-      stops: route.members
-        .filter((m) => m.role.startsWith('stop') && m.type === 'node')
-        .map((member) => {
-          const stationRelation = stationsByStopId[member.ref]?.[0].relationId;
-
-          if (!stationRelation) {
-            const node = data.find(
-              (x): x is OsmNode => x.type === 'node' && x.id === member.ref,
-            );
-            if (node) {
-              nodesWithNoData[node.id] = {
-                name: cleanName(node.tags?.name),
-                // TODO: the side could be wrong, because we don't know
-                // which way the train travels down the track. Currently
-                // it assumes forwards.
-                exitSide: <ExitSide>node.tags?.side,
-                platform: node.tags?.local_ref,
-              };
-            }
-          }
-
-          return {
-            stationRelation,
-            stopNode: member.ref,
-            requestOnly: member.role.includes('_on_demand') || undefined,
-            restriction: member.role.includes('entry_only')
-              ? 'entry_only'
-              : member.role.includes('exit_only')
-                ? 'exit_only'
-                : undefined,
-          };
-        }),
-    };
-  }
+  const { routes, nodesWithNoData } = await getAllRoutes(
+    data,
+    wikidata,
+    stationsByStopId,
+  );
 
   return {
     imageUrls,

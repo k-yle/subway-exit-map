@@ -32,3 +32,9 @@ export const omit = <T>(object: T, keys: (keyof T)[]): Omit<T, keyof T> => {
   }
   return output;
 };
+
+export function* createChunks<T>(array: T[], n: number) {
+  for (let index = 0; index < array.length; index += n) {
+    yield array.slice(index, index + n);
+  }
+}

@@ -51,7 +51,7 @@ export async function groupRoutesThatStopHere(
           to: [(isTerminating ? r.tags!.from : r.tags!.to) || 'Unknown'],
           type: isTerminating ? 'from' : 'to',
           shieldKey: await getShieldKeyHashed(shield),
-          qId: getNetwork(r.tags!),
+          qId: getNetwork(r.tags!)!,
           osmId: r.id,
         };
         return item;

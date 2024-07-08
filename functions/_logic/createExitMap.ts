@@ -27,7 +27,10 @@ const noToUndefined = <T extends string>(
 export function createExitMap(
   node: OsmNode,
   allData: OsmFeature[],
-): Pick<Stop, 'exitSide' | 'carriages' | 'direction' | 'biDiMode'> {
+): Pick<
+  Stop,
+  'exitSide' | 'carriages' | 'direction' | 'biDiMode' | 'availableLabel'
+> {
   const tags = node.tags!;
 
   const suffix = tags['exit:carriages:forward']
@@ -105,7 +108,7 @@ export function createExitMap(
       const exitTo1 = noToUndefined(exitTo[index]?.split(';'));
       const exitNumber1 = noToUndefined(exitNumber[index]?.split(';'));
       const exitSymbols1 = noToUndefined(exitSymbols[index]?.split(';'));
-      const unavailable = FALSY.has(available[index]?.toLowerCase());
+      const unavailable = FALSY.has(available.array[index]?.toLowerCase());
 
       const carriage: Carriage = {
         type: flag
@@ -145,5 +148,6 @@ export function createExitMap(
     carriages,
     direction,
     biDiMode,
+    availableLabel: available.label,
   };
 }

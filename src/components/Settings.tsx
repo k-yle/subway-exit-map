@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Button, Modal, Switch } from '@arco-design/web-react';
+import { Button, Modal, Switch, Typography } from '@arco-design/web-react';
 import { IconCheck } from '@arco-design/web-react/icon';
 import { SettingsContext } from '../context/settings';
 
@@ -26,6 +26,9 @@ export const Settings: React.FC = () => {
         hideCancel
         okText="Close"
       >
+        <Typography.Title heading={6} style={{ margin: '8px 0' }}>
+          Stations
+        </Typography.Title>
         <Switch
           checkedIcon={<IconCheck />}
           checked={settings.showPassThroughRoutes ?? false}
@@ -34,6 +37,17 @@ export const Settings: React.FC = () => {
           }
         />{' '}
         Show routes that never stop at each platform
+        <Typography.Title heading={6} style={{ margin: '8px 0' }}>
+          Routes
+        </Typography.Title>
+        <Switch
+          checkedIcon={<IconCheck />}
+          checked={settings.showConnectingRoutes ?? false}
+          onChange={(newValue) =>
+            setSettings((c) => ({ ...c, showConnectingRoutes: newValue }))
+          }
+        />{' '}
+        Show connecting routes
       </Modal>
     </>
   );

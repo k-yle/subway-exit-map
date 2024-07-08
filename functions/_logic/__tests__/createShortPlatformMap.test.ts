@@ -31,7 +31,7 @@ describe('createShortPlatformMap', () => {
     ({ accessTag, cars, expected }) => {
       expect(
         createShortPlatformMap(accessTag, cars)
-          .map((bool) => +(bool === 'yes'))
+          .array.map((bool) => +(bool === 'yes'))
           .join(''),
       ).toBe(expected);
     },

@@ -8,15 +8,13 @@ export const RoutesNetworks: React.FC = () => {
 
   return (
     <div className="main">
-      <Link to="/" replace>
-        Back
-      </Link>
+      <Link to="/">Back</Link>
       <List
         dataSource={data.networks}
         render={(network) => {
           return (
             <List.Item key={network.qId}>
-              <Link to={`/routes/${network.qId}`} replace>
+              <Link to={`/routes/${network.qId}`}>
                 <Button type="text">
                   <Avatar size={24}>
                     <img alt={network.name} src={network.logoUrl} />

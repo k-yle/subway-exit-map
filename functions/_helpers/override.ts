@@ -1,4 +1,5 @@
 import type { Tags } from 'osm-api';
+import type { ItemId } from 'wikibase-sdk';
 
 /**
  * Override the source data for exceptional cases
@@ -10,12 +11,12 @@ export const BEST_OVERRIDE: Record<string, number[]> = {
   2000393: [2, 4, 5, 8], // SYD - Town Hall 3
 };
 
-export const NETWORK_OVERRIDE: Record<string, string> = {
+export const NETWORK_OVERRIDE: Record<ItemId, ItemId> = {
   Q6955406: 'Q7660181', // NSW TrainLink -> Sydney Trains
 };
 
-export const getNetwork = (tags: Tags) => {
-  const qId = tags['network:wikidata'];
+export const getNetwork = (tags: Tags): ItemId | undefined => {
+  const qId = <ItemId>tags['network:wikidata'];
   return NETWORK_OVERRIDE[qId] || qId;
 };
 

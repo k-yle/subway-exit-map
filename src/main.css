@@ -42,7 +42,7 @@ time {
 
 a {
   text-decoration: none;
-  color: #1e90ff;
+  color: rgb(var(--primary-6));
 }
 
 section {
@@ -81,6 +81,8 @@ div.last {
   color: #fff;
   border-radius: 2px;
   position: relative;
+  min-width: 16px;
+  text-align: center;
   &.first:before {
     /* chop out the drivers cab */
     position: absolute;
@@ -113,6 +115,7 @@ div.last {
 div.gap,
 div.unavailable {
   margin: 2px;
+  min-width: 16px;
   background: #e8e8e8;
   border-radius: 2px;
 }
@@ -203,11 +206,15 @@ tr.exitSymbolRow > td {
     height: 100%;
     text-align: left;
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     align-items: center;
     &:not(.arco-typography-disabled) {
       color: black !important;
     }
+  }
+  & .arco-list-item-content:not(:has(> .not-button)) {
+    overflow: auto;
   }
 }
 
@@ -215,10 +222,45 @@ tr.exitSymbolRow > td {
   display: flex;
   align-items: center;
   gap: 8px;
-  overflow: hidden;
+  overflow-x: auto;
   text-wrap: nowrap !important;
-  text-overflow: ellipsis;
   & > * {
     flex-shrink: 0;
+  }
+}
+
+table.legend td {
+  margin: 0px 4px;
+}
+
+/* the modal isn't responsive by default */
+[role='dialog'] {
+  max-width: 95vw;
+}
+
+.MiniTrainDiagram {
+  display: flex;
+  margin-left: auto;
+  & span {
+    position: relative;
+    z-index: 1;
+  }
+  & .unavailable {
+    background: #f43;
+  }
+  & .unavailable {
+    text-decoration: line-through;
+  }
+  & .first.unavailable:before {
+    border-right: 13px solid #f43 !important;
+  }
+  & .last.unavailable:before {
+    border-left: 13px solid #f43 !important;
+  }
+}
+
+@media (max-width: 550px) {
+  .MiniTrainDiagram {
+    flex-basis: 100%;
   }
 }

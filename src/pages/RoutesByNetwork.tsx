@@ -1,12 +1,13 @@
 import { useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, Button, List, Typography } from '@arco-design/web-react';
+import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
 
 export const RoutesByNetwork: React.FC = () => {
   const data = useContext(DataContext);
-  const qId = useParams().qId!;
+  const qId = useParams<{ qId: ItemId }>().qId!;
 
   const network = data.networks.find((n) => n.qId === qId);
   const routes = data.routes[qId];
@@ -15,10 +16,7 @@ export const RoutesByNetwork: React.FC = () => {
 
   return (
     <div className="main">
-      <Link to="/routes" replace>
-        Back
-      </Link>
-
+      <Link to="/routes">Back</Link>
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
           <img alt={network.name} src={network.logoUrl} />
@@ -32,21 +30,52 @@ export const RoutesByNetwork: React.FC = () => {
         render={([key, value]) => {
           const desinations = [
             ...new Set(
-              Object.values(value.variants).flatMap((x) => [x.from, x.to]),
+              Object.values(value.variants).flatMap((x) => [
+                x.tags.from,
+                x.tags.to,
+              ]),
             ),
-          ].sort((a, b) => a.localeCompare(b));
+          ]
+            .filter((x): x is string => !!x)
+            .sort((a, b) => a.localeCompare(b));
+
           return (
             <List.Item key={key}>
-              <Link to={`/routes/${qId}/${key}`} replace>
+              <Link to={`/routes/${qId}/${key}`}>
                 <Button type="text">
                   <RouteShield route={value.shield} />{' '}
-                  <div>{desinations.flatMap((x) => [x, <br key={x} />])}</div>
+                  <div>
+                    {value.wikidata?.name ||
+                      desinations.flatMap((x) => [x, <br key={x} />])}
+                  </div>
                 </Button>
               </Link>
             </List.Item>
           );
         }}
       />
+      <br />
+      View on{' '}
+      <a
+        href={`https://www.wikidata.org/wiki/${network.qId}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Wikidata
+      </a>
+      {network.wikipedia && (
+        <>
+          {' | '}
+          <a
+            href={`https://en.wikipedia.org/wiki/${network.wikipedia}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Wikipedia
+          </a>
+        </>
+      )}
+      .
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import type { KVNamespace, PagesFunction } from '@cloudflare/workers-types';
 import type { OsmFeature } from 'osm-api';
+import type { ItemId, parse } from 'wikibase-sdk';
 
 export type FwdBwdBoth = 'forward' | 'backward' | 'both_ways';
 
@@ -76,6 +77,7 @@ export type Stop = {
    * - `undefined` means unidirectional.
    */
   biDiMode?: 'regular' | 'occasional';
+  availableLabel?: string | undefined;
   lastUpdate: {
     user: string;
     date: string;
@@ -94,34 +96,54 @@ export enum FareGates {
   partial = 'partial',
 }
 
+export enum Regularity {
+  always = 'always',
+  usually = 'usually',
+}
+
 export type Station = {
   relationId: number;
   gtfsId: string;
   name: string;
-  networks: string[];
+  networks: ItemId[];
   fareGates: FareGates | undefined;
   stops: Stop[];
   flipAlgorithm?: string;
+};
+
+export type Trainset = {
+  name: string;
+  wikidata: string;
+  wikipedia: string | undefined;
+  carriages: number[] | undefined;
+  regularity: Regularity;
+};
+
+export type RouteWikiInfo = {
+  name: string;
+  qId: string;
+  wikipedia: string | undefined;
+  trainsets: Trainset[] | undefined;
 };
 
 export type Data = {
   warnings: string[];
   stations: Station[];
   networks: {
-    qId: string;
+    qId: ItemId;
     name: string;
     logoUrl?: string;
     wikipedia?: string;
   }[];
   routes: {
-    [network: string]: {
+    [network: ItemId]: {
       [shieldKey: string]: {
         shield: RouteShield;
+        wikidata: RouteWikiInfo | undefined;
         variants: {
           [osmId: string]: {
-            from: string;
-            to: string;
-            via: string;
+            tags: Record<'from' | 'to' | 'via', string | undefined>;
+            lastUpdate: Stop['lastUpdate'];
             stops: {
               /** undefined if we have no exit: data for this stop */
               stationRelation: number | undefined;
@@ -148,57 +170,7 @@ export type Data = {
 
 export type Rank = 'normal' | 'preferred' | 'deprecated';
 
-export type Wikidata = {
-  [qId: string]: {
-    pageid: number;
-    ns: number;
-    title: string;
-    lastrevid: number;
-    /** ISO Date */
-    modified: string;
-    type: 'item';
-    id: string;
-    labels: {
-      [languageCode: string]: {
-        language: string;
-        value: string;
-      };
-    };
-    descriptions: {
-      [languageCode: string]: {
-        language: string;
-        value: string;
-      };
-    };
-    aliases: {
-      [languageCode: string]: {
-        language: string;
-        value: string;
-      }[];
-    };
-    claims: {
-      [propertyId: string]: {
-        mainsnak: {
-          snaktype: 'value';
-          property: string;
-          hash: string;
-          datavalue: { value: string };
-          datatype: string;
-        };
-        type: 'statement';
-        id: string;
-        rank: Rank;
-      }[];
-    };
-    sitelinks: {
-      [wikiName: string]: {
-        site: string;
-        title: string;
-        badges: unknown[];
-      };
-    };
-  };
-};
+export type Wikidata = parse.WbGetEntitiesResponse['entities'];
 
 export type Images = {
   [qId: string]: string;

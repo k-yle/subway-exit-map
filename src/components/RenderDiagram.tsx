@@ -2,14 +2,13 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago-i18n';
-import { Button, List } from '@arco-design/web-react';
+import { Button, List, Modal } from '@arco-design/web-react';
 import { Link } from 'react-router-dom';
 import type { Carriage, Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { formatList } from '../helpers/i18n';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
-import { Modal } from './Modal';
 import { PlatformName } from './PlatformName';
 // eslint-disable-next-line import/extensions
 import notAccessible from './icons/NotAccessible.svg';
@@ -66,7 +65,13 @@ export const RenderDiagram: React.FC<{
   return (
     <>
       {isModalOpen && (
-        <Modal isOpen onClose={() => setIsModalOpen(false)}>
+        <Modal
+          visible
+          onOk={() => setIsModalOpen(false)}
+          onCancel={() => setIsModalOpen(false)}
+          hideCancel
+          okText="Close"
+        >
           <strong>
             {stop.platform ? (
               `Platform ${stop.platform} `
@@ -236,6 +241,7 @@ export const RenderDiagram: React.FC<{
               colSpan={carsOnPlatform}
               className="platform"
               tabIndex={0}
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
               role="button"
               onClick={(event) => {
                 event.preventDefault();

@@ -2,11 +2,13 @@ import { useContext, useEffect, useState } from 'react';
 import Timeago from 'react-timeago-i18n';
 import { Avatar, Button, Select } from '@arco-design/web-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import type { ItemId } from 'wikibase-sdk';
 import type { Data, Station } from './types.def';
-import './main.css';
 import { RenderDiagram } from './components/RenderDiagram';
 import { Settings } from './components/Settings';
 import { DataContext } from './context/data';
+
+import './main.css';
 
 const empty = <div style={{ padding: '2px 8px' }}>No results</div>;
 
@@ -60,7 +62,7 @@ const MainLayout: React.FC<{
 };
 
 export const Home: React.FC = () => {
-  const [selectedNetwork, setSelectedNetwork] = useState('');
+  const [selectedNetwork, setSelectedNetwork] = useState<ItemId | ''>('');
 
   const selectedId = useParams().stationId;
   const navigate = useNavigate();
@@ -126,7 +128,10 @@ export const Home: React.FC = () => {
       >
         <Select.Option value="">Choose a station</Select.Option>
         {data.stations
-          .filter((station) => station.networks.includes(selectedNetwork))
+          .filter(
+            (station) =>
+              selectedNetwork && station.networks.includes(selectedNetwork),
+          )
           .map((station) => (
             <Select.Option
               key={station.gtfsId}
