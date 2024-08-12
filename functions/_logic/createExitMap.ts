@@ -12,7 +12,13 @@ import { getBiDiMode } from './getBiDiMode.js';
 import { fillBlanksForColSpan } from './fillBlanksForColSpan.js';
 import { createShortPlatformMap } from './createShortPlatformMap.js';
 
-const EXIT_HIERACHY: ExitType[] = ['escalator', 'flat', 'ramp', 'stairs'];
+const EXIT_HIERACHY: ExitType[] = [
+  'escalator',
+  'flat',
+  'ramp',
+  'steps',
+  'stairs',
+];
 
 /** replaces OSM's string keywords with false */
 const noToUndefined = <T extends string>(

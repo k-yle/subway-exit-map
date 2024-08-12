@@ -14,11 +14,12 @@ const inferShape = (tags: Tags) => {
 };
 
 export function getRouteShield(tags: Tags): RouteShield {
+  const colour = tags!.colour || '#333333';
   return {
     ref: tags!.ref,
     colour: {
-      bg: tags!.colour,
-      fg: getConstrastingTextColour(tags!.colour.replace('#', '')),
+      bg: colour,
+      fg: getConstrastingTextColour(colour.replace('#', '')),
     },
     shape: tags!.shape || inferShape(tags!),
   };
