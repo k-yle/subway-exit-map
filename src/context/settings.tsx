@@ -13,6 +13,7 @@ export const SettingsContext = createContext<{
   settings: Settings;
   setSettings: React.Dispatch<React.SetStateAction<Settings>>;
 }>(undefined as never);
+SettingsContext.displayName = 'SettingsContext';
 
 export const SettingsWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const [settings, setSettings] = useState<Settings>(() => {

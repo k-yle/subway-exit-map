@@ -32,7 +32,6 @@ const runTest = (...arguments_: Parameters<typeof groupRoutesThatStopHere>) =>
     for (const r of Object.values(routes).flat()) {
       const KEYS_TO_DELETE = <const>['osmId', 'qId', 'shieldKey'];
       for (const key of KEYS_TO_DELETE) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete r[key];
       }
     }

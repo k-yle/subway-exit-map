@@ -34,7 +34,6 @@ export async function getAllRoutes(
 
     const network = getNetwork(route.tags)!;
     const shield = getRouteShield(route.tags);
-    // eslint-disable-next-line unicorn/no-await-expression-member
     const shieldKey = await getShieldKeyHashed(shield);
     routes[network] ||= {};
     routes[network][shieldKey] ||= {

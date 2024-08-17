@@ -7,7 +7,7 @@
     "start-only-client": "vite",
     "build": "vite build",
     "test": "vitest",
-    "lint": "tsc && tsc -p functions/tsconfig.json && eslint --ignore-path .gitignore ."
+    "lint": "tsc && tsc -p functions/tsconfig.json && eslint ."
   },
   "packageManager": "yarn@4.2.1",
   "resolutions": {
@@ -26,22 +26,14 @@
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@vitejs/plugin-react": "^4.2.1",
-    "eslint": "^8.56.0",
-    "eslint-config-kyle": "^17.6.0",
+    "eslint": "^9.9.0",
+    "eslint-config-kyle": "^25.0.0-beta2",
     "osm-api": "^2.0.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.12",
     "vitest": "^1.2.2",
     "wikibase-sdk": "^10.0.2",
     "wrangler": "^3.53.1"
-  },
-  "eslintConfig": {
-    "settings": {
-      "jest": {
-        "version": 29
-      }
-    },
-    "extends": "kyle"
   },
   "prettier": "eslint-config-kyle/prettier"
 }

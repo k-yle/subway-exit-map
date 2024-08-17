@@ -10,6 +10,6 @@ describe('countAdjacentEqual', () => {
     ${'aa'}      | ${[2, 0]}
     ${''}        | ${[]}
   `('converts $input to $output', ({ input, output }) => {
-    expect(countAdjacentEqual([...input])).toEqual(output);
+    expect(countAdjacentEqual([...input])).toStrictEqual(output);
   });
 });

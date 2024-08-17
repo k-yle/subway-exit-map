@@ -93,7 +93,6 @@ export async function groupRoutesThatStopHere(
         // we've already seen a single route with this ref
         const existingKey = singles[route.ref];
         groupedByDestination[existingKey][0].to!.push(route.to![0]);
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete groupedByDestination[key];
       } else {
         // we haven't (yet) seen any other single routes with this ref
@@ -110,6 +109,7 @@ export async function groupRoutesThatStopHere(
         const routes = unsorted.sort((a, b) =>
           (a.ref || '').localeCompare(b.ref || ''),
         );
+        // eslint-disable-next-line no-useless-assignment -- bug in the rule
         const to = formatList(
           routes
             .flatMap((r) => r.to!)

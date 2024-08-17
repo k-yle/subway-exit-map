@@ -8,6 +8,7 @@ import {
 import type { Data } from '../types.def.js';
 
 export const DataContext = createContext<Data>(undefined as never);
+DataContext.displayName = 'DataContext';
 
 export const DataWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const [data, setData] = useState<Data>();

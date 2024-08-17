@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import TimeAgo from 'react-timeago-i18n';
@@ -10,7 +9,6 @@ import { formatList } from '../helpers/i18n';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { PlatformName } from './PlatformName';
-// eslint-disable-next-line import/extensions
 import notAccessible from './icons/NotAccessible.svg';
 import { RouteShield } from './RouteShield';
 
@@ -237,11 +235,11 @@ export const RenderDiagram: React.FC<{
           <tr>
             <td>{stop.flip ? to : from}</td>
             {!!carsOffPlatformLeft && <td colSpan={carsOffPlatformLeft} />}
+            {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
             <td
               colSpan={carsOnPlatform}
               className="platform"
               tabIndex={0}
-              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
               role="button"
               onClick={(event) => {
                 event.preventDefault();

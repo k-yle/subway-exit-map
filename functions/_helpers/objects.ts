@@ -27,7 +27,6 @@ export const groupBy = <T, K extends string | number>(
 export const omit = <T>(object: T, keys: (keyof T)[]): Omit<T, keyof T> => {
   const output = { ...object };
   for (const key of keys) {
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete output[key];
   }
   return output;
