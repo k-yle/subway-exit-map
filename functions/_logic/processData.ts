@@ -59,12 +59,14 @@ export async function processData(
       let station = stations.find((s) => s.gtfsId === gtfsId);
       if (!station) {
         const fareGates = trainStationFeature.tags.fare_gates;
+        const fareGatesNote = trainStationFeature.tags['fare_gates:note'];
         station = {
           relationId: relation.id,
           gtfsId,
           name: trainStationFeature.tags.name,
           fareGates:
             fareGates in FareGates ? (fareGates as FareGates) : undefined,
+          fareGatesNote,
           networks: [],
           stops: [],
         };

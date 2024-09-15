@@ -45,6 +45,7 @@
     { "key": "ref", "object_types": ["node", "area"] },
     { "key": "wheelchair", "object_types": ["node", "area"] },
     { "key": "fare_gates", "object_types": ["node", "area"] },
+    { "key": "fare_gates:note", "object_types": ["node", "area"] },
 
     { "key": "public_transport", "object_types": ["relation"] },
     { "key": "network:wikidata", "object_types": ["relation"] }

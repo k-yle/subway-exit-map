@@ -107,6 +107,7 @@ export type Station = {
   name: string;
   networks: ItemId[];
   fareGates: FareGates | undefined;
+  fareGatesNote: string | undefined;
   stops: Stop[];
   flipAlgorithm?: string;
 };

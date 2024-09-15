@@ -39,7 +39,23 @@ const MainLayout: React.FC<{
           partial: (
             <>
               <br />
-              This station has fare gates at <strong>some entrances</strong>.
+              This station has fare gates at <strong>some entrances</strong>
+              {station.fareGatesNote && (
+                <>
+                  {' '}
+                  (
+                  <Button
+                    type="text"
+                    // eslint-disable-next-line no-alert
+                    onClick={() => alert(`“${station.fareGatesNote}”`)}
+                    style={{ padding: 0 }}
+                  >
+                    click for details
+                  </Button>
+                  )
+                </>
+              )}
+              .
             </>
           ),
         }[station.fareGates]}
