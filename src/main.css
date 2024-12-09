@@ -169,6 +169,12 @@ tr.exitSymbolRow > td {
   vertical-align: bottom;
 }
 
+.flexCentre {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .shield {
   padding: 2px 4px;
   font-family: monospace;

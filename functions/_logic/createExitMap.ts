@@ -51,7 +51,9 @@ export function createExitMap(
   const exitNumber =
     tags[`destination:ref:carriages${suffix}`]?.split('|') || [];
   const exitSymbols =
-    tags[`destination:symbol:carriages${suffix}`]?.split('|') || [];
+    tags[`destination:symbol:carriages${suffix}`]
+      ?.split('|')
+      .map((s) => s.toLowerCase()) || [];
 
   if (!exitType.length) {
     return { carriages: [], direction: 'both_ways', exitSide: undefined };

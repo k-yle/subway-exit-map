@@ -369,10 +369,12 @@ export async function processData(
       routes,
       nodesWithNoData,
       supportedSymbols: Object.fromEntries(
-        Object.keys(ICONS).map((symbol) => [
-          symbol,
-          `${API_BASE_URL}/image?symbol=${symbol}`,
-        ]),
+        Object.values(ICONS)
+          .flatMap(Object.keys)
+          .map((symbol) => [
+            symbol,
+            `${API_BASE_URL}/image?qId={qId}&symbol=${symbol}`,
+          ]),
       ),
       lastGenerated: new Date().toISOString(),
       lastUpdated,

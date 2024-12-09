@@ -8,9 +8,14 @@ export const onRequest: Handler = async (context) => {
   );
 
   const apiUrl = new URL(context.request.url);
+
+  const qId = apiUrl.searchParams.get('qId')?.toUpperCase() || '';
+  const symbol = apiUrl.searchParams.get('symbol')?.toLowerCase() || '';
+
   const imageUrl =
-    images?.[apiUrl.searchParams.get('qId') || ''] ||
-    ICONS[apiUrl.searchParams.get('symbol') || ''];
+    qId && symbol
+      ? ICONS[qId]?.[symbol] || ICONS.generic[symbol]
+      : images?.[qId];
 
   if (!imageUrl) return new Response(undefined, { status: 404 });
 

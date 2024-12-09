@@ -11,6 +11,7 @@ import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { PlatformName } from './PlatformName';
 import notAccessible from './icons/NotAccessible.svg';
 import { RouteShield } from './RouteShield';
+import { RenderSymbol } from './icons/RenderSymbol';
 
 export const RenderDiagram: React.FC<{
   data: Data;
@@ -152,16 +153,16 @@ export const RenderDiagram: React.FC<{
 
               return (
                 <td key={carriage.ref} colSpan={colSpan}>
-                  {carriage.exitSymbols
-                    ?.filter((symbol) => data.supportedSymbols[symbol])
-                    .map((symbol) => (
-                      <img
+                  <div className="flexCentre">
+                    {carriage.exitSymbols?.map((symbol) => (
+                      <RenderSymbol
                         key={symbol}
-                        src={data.supportedSymbols[symbol]}
-                        alt={symbol}
-                        style={{ width: 20, height: 20 }}
+                        symbol={symbol}
+                        data={data}
+                        networks={station.networks}
                       />
                     ))}
+                  </div>
                   {carriage.unavailable && <strong>Short Platform!</strong>}
                 </td>
               );

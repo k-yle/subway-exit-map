@@ -20,15 +20,38 @@ export const getNetwork = (tags: Tags): ItemId | undefined => {
   return NETWORK_OVERRIDE[qId] || qId;
 };
 
-/**
- * Sydney is the only city that uses `destination:symbol:carriages`, so
- * for now these are hardcoded.
- */
-export const ICONS: Record<string, string> = {
-  bus: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20B.svg',
-  train: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20T.svg',
-  ferry: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20F.svg',
-  light_rail:
-    'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20L.svg',
-  metro: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20M.svg',
+// TODO: remove hardcoded icons
+export const ICONS: { [network: string]: { [icon: string]: string } } = {
+  generic: {
+    bus: 'https://commons.wikimedia.org/wiki/Special:FilePath/RWBA_Bus.svg',
+    's-bahn':
+      'https://commons.wikimedia.org/wiki/Special:FilePath/S-Bahn_Austria.svg',
+    tram: 'https://commons.wikimedia.org/wiki/Special:FilePath/IE%20road%20sign%20symbol%20F-016.svg',
+    train:
+      'https://commons.wikimedia.org/wiki/Special:FilePath/Fernbahn_Signet_HVV.svg',
+    light_rail:
+      'https://commons.wikimedia.org/wiki/Special:FilePath/IE%20road%20sign%20symbol%20F-016.svg',
+    ferry:
+      'https://commons.wikimedia.org/wiki/Special:FilePath/RWBA%20Fähre(R).svg',
+    metro:
+      'https://commons.wikimedia.org/wiki/Special:FilePath/BSicon%20SUBWAY-CHN.svg',
+  },
+  Q7660181: {
+    // Sydney Trains
+    bus: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20B.svg',
+    train: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20T.svg',
+    ferry: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20F.svg',
+    light_rail:
+      'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20L.svg',
+    metro: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20M.svg',
+  },
+  Q14774571: {
+    // Sydney Metro
+    bus: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20B.svg',
+    train: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20T.svg',
+    ferry: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20F.svg',
+    light_rail:
+      'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20L.svg',
+    metro: 'https://commons.wikimedia.org/wiki/Special:FilePath/TfNSW%20M.svg',
+  },
 };
