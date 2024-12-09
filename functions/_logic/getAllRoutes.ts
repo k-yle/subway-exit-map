@@ -2,7 +2,7 @@ import type { OsmFeature, OsmNode } from 'osm-api';
 import type { Item, ItemId } from 'wikibase-sdk';
 import { getNetwork } from '../_helpers/override.js';
 import { getShieldKeyHashed } from '../_helpers/hash.js';
-import { cleanName } from '../_helpers/osm.js';
+import { cleanName, getName } from '../_helpers/osm.js';
 import { P, Q, getItemName, getItemWikipedia } from '../_helpers/wikidata.js';
 import {
   type Data,
@@ -19,6 +19,7 @@ export async function getAllRoutes(
   data: OsmFeature[],
   wikidata: Wikidata,
   stationsByStopId: Record<number, [Station, Stop]>,
+  languages: string[],
 ) {
   const nodesWithNoData: Data['nodesWithNoData'] = {};
   const routes: Data['routes'] = {};
@@ -120,7 +121,7 @@ export async function getAllRoutes(
             );
             if (node) {
               nodesWithNoData[node.id] = {
-                name: cleanName(node.tags?.name),
+                name: cleanName(getName(node.tags, languages)),
                 // TODO: the side could be wrong, because we don't know
                 // which way the train travels down the track. Currently
                 // it assumes forwards.

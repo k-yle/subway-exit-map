@@ -27,7 +27,8 @@ export const onRequest: Handler = async (context) => {
     context.request.headers
       .get('Accept-Language')
       ?.split(',')
-      .map((code) => code.split(';')[0]) || [];
+      .map((code) => code.split(';')[0])
+      .flatMap((locale) => [locale, locale.split('-')[0]]) || [];
 
   if (!languages.length) languages.push('en');
 

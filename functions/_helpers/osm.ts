@@ -34,6 +34,11 @@ export const getTrackDirection = (
 
 export const FALSY = new Set(['', 'no', 'none', 'emergency']);
 
+export const getRef = (tags: Tags | undefined) => tags?.ref || tags?.uic_ref;
+
+export const getName = (tags: Tags | undefined, languages: string[]) =>
+  languages.map((lang) => tags?.[`name:${lang}`]).find(Boolean) || tags?.name;
+
 /**
  * remove platform number from stop_position nodes
  * @deprecated TODO: we should never use the name from the stop_position

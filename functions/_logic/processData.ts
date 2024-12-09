@@ -4,7 +4,13 @@ import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS, getNetwork } from '../_helpers/override.js';
 import { getShieldKey } from '../_helpers/hash.js';
-import { cleanName, findMember, isStation } from '../_helpers/osm.js';
+import {
+  cleanName,
+  findMember,
+  getName,
+  getRef,
+  isStation,
+} from '../_helpers/osm.js';
 import {
   type AdjacentStop,
   type Data,
@@ -56,7 +62,7 @@ export async function processData(
       }
 
       const gtfsId =
-        trainStationFeature.tags.ref || `_${trainStationFeature.id}`;
+        getRef(trainStationFeature.tags) || `_${trainStationFeature.id}`;
 
       let station = stations.find((s) => s.gtfsId === gtfsId);
       if (!station) {
@@ -65,7 +71,7 @@ export async function processData(
         station = {
           relationId: relation.id,
           gtfsId,
-          name: trainStationFeature.tags.name,
+          name: getName(trainStationFeature.tags, languages)!,
           fareGates:
             fareGates in FareGates ? (fareGates as FareGates) : undefined,
           fareGatesNote,
@@ -225,7 +231,10 @@ export async function processData(
 
               // if the station came from the group, each stop needs to use the correct name
               ...(trainStationFromGroup && {
-                disambiguationName: trainStationFromOwn?.tags?.name,
+                disambiguationName: getName(
+                  trainStationFromOwn?.tags,
+                  languages,
+                ),
               }),
 
               // typecast is a hack, we fix this later
@@ -276,13 +285,16 @@ export async function processData(
       // the next stop doesn't have exit:carriages data, but we
       // might be able to find it in the raw OSM data
       const maybeStop = data.find(
-        (n) => n.type === 'node' && n.id === stopNodeId && n.tags?.name,
+        (n) =>
+          n.type === 'node' &&
+          n.id === stopNodeId &&
+          getName(n.tags, languages),
       );
       if (maybeStop) {
         return {
           gtfsId: undefined,
           platform: maybeStop.tags!.local_ref,
-          stationName: cleanName(maybeStop.tags!.name),
+          stationName: cleanName(getName(maybeStop.tags, languages)),
         };
       }
 
@@ -336,8 +348,13 @@ export async function processData(
       const firstSupportedLanguage =
         languages.find((lang) => item.labels?.[lang]) || 'en';
 
-      const wikipediaPage =
-        item.sitelinks?.[<Site>`${firstSupportedLanguage}wiki`]?.title;
+      const wikipediaPage = languages
+        .map((lang) => {
+          const page = item.sitelinks?.[<Site>`${lang}wiki`]?.title;
+          if (!page) return undefined;
+          return `${lang}:${page.replaceAll(' ', '_')}`;
+        })
+        .find(Boolean);
 
       const bestLogo = (item.claims.P8972 || item.claims.P154)
         ?.filter((claim) => claim.mainsnak.datatype === 'commonsMedia')
@@ -357,9 +374,7 @@ export async function processData(
       return {
         qId,
         name: item.labels?.[firstSupportedLanguage]?.value || '',
-        wikipedia: wikipediaPage
-          ? `https://${firstSupportedLanguage}.wikipedia.org/wiki/${wikipediaPage.replaceAll(' ', '_')}`
-          : undefined,
+        wikipedia: wikipediaPage,
         logoUrl: logoUrl && `${API_BASE_URL}/image?qId=${qId}`,
       };
     })
@@ -369,6 +384,7 @@ export async function processData(
     data,
     wikidata,
     stationsByStopId,
+    languages,
   );
 
   return {
