@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { Button, Modal, Switch, Typography } from '@arco-design/web-react';
 import { IconCheck } from '@arco-design/web-react/icon';
 import { SettingsContext } from '../context/settings';
+import { t } from '../i18n';
 
 export const Settings: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,20 +15,20 @@ export const Settings: React.FC = () => {
         onClick={() => setIsOpen(true)}
         style={{ padding: 0 }}
       >
-        Settings
+        {t('Settings.settings')}
       </Button>
       <Modal
-        title="Settings"
+        title={t('Settings.settings')}
         visible={isOpen}
         onOk={() => setIsOpen(false)}
         onCancel={() => setIsOpen(false)}
         autoFocus={false}
         focusLock
         hideCancel
-        okText="Close"
+        okText={t('generic.close')}
       >
         <Typography.Title heading={6} style={{ margin: '8px 0' }}>
-          Stations
+          {t('generic.stations')}
         </Typography.Title>
         <Switch
           checkedIcon={<IconCheck />}
@@ -36,9 +37,9 @@ export const Settings: React.FC = () => {
             setSettings((c) => ({ ...c, showPassThroughRoutes: newValue }))
           }
         />{' '}
-        Show routes that never stop at each platform
+        {t('Settings.showPassThroughRoutes')}
         <Typography.Title heading={6} style={{ margin: '8px 0' }}>
-          Routes
+          {t('generic.routes')}
         </Typography.Title>
         <Switch
           checkedIcon={<IconCheck />}
@@ -47,7 +48,7 @@ export const Settings: React.FC = () => {
             setSettings((c) => ({ ...c, showConnectingRoutes: newValue }))
           }
         />{' '}
-        Show connecting routes
+        {t('Settings.showConnectingRoutes')}
       </Modal>
     </>
   );

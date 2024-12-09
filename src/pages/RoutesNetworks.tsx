@@ -2,13 +2,14 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, List } from '@arco-design/web-react';
 import { DataContext } from '../context/data';
+import { t } from '../i18n';
 
 export const RoutesNetworks: React.FC = () => {
   const data = useContext(DataContext);
 
   return (
     <div className="main">
-      <Link to="/">Back</Link>
+      <Link to="/">{t('generic.back')}</Link>
       <List
         dataSource={data.networks}
         render={(network) => {

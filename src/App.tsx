@@ -7,10 +7,20 @@ import type { Data, Station } from './types.def';
 import { RenderDiagram } from './components/RenderDiagram';
 import { Settings } from './components/Settings';
 import { DataContext } from './context/data';
+import { bold, locale, t } from './i18n';
 
 import './main.css';
+import { copyrightFooter } from './components/text';
 
-const empty = <div style={{ padding: '2px 8px' }}>No results</div>;
+const empty = (
+  <div style={{ padding: '2px 8px' }}>{t('generic.no-results')}</div>
+);
+
+const greenPreview = (str: string) => (
+  <strong key={0} className="green-preview">
+    {str}
+  </strong>
+);
 
 const MainLayout: React.FC<{
   station: Station | undefined;
@@ -20,37 +30,42 @@ const MainLayout: React.FC<{
 
   return (
     <>
-      The best carriages are shown in{' '}
-      <strong className="green-preview">green</strong>.
+      {t('MainLayout.intro', { greenPreview })}
       {station.fareGates &&
         {
           no: (
             <>
               <br />
-              This station does <strong>not</strong> have fare gates.
+              {t('MainLayout.fare-gates.no', { bold })}
             </>
           ),
           yes: (
             <>
               <br />
-              This station <strong>has</strong> fare gates.
+              {t('MainLayout.fare-gates.yes', { bold })}
             </>
           ),
           partial: (
             <>
               <br />
-              This station has fare gates at <strong>some entrances</strong>
+              {t('MainLayout.fare-gates.partial', { bold })}
               {station.fareGatesNote && (
                 <>
                   {' '}
                   (
                   <Button
                     type="text"
-                    // eslint-disable-next-line no-alert
-                    onClick={() => alert(`“${station.fareGatesNote}”`)}
+                    onClick={() =>
+                      // eslint-disable-next-line no-alert
+                      alert(
+                        t('MainLayout.fare-gates-note.alert', {
+                          note: station.fareGatesNote,
+                        }),
+                      )
+                    }
                     style={{ padding: 0 }}
                   >
-                    click for details
+                    {t('MainLayout.fare-gates-note.btn')}
                   </Button>
                   )
                 </>
@@ -62,8 +77,7 @@ const MainLayout: React.FC<{
       {station.stops.some((stop) => stop.biDiMode === 'occasional') && (
         <>
           <br />
-          <sup>†</sup> = During disruptions, trains may travel in the opposite
-          direction at this platform.
+          <sup>†</sup> = {t('MainLayout.bi-di-occasional')}
         </>
       )}
       {station.stops
@@ -115,7 +129,7 @@ export const Home: React.FC = () => {
         notFoundContent={empty}
       >
         {selectedNetwork === '' && (
-          <Select.Option value="">Choose a network</Select.Option>
+          <Select.Option value="">{t('Home.select-network')}</Select.Option>
         )}
         {data.networks.map((network) => (
           <Select.Option key={network.qId} value={network.qId}>
@@ -142,7 +156,7 @@ export const Home: React.FC = () => {
         style={{ marginTop: 8 }}
         notFoundContent={empty}
       >
-        <Select.Option value="">Choose a station</Select.Option>
+        <Select.Option value="">{t('Home.select-station')}</Select.Option>
         {data.stations
           .filter(
             (station) =>
@@ -170,23 +184,26 @@ export const Home: React.FC = () => {
       <br />
       <br />
       <hr />
-      Last updated: <Timeago date={data.lastUpdated} hideSeconds />
+      {t('Home.footer.lastUpdated', {
+        relativeTime: (
+          <Timeago
+            key={0}
+            date={data.lastUpdated}
+            hideSeconds
+            locale={locale}
+          />
+        ),
+      })}
       {' | '}
       <Settings />
       {' | '}
       <Link to="/routes">
         <Button type="text" style={{ padding: 0 }}>
-          View Routes
+          {t('Menu.view-routes')}
         </Button>
       </Link>
       <br />
-      <small>
-        Data copyright &copy;{' '}
-        <a href="https://osm.org/copyright" target="_blank" rel="noreferrer">
-          OpenStreetMap contributors
-        </a>
-        .
-      </small>
+      <small>{copyrightFooter}</small>
     </main>
   );
 };

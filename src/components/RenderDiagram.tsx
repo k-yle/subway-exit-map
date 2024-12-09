@@ -5,7 +5,7 @@ import { Button, List, Modal } from '@arco-design/web-react';
 import { Link } from 'react-router-dom';
 import type { Carriage, Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
-import { formatList } from '../helpers/i18n';
+import { bold, formatList, locale, t } from '../i18n';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { PlatformName } from './PlatformName';
@@ -45,20 +45,23 @@ export const RenderDiagram: React.FC<{
     <RenderAdjacentStops
       label={
         {
-          regular: 'To',
+          regular: t('generic.to'),
           occasional: (
             <>
-              From<sup>†</sup>
+              {t('generic.from')}
+              <sup>†</sup>
             </>
           ),
-          no: 'From',
-          unknown: 'From',
+          no: t('generic.from'),
+          unknown: t('generic.from'),
         }[stop.biDiMode || 'no']
       }
       stops={stop.lastStop}
     />
   );
-  const to = <RenderAdjacentStops label="To" stops={stop.nextStop} />;
+  const to = (
+    <RenderAdjacentStops label={t('generic.to')} stops={stop.nextStop} />
+  );
 
   const flatRoutes = Object.values(stop.routes).flat();
 
@@ -70,34 +73,43 @@ export const RenderDiagram: React.FC<{
           onOk={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}
           hideCancel
-          okText="Close"
+          okText={t('generic.close')}
         >
-          <strong>
-            {stop.platform ? (
-              `Platform ${stop.platform} `
-            ) : (
-              <>
-                The <PlatformName stop={stop} includeDestinations={false} />{' '}
-                Platform
-              </>
-            )}
-          </strong>{' '}
-          at <strong>{station.name}</strong> was last edited{' '}
-          <TimeAgo date={stop.lastUpdate.date} /> by{' '}
-          <a
-            href={`https://osm.org/user/${stop.lastUpdate.user}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {stop.lastUpdate.user}
-          </a>
+          {t('RenderDiagram.history', {
+            bold,
+            platformName: stop.platform
+              ? t('RenderDiagram.platform.with-ref', { ref: stop.platform })
+              : t('RenderDiagram.platform.no-ref', {
+                  shields: (
+                    <PlatformName
+                      key={0}
+                      stop={stop}
+                      includeDestinations={false}
+                    />
+                  ),
+                }),
+            stationName: station.name,
+            timeAgo: (
+              <TimeAgo key={1} date={stop.lastUpdate.date} locale={locale} />
+            ),
+            user: (
+              <a
+                key={2}
+                href={`https://osm.org/user/${stop.lastUpdate.user}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {stop.lastUpdate.user}
+              </a>
+            ),
+          })}
           <br />
           <a
             href={`https://osm.org/node/${stop.nodeId}`}
             target="_blank"
             rel="noreferrer"
           >
-            View on OpenStreetMap
+            {t('generic.view-on', { name: 'OpenStreetMap' })}
           </a>
           <br />
           <br />
@@ -110,7 +122,10 @@ export const RenderDiagram: React.FC<{
                     to={`/routes/${route.qId}/${route.shieldKey}/${route.osmId}`}
                   >
                     <Button type="text">
-                      <RouteShield route={route} /> to {route.to?.join(' & ')}
+                      <RouteShield key={0} route={route} />{' '}
+                      {t('RenderDiagram.route', {
+                        to: route.to?.join(' & '),
+                      })}
                     </Button>
                   </Link>
                 </List.Item>
@@ -119,11 +134,14 @@ export const RenderDiagram: React.FC<{
           )}
         </Modal>
       )}
-      {stop.exitSide && (
-        <>
-          Exit on the <strong>{stop.exitSide}</strong>
-        </>
-      )}
+      {stop.exitSide &&
+        t('RenderDiagram.exit-side', {
+          bold,
+          side: {
+            left: t('generic.left'),
+            right: t('generic.right'),
+          }[stop.exitSide],
+        })}
       <table className="table">
         <tbody>
           {/* first row - the exit numbers */}
@@ -136,7 +154,11 @@ export const RenderDiagram: React.FC<{
               return (
                 <td key={carriage.ref} className="exitRef" colSpan={colSpan}>
                   {carriage.exitNumber && (
-                    <span>Exit {formatList(carriage.exitNumber)}</span>
+                    <span>
+                      {t('RenderDiagram.exit-number', {
+                        ref: formatList(carriage.exitNumber),
+                      })}
+                    </span>
                   )}
                 </td>
               );
@@ -163,7 +185,9 @@ export const RenderDiagram: React.FC<{
                       />
                     ))}
                   </div>
-                  {carriage.unavailable && <strong>Short Platform!</strong>}
+                  {carriage.unavailable && (
+                    <strong>{t('RenderDiagram.short-platform.title')}</strong>
+                  )}
                 </td>
               );
             })}
@@ -180,8 +204,11 @@ export const RenderDiagram: React.FC<{
               return (
                 <td key={carriage.ref} colSpan={colSpan}>
                   {carriage.unavailable &&
-                    'Doors will not open in these carriages'}
-                  {carriage.exitTo && <>to {formatList(carriage.exitTo)}</>}
+                    t('RenderDiagram.short-platform.subtitle')}
+                  {carriage.exitTo &&
+                    t('RenderDiagram.route', {
+                      to: formatList(carriage.exitTo),
+                    })}
                 </td>
               );
             })}
@@ -249,12 +276,15 @@ export const RenderDiagram: React.FC<{
               }}
             >
               {stop.platform
-                ? `${stop.disambiguationName || station.name}, Platform ${stop.platform}`
+                ? t('RenderDiagram.platform-name', {
+                    station: stop.disambiguationName || station.name,
+                    platform: stop.platform,
+                  })
                 : station.name}{' '}
               {stop.description && `(${stop.description}) `}
               {stop.inaccessible && (
                 <img
-                  alt="Platform is not wheelchair accessible"
+                  alt={t('generic.inaccessible') as string}
                   src={notAccessible}
                   style={{ height: '1.2rem', verticalAlign: 'bottom' }}
                 />

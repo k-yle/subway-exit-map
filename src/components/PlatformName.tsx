@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import type { Stop } from '../types.def';
 import { uniqBy } from '../helpers/objects';
 import { SettingsContext } from '../context/settings';
+import { t } from '../i18n';
 import { RouteShield } from './RouteShield';
 
 export const PlatformName: React.FC<{
@@ -30,11 +31,17 @@ export const PlatformName: React.FC<{
           key={to}
           className={clsx(routes[0].type === 'from' && 'italics')}
         >
-          {routes[0].type === 'from' && 'Drop-off only: '}
+          {routes[0].type === 'from' && t('RoutesInfo.exit_only')}{' '}
           {routes.map((route) => (
             <RouteShield key={JSON.stringify(route)} route={route} />
-          ))}
-          {{ to: ' to ', from: ' from ', both: ' to/from ' }[routes[0].type]}
+          ))}{' '}
+          {
+            {
+              to: t('generic.to_lower'),
+              from: t('generic.from_lower'),
+              both: t('generic.to-from'),
+            }[routes[0].type]
+          }{' '}
           {to}
           <br />
         </small>
@@ -46,15 +53,24 @@ export const PlatformName: React.FC<{
               <Fragment key={JSON.stringify(route)}>
                 <RouteShield route={route} />
                 {route.isDuplicate?.from && (
-                  <em> (from {route.isDuplicate?.from}) </em>
+                  <em>
+                    {' '}
+                    {t(
+                      'PlatformName.pass-through.from',
+                      route.isDuplicate,
+                    )}{' '}
+                  </em>
                 )}
                 {route.isDuplicate?.to && (
-                  <em> (to {route.isDuplicate?.to}) </em>
+                  <em>
+                    {' '}
+                    {t('PlatformName.pass-through.to', route.isDuplicate)}{' '}
+                  </em>
                 )}
               </Fragment>
             );
           })}
-          <em>does not stop here</em>
+          <em>{t('PlatformName.pass-through')}</em>
         </small>
       )}
     </>

@@ -6,6 +6,7 @@ import {
   useState,
 } from 'react';
 import type { Data } from '../types.def.js';
+import { t } from '../i18n.js';
 
 export const DataContext = createContext<Data>(undefined as never);
 DataContext.displayName = 'DataContext';
@@ -41,8 +42,8 @@ export const DataWrapper: React.FC<PropsWithChildren> = ({ children }) => {
     doFetch();
   }, [doFetch]);
 
-  if (error) return <>Failed to download data :(</>;
-  if (!data || isLoading) return <>Loading…</>;
+  if (error) return <>{t('error.load')}</>;
+  if (!data || isLoading) return <>{t('generic.loading')}</>;
 
   console.log('data', data);
 

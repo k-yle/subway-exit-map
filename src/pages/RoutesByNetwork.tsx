@@ -1,9 +1,10 @@
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, Button, List, Typography } from '@arco-design/web-react';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
+import { t } from '../i18n';
 
 export const RoutesByNetwork: React.FC = () => {
   const data = useContext(DataContext);
@@ -16,7 +17,7 @@ export const RoutesByNetwork: React.FC = () => {
 
   return (
     <div className="main">
-      <Link to="/routes">Back</Link>
+      <Link to="/routes">{t('generic.back')}</Link>
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
           <img alt={network.name} src={network.logoUrl} />
@@ -55,27 +56,31 @@ export const RoutesByNetwork: React.FC = () => {
         }}
       />
       <br />
-      View on{' '}
-      <a
-        href={`https://www.wikidata.org/wiki/${network.qId}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Wikidata
-      </a>
-      {network.wikipedia && (
-        <>
-          {' | '}
-          <a
-            href={`https://en.wikipedia.org/wiki/${network.wikipedia}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Wikipedia
-          </a>
-        </>
-      )}
-      .
+      {t('generic.view-on', {
+        name: (
+          <Fragment key={0}>
+            <a
+              href={`https://www.wikidata.org/wiki/${network.qId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Wikidata
+            </a>
+            {network.wikipedia && (
+              <>
+                {' | '}
+                <a
+                  href={`https://en.wikipedia.org/wiki/${network.wikipedia}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wikipedia
+                </a>
+              </>
+            )}
+          </Fragment>
+        ),
+      })}
     </div>
   );
 };

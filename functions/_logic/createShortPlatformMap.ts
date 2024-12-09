@@ -37,5 +37,6 @@ export function createShortPlatformMap(
     .map((bool) => (bool ? 'yes' : 'no'));
 
   const label = alignment[0].toUpperCase() + alignment.slice(1);
+  // TODO: i18n
   return { array, label: `${label} ${count} car${count === 1 ? '' : 's'}` };
 }

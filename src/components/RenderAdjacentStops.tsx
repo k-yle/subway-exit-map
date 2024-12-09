@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AdjacentStop } from '../types.def';
-import { orFormatter } from '../helpers/i18n';
+import { orFormatter } from '../i18n';
 
 export const RenderAdjacentStops: React.FC<{
   label: React.ReactNode;

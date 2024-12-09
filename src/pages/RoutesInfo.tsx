@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { Fragment, useContext, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, Button, List, Tag, Typography } from '@arco-design/web-react';
 import { IconCaretLeft, IconCaretRight } from '@arco-design/web-react/icon';
@@ -10,11 +10,15 @@ import notAccessibleBlack from '../components/icons/NotAccessibleBlack.svg';
 import { SettingsContext } from '../context/settings';
 import { Settings } from '../components/Settings';
 import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
+import { locale, t } from '../i18n';
+import { copyrightFooter } from '../components/text';
 import { TrainsetInfo } from './TrainsetInfo';
+
+const noop = <T,>(x: T) => x;
 
 const inaccessible = (
   <img
-    alt="Platform is not wheelchair accessible"
+    alt={t('generic.inaccessible') as string}
     src={notAccessibleBlack}
     style={{ height: '1.2rem', verticalAlign: 'bottom' }}
   />
@@ -49,22 +53,36 @@ export const RoutesInfo: React.FC = () => {
     const hasFareGates = allStations.some((s) => s.fareGates);
 
     return [
-      { icon: <IconCaretLeft />, label: 'Exit on the left', if: hasSides },
-      { icon: <IconCaretRight />, label: 'Exit on the right', if: hasSides },
+      {
+        icon: <IconCaretLeft />,
+        label: t('RenderDiagram.exit-side', {
+          side: t('generic.left'),
+          bold: noop,
+        }),
+        if: hasSides,
+      },
+      {
+        icon: <IconCaretRight />,
+        label: t('RenderDiagram.exit-side', {
+          side: t('generic.right'),
+          bold: noop,
+        }),
+        if: hasSides,
+      },
       {
         icon: inaccessible,
-        label: 'Not Accessible',
+        label: t('Legend.inaccessible'),
         if: allStops.some((s) => s.inaccessible),
       },
-      { icon: '🔒', label: 'Station has fare gates', if: hasFareGates },
+      { icon: '🔒', label: t('Legend.fare-gates.yes'), if: hasFareGates },
       {
         icon: '🔓',
-        label: 'Station does not have fare gates',
+        label: t('Legend.fare-gates.no'),
         if: hasFareGates,
       },
       {
         icon: '🔏',
-        label: 'Station has fare gates at some exits',
+        label: t('Legend.fare-gates.partial'),
         if: allStations.some((s) => s.fareGates === 'partial'),
       },
     ];
@@ -74,14 +92,15 @@ export const RoutesInfo: React.FC = () => {
 
   return (
     <div className="main">
-      <Link to={`/routes/${qId}/${shieldKey}`}>Back</Link>
+      <Link to={`/routes/${qId}/${shieldKey}`}>{t('generic.back')}</Link>
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
           <img alt={network.name} src={network.logoUrl} />
         </Avatar>
-        <RouteShield route={route.shield} /> {variant.tags.from} to{' '}
-        {variant.tags.to}
-        {variant.tags.via && ` via ${variant.tags.via}`}
+        <RouteShield route={route.shield} />
+        {variant.tags.via
+          ? t('RoutesByShield.label.from-to-via', variant.tags)
+          : t('RoutesByShield.label.from-to', variant.tags)}
       </Typography.Title>
       {route.wikidata?.trainsets && (
         <TrainsetInfo trainsets={route.wikidata.trainsets} />
@@ -108,7 +127,9 @@ export const RoutesInfo: React.FC = () => {
                   rel="noreferrer"
                 >
                   <Button type="text">
-                    <Typography.Text type="error">Unknown</Typography.Text>
+                    <Typography.Text type="error">
+                      {t('generic.unknown')}
+                    </Typography.Text>
                   </Button>
                 </a>
               </List.Item>
@@ -121,12 +142,12 @@ export const RoutesInfo: React.FC = () => {
           const suffix = (
             <>
               {stop?.platform}
-              {stopMeta.requestOnly && <Tag>On Request</Tag>}
+              {stopMeta.requestOnly && <Tag>{t('RoutesInfo.on_request')}</Tag>}
               {(stopMeta.restriction === 'entry_only' || isFirst) && (
-                <Tag>Pick up only</Tag>
+                <Tag>{t('RoutesInfo.entry_only')}</Tag>
               )}
               {(stopMeta.restriction === 'exit_only' || isLast) && (
-                <Tag>Drop-off only</Tag>
+                <Tag>{t('RoutesInfo.exit_only')}</Tag>
               )}
             </>
           );
@@ -176,14 +197,14 @@ export const RoutesInfo: React.FC = () => {
         }}
       />
       {!!legend.length && (
-        <Typography.Title heading={6}>Legend</Typography.Title>
+        <Typography.Title heading={6}>{t('Legend.title')}</Typography.Title>
       )}
       <table className="legend">
         <tbody>
           {legend
             .filter((item) => item.if)
             .map((item) => (
-              <tr key={item.label}>
+              <tr key={item.label.toString()}>
                 <td>{item.icon}</td>
                 <td>=</td>
                 <td>{item.label}</td>
@@ -192,58 +213,62 @@ export const RoutesInfo: React.FC = () => {
         </tbody>
       </table>
       <br />
-      <Settings />. Last edited <TimeAgo date={variant.lastUpdate.date} />
-      &nbsp;by{' '}
-      <a
-        href={`https://osm.org/user/${variant.lastUpdate.user}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {variant.lastUpdate.user}
-      </a>
-      .
-      <br />
-      View on{' '}
-      <a
-        href={`https://osm.org/relation/${relationId}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        OpenStreetMap
-      </a>
-      {route.wikidata?.qId && (
-        <>
-          {' | '}
+      {t('RoutesInfo.footer', {
+        settings: <Settings key={0} />,
+        timeAgo: (
+          <TimeAgo key={1} date={variant.lastUpdate.date} locale={locale} />
+        ),
+        user: (
           <a
-            href={`https://www.wikidata.org/wiki/${route.wikidata.qId}`}
+            key={2}
+            href={`https://osm.org/user/${variant.lastUpdate.user}`}
             target="_blank"
             rel="noreferrer"
           >
-            Wikidata
+            {variant.lastUpdate.user}
           </a>
-        </>
-      )}
-      {route.wikidata?.wikipedia && (
-        <>
-          {' | '}
-          <a
-            href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Wikipedia
-          </a>
-        </>
-      )}
-      .
+        ),
+      })}
       <br />
-      <small>
-        Data copyright &copy;{' '}
-        <a href="https://osm.org/copyright" target="_blank" rel="noreferrer">
-          OpenStreetMap contributors
-        </a>
-        .
-      </small>
+      {t('generic.view-on', {
+        name: (
+          <Fragment key={0}>
+            <a
+              href={`https://osm.org/relation/${relationId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              OpenStreetMap
+            </a>
+            {route.wikidata?.qId && (
+              <>
+                {' | '}
+                <a
+                  href={`https://www.wikidata.org/wiki/${route.wikidata.qId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wikidata
+                </a>
+              </>
+            )}
+            {route.wikidata?.wikipedia && (
+              <>
+                {' | '}
+                <a
+                  href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wikipedia
+                </a>
+              </>
+            )}
+          </Fragment>
+        ),
+      })}
+      <br />
+      <small>{copyrightFooter}</small>
     </div>
   );
 };

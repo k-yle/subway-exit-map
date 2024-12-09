@@ -1,9 +1,10 @@
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, Button, List, Typography } from '@arco-design/web-react';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
+import { t } from '../i18n';
 import { TrainsetInfo } from './TrainsetInfo';
 
 export const RoutesByShield: React.FC = () => {
@@ -18,7 +19,7 @@ export const RoutesByShield: React.FC = () => {
 
   return (
     <div className="main">
-      <Link to={`/routes/${qId}`}>Back</Link>
+      <Link to={`/routes/${qId}`}>{t('generic.back')}</Link>
 
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
@@ -37,8 +38,9 @@ export const RoutesByShield: React.FC = () => {
             <List.Item key={key}>
               <Link to={`/routes/${qId}/${shieldKey}/${key}`}>
                 <Button type="text">
-                  {value.tags.from} to {value.tags.to}
-                  {value.tags.via && ` via ${value.tags.via}`}
+                  {value.tags.via
+                    ? t('RoutesByShield.label.from-to-via', value.tags)
+                    : t('RoutesByShield.label.from-to', value.tags)}
                 </Button>
               </Link>
             </List.Item>
@@ -48,27 +50,31 @@ export const RoutesByShield: React.FC = () => {
       <br />
       {route.wikidata && (
         <>
-          View on{' '}
-          <a
-            href={`https://www.wikidata.org/wiki/${route.wikidata.qId}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Wikidata
-          </a>
-          {route.wikidata?.wikipedia && (
-            <>
-              {' | '}
-              <a
-                href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Wikipedia
-              </a>
-            </>
-          )}
-          .
+          {t('generic.view-on', {
+            name: (
+              <Fragment key={0}>
+                <a
+                  href={`https://www.wikidata.org/wiki/${route.wikidata.qId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Wikidata
+                </a>
+                {route.wikidata?.wikipedia && (
+                  <>
+                    {' | '}
+                    <a
+                      href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Wikipedia
+                    </a>
+                  </>
+                )}
+              </Fragment>
+            ),
+          })}
         </>
       )}
     </div>

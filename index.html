@@ -20,10 +20,14 @@
     <script type="module">
       import { createElement } from 'react';
       import { createRoot } from 'react-dom/client';
-      import { App } from './src';
+      import { i18nReady } from './src/i18n';
       import '@arco-design/web-react/dist/css/arco.css';
 
-      createRoot(document.querySelector('main')).render(createElement(App));
+      i18nReady
+        .then(() => import('./src'))
+        .then(({ App }) => {
+          createRoot(document.querySelector('main')).render(createElement(App));
+        });
     </script>
   </body>
 </html>
