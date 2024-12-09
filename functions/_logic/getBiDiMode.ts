@@ -11,7 +11,8 @@ export function getBiDiMode(
     return 'regular';
   }
 
-  if (getTrackDirection(track.tags) === 'both_ways') {
+  const direction = getTrackDirection(track.tags);
+  if (direction === 'both_ways' || direction === 'unknown') {
     // check if regular or occasional
     const routesThatUseThisTrack = allData.filter(
       (relation): relation is OsmRelation =>
@@ -42,7 +43,7 @@ export function getBiDiMode(
     }
 
     // bi di, but routes only travel in one direction
-    return 'occasional';
+    return direction === 'unknown' ? 'unknown' : 'occasional';
   }
 
   return undefined;

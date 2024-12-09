@@ -5,6 +5,10 @@ import type { Stop } from '../types.def.js';
 
 describe('getBiDiMode', () => {
   const implicitTrack = <OsmWay>{ id: 2 };
+  const explicitOccasionalTrack = <OsmWay>(<Partial<OsmWay>>{
+    id: 2,
+    tags: { 'railway:bidirectional': 'possible' },
+  });
   const explicitRegularTrack = <OsmWay>(<Partial<OsmWay>>{
     id: 2,
     tags: { 'railway:bidirectional': 'regular' },
@@ -78,9 +82,9 @@ describe('getBiDiMode', () => {
     // regular, because routes pass in 2 directions
     [implicitTrack, [fwdRoute, fwdRoute, bwdRoute], 'regular'],
 
-    // occasional, because routes pass in 1 direction.
+    // unknown, because routes pass in 1 direction.
     // the terminating route came from the same place as fwd
-    [implicitTrack, [fwdRoute, fwdRoute, fwdTerminatingRoute], 'occasional'],
+    [implicitTrack, [fwdRoute, fwdRoute, fwdTerminatingRoute], 'unknown'],
 
     // regular, because routes pass in 2 direction.
     // the terminating route came from the other direction to fwdRoute
@@ -88,14 +92,62 @@ describe('getBiDiMode', () => {
 
     // occasional, because routes pass in 1 direction.
     // the terminating route came from the same place as fwd
-    [implicitTrack, [fwdRoute, fwdRoute, fwdOriginatingRoute], 'occasional'],
+    [implicitTrack, [fwdRoute, fwdRoute, fwdOriginatingRoute], 'unknown'],
 
     // regular, because routes pass in 2 direction.
     // the terminating route came from the other direction to fwdRoute
-    [implicitTrack, [fwdRoute, fwdRoute, bwdOriginatingRoute], 'occasional'], // TODO: bug
+    [implicitTrack, [fwdRoute, fwdRoute, bwdOriginatingRoute], 'unknown'], // TODO: bug
 
     // occasional, because routes pass in 1 direction
-    [implicitTrack, [fwdRoute], 'occasional'],
+    [implicitTrack, [fwdRoute], 'unknown'],
+
+    // regular, because there are no routes using this track
+    [implicitTrack, [], 'regular'],
+
+    // regular, because routes pass in 3 directions
+    [
+      explicitOccasionalTrack,
+      [fwdRoute, fwdRoute, bwdRoute, fwdTerminatingRoute],
+      'regular',
+    ],
+
+    // regular, because routes pass in 2 directions
+    [explicitOccasionalTrack, [fwdRoute, fwdRoute, bwdRoute], 'regular'],
+
+    // occasional, because routes pass in 1 direction.
+    // the terminating route came from the same place as fwd
+    [
+      explicitOccasionalTrack,
+      [fwdRoute, fwdRoute, fwdTerminatingRoute],
+      'occasional',
+    ],
+
+    // regular, because routes pass in 2 direction.
+    // the terminating route came from the other direction to fwdRoute
+    [
+      explicitOccasionalTrack,
+      [fwdRoute, fwdRoute, bwdTerminatingRoute],
+      'regular',
+    ],
+
+    // occasional, because routes pass in 1 direction.
+    // the terminating route came from the same place as fwd
+    [
+      explicitOccasionalTrack,
+      [fwdRoute, fwdRoute, fwdOriginatingRoute],
+      'occasional',
+    ],
+
+    // regular, because routes pass in 2 direction.
+    // the terminating route came from the other direction to fwdRoute
+    [
+      explicitOccasionalTrack,
+      [fwdRoute, fwdRoute, bwdOriginatingRoute],
+      'occasional',
+    ], // TODO: bug
+
+    // occasional, because routes pass in 1 direction
+    [explicitOccasionalTrack, [fwdRoute], 'occasional'],
 
     // regular, because there are no routes using this track
     [implicitTrack, [], 'regular'],

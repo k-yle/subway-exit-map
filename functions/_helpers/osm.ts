@@ -22,12 +22,13 @@ const ONEWAY_TAGS: Record<string, Record<string, FwdBwdBoth>> = {
 };
 
 /** assume bidirectional unless explicitly tagged. */
-export const getTrackDirection = (tags: Tags | undefined): FwdBwdBoth => {
-  if (!tags) return 'both_ways';
+export const getTrackDirection = (
+  tags: Tags | undefined,
+): FwdBwdBoth | 'unknown' => {
   return (
-    Object.entries(tags)
+    Object.entries(tags || {})
       .map(([key, value]) => ONEWAY_TAGS[key]?.[value])
-      .find(Boolean) || 'both_ways'
+      .find(Boolean) || 'unknown'
   );
 };
 

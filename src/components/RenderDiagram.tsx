@@ -51,6 +51,7 @@ export const RenderDiagram: React.FC<{
             </>
           ),
           no: 'From',
+          unknown: 'From',
         }[stop.biDiMode || 'no']
       }
       stops={stop.lastStop}

@@ -95,7 +95,7 @@ export function createExitMap(
   const biDiMode = getBiDiMode(track, allData);
 
   const trackDirection = getTrackDirection(track.tags);
-  const direction = <FwdBwdBoth>suffix?.slice(1) || trackDirection;
+  const direction = <FwdBwdBoth | 'unknown'>suffix?.slice(1) || trackDirection;
 
   // we do NOT copy exitType, since that would be wrong.
   fillBlanksForColSpan(
@@ -152,7 +152,8 @@ export function createExitMap(
   return {
     exitSide,
     carriages,
-    direction,
+    // for backwards compatibility with the frontend
+    direction: direction === 'unknown' ? 'both_ways' : direction,
     biDiMode,
     availableLabel: available.label,
   };

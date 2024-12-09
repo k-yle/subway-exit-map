@@ -74,9 +74,11 @@ export type Stop = {
    *   but the PTv2 relations only travel in one direction, or the
    *   track has `railway:bidirectional=possible`
    *
+   * - `unknown` means there's no directional info in the database.
+   *
    * - `undefined` means unidirectional.
    */
-  biDiMode?: 'regular' | 'occasional';
+  biDiMode?: 'regular' | 'occasional' | 'unknown';
   availableLabel?: string | undefined;
   lastUpdate: {
     user: string;
