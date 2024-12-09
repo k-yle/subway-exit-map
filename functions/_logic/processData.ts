@@ -1,5 +1,5 @@
 import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
-import type { Item, Site } from 'wikibase-sdk';
+import type { Item, ItemId, Site } from 'wikibase-sdk';
 import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS, getNetwork } from '../_helpers/override.js';
@@ -7,6 +7,7 @@ import { getShieldKey } from '../_helpers/hash.js';
 import {
   cleanName,
   findMember,
+  getLocalRef,
   getName,
   getRef,
   isStation,
@@ -89,14 +90,16 @@ export async function processData(
           );
 
           if (node) {
+            const ownLocalRef = getLocalRef(node.tags, station.networks);
+
             // find a platform in the same stop_area with a matching local_ref
             const platformFeature = relation.members
               .filter((m) => m.role === 'platform')
               .map((m) => data.find((d) => d.type === m.type && d.id === m.ref))
               .find(
                 (feature) =>
-                  node.tags?.local_ref &&
-                  node.tags?.local_ref === feature?.tags?.local_ref,
+                  ownLocalRef &&
+                  ownLocalRef === getLocalRef(feature?.tags, station.networks),
               );
 
             const routesThatStopHere = data.filter(
@@ -209,7 +212,7 @@ export async function processData(
             station.stops.push({
               nodeId: node.id,
               gtfsId: node.tags?.ref || `${node.id}`,
-              platform: node.tags?.local_ref,
+              platform: getLocalRef(node.tags, station.networks),
               description:
                 (node.tags?.description?.length ?? 99) < 20
                   ? node.tags!.description
@@ -278,7 +281,10 @@ export async function processData(
   }
 
   // convert the next/last stop from number[] to the proper type
-  const nIdToObject = (stopNodeId: number): AdjacentStop | undefined => {
+  const nIdToObject = (
+    stopNodeId: number,
+    networks: ItemId[],
+  ): AdjacentStop | undefined => {
     const [station, stop] = stationsByStopId[stopNodeId] || [];
 
     if (!station || !stop) {
@@ -293,7 +299,7 @@ export async function processData(
       if (maybeStop) {
         return {
           gtfsId: undefined,
-          platform: maybeStop.tags!.local_ref,
+          platform: getLocalRef(maybeStop.tags, networks),
           stationName: cleanName(getName(maybeStop.tags, languages)),
         };
       }
@@ -310,10 +316,10 @@ export async function processData(
   for (const station of stations) {
     for (const stop of station.stops) {
       stop.lastStop = stop.lastStop
-        .map((id) => nIdToObject(<never>id))
+        .map((id) => nIdToObject(<never>id, station.networks))
         .filter(isTruthy);
       stop.nextStop = stop.nextStop
-        .map((id) => nIdToObject(<never>id))
+        .map((id) => nIdToObject(<never>id, station.networks))
         .filter(isTruthy);
     }
 

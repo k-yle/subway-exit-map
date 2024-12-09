@@ -1,4 +1,5 @@
 import type { OsmFeature, OsmRelation, Tags } from 'osm-api';
+import type { ItemId } from 'wikibase-sdk';
 import type { FwdBwdBoth } from '../_logic/types.def.js';
 
 const ONEWAY_TAGS: Record<string, Record<string, FwdBwdBoth>> = {
@@ -33,6 +34,23 @@ export const getTrackDirection = (
 };
 
 export const FALSY = new Set(['', 'no', 'none', 'emergency']);
+
+/** some cities (e.g. London & Wien) use `ref` instead of `local_ref` */
+const CITIES_WITHOUT_LOCAL_REF = new Set([
+  'Q209400', // Wiener Linien
+  'Q2516485', // VOR (Österreich)
+]);
+
+export const getLocalRef = (tags: Tags | undefined, networks: ItemId[]) => {
+  if (!tags) return undefined;
+  if (tags.local_ref) return tags.local_ref;
+
+  if (new Set(networks).intersection(CITIES_WITHOUT_LOCAL_REF).size) {
+    return tags.ref;
+  }
+
+  return undefined;
+};
 
 export const getRef = (tags: Tags | undefined) => tags?.ref || tags?.uic_ref;
 

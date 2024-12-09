@@ -2,7 +2,7 @@ import type { OsmFeature, OsmNode } from 'osm-api';
 import type { Item, ItemId } from 'wikibase-sdk';
 import { getNetwork } from '../_helpers/override.js';
 import { getShieldKeyHashed } from '../_helpers/hash.js';
-import { cleanName, getName } from '../_helpers/osm.js';
+import { cleanName, getLocalRef, getName } from '../_helpers/osm.js';
 import { P, Q, getItemName, getItemWikipedia } from '../_helpers/wikidata.js';
 import {
   type Data,
@@ -126,7 +126,7 @@ export async function getAllRoutes(
                 // which way the train travels down the track. Currently
                 // it assumes forwards.
                 exitSide: <ExitSide>node.tags?.side,
-                platform: node.tags?.local_ref,
+                platform: getLocalRef(node.tags, [network]),
               };
             }
           }
