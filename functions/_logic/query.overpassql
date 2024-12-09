@@ -24,6 +24,9 @@ way(bn.stationTrackNodes) -> .stationTrackWaysIncludingAdjacent;
 // split out the stop_area relations
 rel.allRelations[public_transport=stop_area]->.stopAreas;
 
+// get all stop_area_groups that contain our stop areas
+rel(br.stopAreas)[public_transport=stop_area_group] -> .stopAreaGroups;
+
 // filter out train routes with no `network:wikidata` tag, the idea
 // is to filter out regional trains that have 1000+ members and
 // aren't useful or relevant. Also filter out inter-state trains based
@@ -45,5 +48,5 @@ rel.allRelations[public_transport=stop_area]->.stopAreas;
 nwr(r.stopAreas)[public_transport=station]->.stations;
 
 // don't output every relation, just the ones we want
-(.stops; .stations; .stopAreas; .suburbanTrainRoutes; .stationTrackWaysIncludingAdjacent; .stationTrackNodes;);
+(.stops; .stations; .stopAreas; .stopAreaGroups; .suburbanTrainRoutes; .stationTrackWaysIncludingAdjacent; .stationTrackNodes;);
 out meta;

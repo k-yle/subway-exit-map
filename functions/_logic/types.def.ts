@@ -90,6 +90,13 @@ export type Stop = {
   passThroughRoutes:
     | (RouteShield & { isDuplicate?: { to?: string; from?: string } })[]
     | undefined;
+
+  /**
+   * A huge station might be divided into different names.
+   * If this name exists, it should be prefered over the
+   * station's default name.
+   */
+  disambiguationName?: string;
 };
 
 export enum FareGates {

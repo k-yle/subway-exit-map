@@ -249,7 +249,7 @@ export const RenderDiagram: React.FC<{
               }}
             >
               {stop.platform
-                ? `${station.name}, Platform ${stop.platform}`
+                ? `${stop.disambiguationName || station.name}, Platform ${stop.platform}`
                 : station.name}{' '}
               {stop.description && `(${stop.description}) `}
               {stop.inaccessible && (

@@ -1,4 +1,4 @@
-import type { Tags } from 'osm-api';
+import type { OsmFeature, OsmRelation, Tags } from 'osm-api';
 import type { FwdBwdBoth } from '../_logic/types.def.js';
 
 const ONEWAY_TAGS: Record<string, Record<string, FwdBwdBoth>> = {
@@ -40,3 +40,19 @@ export const FALSY = new Set(['', 'no', 'none', 'emergency']);
  */
 export const cleanName = (name: string | undefined) =>
   name?.split(',')[0].replace(/ *((platform|station).+)? *\d*$/i, '') || '';
+
+/**
+ * shorthand to map a relation's members to it's features.
+ * The `role` is not passed down.
+ * @example `.map(findMember(data))`
+ */
+export const findMember =
+  (data: OsmFeature[]) => (member: OsmRelation['members'][0]) => {
+    return data.find((f) => f.type === member.type && f.id === member.ref);
+  };
+
+/** @example `.map(isStation)` */
+export const isStation = (feature: OsmFeature | undefined) => {
+  if (feature?.tags?.public_transport === 'station') return feature;
+  return undefined;
+};

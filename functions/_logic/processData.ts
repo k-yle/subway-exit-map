@@ -4,7 +4,7 @@ import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS, getNetwork } from '../_helpers/override.js';
 import { getShieldKey } from '../_helpers/hash.js';
-import { cleanName } from '../_helpers/osm.js';
+import { cleanName, findMember, isStation } from '../_helpers/osm.js';
 import {
   type AdjacentStop,
   type Data,
@@ -21,6 +21,7 @@ import {
 import { flipFunctions } from './flipping/index.js';
 import { getTravellingDirection } from './getTravellingDirection.js';
 import { getAllRoutes } from './getAllRoutes.js';
+import { parseStopAreaGroups } from './stopAreaGroups.js';
 
 export async function processData(
   { osm: data, wikidata, lastUpdated }: RawInput,
@@ -33,28 +34,29 @@ export async function processData(
   const warnings: string[] = [];
   const stations: Station[] = [];
 
+  const stopAreaGroups = parseStopAreaGroups(data);
+
   // find all stop_area relations first
   for (const relation of data) {
     if (
       relation.type === 'relation' &&
       relation.tags?.public_transport === 'stop_area'
     ) {
-      const trainStationFeature = relation.members
-        .map((member) => {
-          const feature = data.find(
-            (f) => f.type === member.type && f.id === member.ref,
-          );
-          if (feature?.tags?.public_transport === 'station') return feature;
-          return undefined;
-        })
+      const trainStationFromGroup = stopAreaGroups.get(relation.id);
+      const trainStationFromOwn = relation.members
+        .map(findMember(data))
+        .map(isStation)
         .find(Boolean);
+
+      const trainStationFeature = trainStationFromGroup || trainStationFromOwn;
 
       if (!trainStationFeature?.tags) {
         warnings.push(`No station found for ${relation.id}`);
         continue;
       }
 
-      const gtfsId = trainStationFeature.tags.ref || `_${relation.id}`;
+      const gtfsId =
+        trainStationFeature.tags.ref || `_${trainStationFeature.id}`;
 
       let station = stations.find((s) => s.gtfsId === gtfsId);
       if (!station) {
@@ -221,6 +223,11 @@ export async function processData(
                 ? routesThatPassThroughWithoutStopping
                 : undefined,
 
+              // if the station came from the group, each stop needs to use the correct name
+              ...(trainStationFromGroup && {
+                disambiguationName: trainStationFromOwn?.tags?.name,
+              }),
+
               // typecast is a hack, we fix this later
               lastStop: <never[]>[...lastStops],
               nextStop: <never[]>[...nextStops],
@@ -243,8 +250,12 @@ export async function processData(
       }
 
       station.stops.sort((stopA, stopB) => {
-        const a = getPlatform(stopA).padStart(longestPlatform, '0');
-        const b = getPlatform(stopB).padStart(longestPlatform, '0');
+        const a =
+          stopA.disambiguationName +
+          getPlatform(stopA).padStart(longestPlatform, '0');
+        const b =
+          stopB.disambiguationName +
+          getPlatform(stopB).padStart(longestPlatform, '0');
         return a.localeCompare(b);
       });
     }
