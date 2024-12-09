@@ -10,7 +10,7 @@ export async function fetchChunked(
   API_BASE_URL: string,
 ) {
   const data: Wikidata = {};
-  for (const chunk of createChunks([...qIds], 100)) {
+  for (const chunk of createChunks([...qIds], 50)) {
     console.log('Fetching from wikidata…');
     const resp = await fetch(
       `https://www.wikidata.org/w/api.php?action=wbgetentities&ids=${chunk.join('|')}&format=json`,

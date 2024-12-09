@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "postinstall": "cp functions/_logic/query.overpassql functions/_logic/query.overpassql.txt",
+    "prestart": "npm run postinstall",
     "start": "wrangler pages dev --port 7002 --proxy 7001 -- npm run start-only-client",
     "start-only-client": "vite",
     "build": "vite build",
