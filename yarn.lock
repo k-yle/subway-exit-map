@@ -1007,6 +1007,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rapideditor/country-coder@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "@rapideditor/country-coder@npm:5.3.0"
+  dependencies:
+    which-polygon: "npm:^2.2.1"
+  checksum: 10c0/df64249a111c35f89b3b9d7aa3165adda93e6f445f99404a4eb284a8f78badbbc8c86e5917471a4c7931460b8f5fbe176681252f93bcdffcb592a352544e7746
+  languageName: node
+  linkType: hard
+
 "@remix-run/router@npm:1.17.1":
   version: 1.17.1
   resolution: "@remix-run/router@npm:1.17.1"
@@ -4166,6 +4175,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lineclip@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "lineclip@npm:1.1.5"
+  checksum: 10c0/3b4272a5fe67ce703825a0520003083c1b5412bfd8244e32879d7ce9ddfc429c2af78c608eb379037b404ea2937e60480c18925638235fdd6a821b4f4e4ef683
+  languageName: node
+  linkType: hard
+
 "lines-and-columns@npm:^1.1.6":
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
@@ -5028,6 +5044,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"quickselect@npm:^1.0.1":
+  version: 1.1.1
+  resolution: "quickselect@npm:1.1.1"
+  checksum: 10c0/8890dfe3c42d18e84fb5c18aee04da49b0f5b9d2a7196344c4451cb5660549a2bf770be866704a4a9e6c73d35475c599dd24cf78abcc19886ab54c019a952a37
+  languageName: node
+  linkType: hard
+
+"rbush@npm:^2.0.1":
+  version: 2.0.2
+  resolution: "rbush@npm:2.0.2"
+  dependencies:
+    quickselect: "npm:^1.0.1"
+  checksum: 10c0/dfaef8171ff1fb15924e0a84150cc23e31508d67a7821ddb948cd0a5d003f5a20406836866bb1a2dc1f1e2dee06aeb2ce02a1f61a4a8f84ccb792696f43883a7
+  languageName: node
+  linkType: hard
+
 "react-clientside-effect@npm:^1.2.6":
   version: 1.2.6
   resolution: "react-clientside-effect@npm:1.2.6"
@@ -5428,6 +5460,7 @@ __metadata:
     "@arco-design/web-react": "npm:^2.61.2"
     "@cloudflare/workers-types": "npm:^4.20240502.0"
     "@formatjs/intl": "npm:^3.0.4"
+    "@rapideditor/country-coder": "npm:^5.3.0"
     "@types/react": "npm:^18.2.48"
     "@types/react-dom": "npm:^18.2.18"
     "@vitejs/plugin-react": "npm:^4.2.1"
@@ -6443,6 +6476,16 @@ __metadata:
     is-weakmap: "npm:^2.0.2"
     is-weakset: "npm:^2.0.3"
   checksum: 10c0/3345fde20964525a04cdf7c4a96821f85f0cc198f1b2ecb4576e08096746d129eb133571998fe121c77782ac8f21cbd67745a3d35ce100d26d4e684c142ea1f2
+  languageName: node
+  linkType: hard
+
+"which-polygon@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "which-polygon@npm:2.2.1"
+  dependencies:
+    lineclip: "npm:^1.1.5"
+    rbush: "npm:^2.0.1"
+  checksum: 10c0/4f712181fc086ccdc414aaf328cfbcd40b028a74496e70b97925afb247ec4f21f31c7ad171998ea47e19fe6f091aae38e25997eec880ef70cbe2556d74a8f27d
   languageName: node
   linkType: hard
 

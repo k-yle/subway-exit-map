@@ -46,6 +46,8 @@ export const onRequest: Handler = async (context) => {
     );
   }
 
+  toClient.country = context.request.headers.get('CF-IPCountry') || undefined;
+
   return Response.json(
     extended
       ? toClient

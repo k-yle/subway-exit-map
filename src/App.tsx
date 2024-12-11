@@ -104,7 +104,10 @@ export const Home: React.FC = () => {
     // or default to the first network (alphabetically)
     if (data && !selectedNetwork) {
       const station = data.stations.find((s) => s.gtfsId === selectedId);
-      setSelectedNetwork(station ? station.networks[0] : data.networks[0].qId);
+      const defaultNetwork =
+        data.networks.find((n) => n.country === data.country) ||
+        data.networks[0];
+      setSelectedNetwork(station ? station.networks[0] : defaultNetwork.qId);
     }
   }, [data, selectedNetwork, selectedId]);
 

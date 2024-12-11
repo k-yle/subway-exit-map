@@ -144,6 +144,7 @@ export type Data = {
     name: string;
     logoUrl?: string;
     wikipedia?: string;
+    country?: string;
   }[];
   routes: {
     [network: ItemId]: {
@@ -176,6 +177,7 @@ export type Data = {
   };
   lastGenerated: string;
   lastUpdated: string;
+  country?: string;
 };
 
 export type Rank = 'normal' | 'preferred' | 'deprecated';

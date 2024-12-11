@@ -1,5 +1,6 @@
 import type { OsmNode, OsmRelation, OsmWay } from 'osm-api';
 import type { Item, ItemId, Site } from 'wikibase-sdk';
+import { iso1A2Code } from '@rapideditor/country-coder';
 import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
 import { sortByRank } from '../_helpers/wikidata.js';
 import { ICONS, getNetwork } from '../_helpers/override.js';
@@ -366,6 +367,12 @@ export async function processData(
         ?.filter((claim) => claim.mainsnak.datatype === 'commonsMedia')
         .sort(sortByRank)[0]?.mainsnak.datavalue?.value;
 
+      const country = (
+        item.claims.P17?.find(
+          (claim) => claim.mainsnak.datatype === 'wikibase-item',
+        )?.mainsnak.datavalue?.value as { id: string } | undefined
+      )?.id;
+
       const fbUsername =
         item.claims.P2013?.sort(sortByRank)[0]?.mainsnak.datavalue?.value;
 
@@ -382,9 +389,10 @@ export async function processData(
         name: item.labels?.[firstSupportedLanguage]?.value || '',
         wikipedia: wikipediaPage,
         logoUrl: logoUrl && `${API_BASE_URL}/image?qId=${qId}`,
+        country: (country && iso1A2Code(country)) || undefined,
       };
     })
-    .sort((a, b) => b.name.localeCompare(a.name));
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const { routes, nodesWithNoData } = await getAllRoutes(
     data,
