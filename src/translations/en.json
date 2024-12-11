@@ -43,6 +43,7 @@
   "TrainsetInfo.list-item": "{length} ‘{name}’ trains",
   "error.load": "Failed to download data :(",
   "generic.back": "Back",
+  "generic.both_sides": "left & right",
   "generic.close": "Close",
   "generic.from": "From",
   "generic.from_lower": "from",

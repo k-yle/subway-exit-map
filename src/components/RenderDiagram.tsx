@@ -142,6 +142,7 @@ export const RenderDiagram: React.FC<{
           side: {
             left: t('generic.left'),
             right: t('generic.right'),
+            both: t('generic.both_sides'),
           }[stop.exitSide],
         })}
       <table className="table">

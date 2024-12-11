@@ -43,6 +43,7 @@
   "TrainsetInfo.list-item": "{length} ‚{name}‘ Züge",
   "error.load": "Daten konnten nicht heruntergeladen werden :-(",
   "generic.back": "Zurück",
+  "generic.both_sides": "links und rechts",
   "generic.close": "Schließen",
   "generic.from": "Von",
   "generic.from_lower": "von",

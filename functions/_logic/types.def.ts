@@ -4,7 +4,7 @@ import type { ItemId, parse } from 'wikibase-sdk';
 
 export type FwdBwdBoth = 'forward' | 'backward' | 'both_ways';
 
-export type ExitSide = 'left' | 'right' | undefined;
+export type ExitSide = 'left' | 'right' | 'both' | undefined;
 
 export type ExitType =
   | 'stairs'

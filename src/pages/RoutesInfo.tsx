@@ -1,7 +1,11 @@
 import { Fragment, useContext, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, Button, List, Tag, Typography } from '@arco-design/web-react';
-import { IconCaretLeft, IconCaretRight } from '@arco-design/web-react/icon';
+import {
+  IconCaretLeft,
+  IconCaretRight,
+  IconCode,
+} from '@arco-design/web-react/icon';
 import TimeAgo from 'react-timeago-i18n';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
@@ -136,9 +140,11 @@ export const RoutesInfo: React.FC = () => {
             );
           }
 
-          const prefix = { left: <IconCaretLeft />, right: <IconCaretRight /> }[
-            stop.exitSide!
-          ];
+          const prefix = {
+            left: <IconCaretLeft />,
+            right: <IconCaretRight />,
+            both: <IconCode />,
+          }[stop.exitSide!];
           const suffix = (
             <>
               {stop?.platform}
