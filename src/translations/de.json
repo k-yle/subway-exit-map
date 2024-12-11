@@ -58,5 +58,6 @@
   "generic.to-from": "von/nach",
   "generic.to_lower": "nach",
   "generic.unknown": "Unbekannt",
-  "generic.view-on": "Auf {name} ansehen."
+  "generic.view-on": "Auf {name} ansehen.",
+  "head.title": "U-Bahn Ausgangskarte"
 }

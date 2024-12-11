@@ -24,15 +24,17 @@ document.querySelector('html')!.setAttribute('lang', locale);
 const cache = createIntlCache();
 let intl: IntlShape;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- literally anything is allowed
+export const t = (id: string, values?: Record<string, any>) =>
+  intl.formatMessage({ id }, values);
+
 export const i18nReady = (async () => {
   const { default: messages } = await translations[locale]();
 
   intl = createIntl({ locale, messages }, cache);
-})();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- literally anything is allowed
-export const t = (id: string, values?: Record<string, any>) =>
-  intl.formatMessage({ id }, values);
+  document.title = t('head.title') as string;
+})();
 
 /**
  * Set to `en-US` for all English dialects because:

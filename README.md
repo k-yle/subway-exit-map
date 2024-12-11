@@ -8,9 +8,9 @@ This app uses [data from OpenStreetMap](https://osm.wiki/Key:exit:carriages) to 
 
 ![](https://upload.wikimedia.org/wikipedia/commons/0/0d/Train_platform_exit_locations_with_destination.png)
 
-## [Demo App](https://exits.kyle.kiwi) — [API](https://exits.kyle.kiwi/api) — [Data Model](https://osm.wiki/Key:exit:carriages)
+## [Demo App](https://exits.to) — [API](https://exits.to/api) — [Data Model](https://osm.wiki/Key:exit:carriages)
 
 ### License
 
-- [The data](https://exits.kyle.kiwi/api) is sourced from OpenStreetMap and licensed under the [ODbL license](https://osm.org/copyright).
+- [The data](https://exits.to/api) is sourced from OpenStreetMap and licensed under the [ODbL license](https://osm.org/copyright).
 - The code is licensed under the [MIT license](./LICENSE).

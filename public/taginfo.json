@@ -1,13 +1,13 @@
 {
   "data_format": 1,
-  "data_url": "https://github.com/k-yle/subway-exit-map/raw/main/taginfo.json",
+  "data_url": "https://exits.to/taginfo.json",
   "data_updated": "20240515T000000Z",
   "project": {
     "name": "Subway Exit Map",
     "description": "Used for rendering a map of exits on subway/train platforms",
-    "project_url": "https://exits.kyle.kiwi",
+    "project_url": "https://exits.to",
     "doc_url": "https://osm.wiki/Key:exit:carriages",
-    "icon_url": "https://exits.kyle.kiwi/icon.png",
+    "icon_url": "https://exits.to/icon.png",
     "contact_name": "Kyle Hensel",
     "contact_email": "message @kylenz on OpenStreetMap"
   },
@@ -43,6 +43,7 @@
 
     { "key": "side", "object_types": ["node"] },
     { "key": "ref", "object_types": ["node", "area"] },
+    { "key": "uic_ref", "object_types": ["node", "area"] },
     { "key": "wheelchair", "object_types": ["node", "area"] },
     { "key": "fare_gates", "object_types": ["node", "area"] },
     { "key": "fare_gates:note", "object_types": ["node", "area"] },

@@ -58,5 +58,6 @@
   "generic.to-from": "to/from",
   "generic.to_lower": "to",
   "generic.unknown": "Unknown",
-  "generic.view-on": "View on {name}."
+  "generic.view-on": "View on {name}.",
+  "head.title": "Subway Exit Map"
 }
