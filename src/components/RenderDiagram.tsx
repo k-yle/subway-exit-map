@@ -31,7 +31,9 @@ export const RenderDiagram: React.FC<{
   const colSpans = useMemo(
     () =>
       countAdjacentEqual(
-        carriages.map((x) => `${x.exitNumber}${x.exitTo}${x.unavailable}`),
+        carriages.map(
+          (x) => `${x.exitNumber}${x.exitTo}${x.exitSymbols}${x.unavailable}`,
+        ),
       ),
     [carriages],
   );
