@@ -1,4 +1,4 @@
-export type * from '../functions/_logic/types.def.js';
+export type * from '../script/_logic/types.def.js';
 
 export interface Settings {
   showPassThroughRoutes?: boolean;

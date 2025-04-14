@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, List } from '@arco-design/web-react';
 import { DataContext } from '../context/data';
-import { t } from '../i18n';
+import { getName, t } from '../i18n';
 
 export const RoutesNetworks: React.FC = () => {
   const data = useContext(DataContext);
@@ -13,14 +13,15 @@ export const RoutesNetworks: React.FC = () => {
       <List
         dataSource={data.networks}
         render={(network) => {
+          const name = getName(network.name);
           return (
             <List.Item key={network.qId}>
               <Link to={`/routes/${network.qId}`}>
                 <Button type="text">
                   <Avatar size={24}>
-                    <img alt={network.name} src={network.logoUrl} />
+                    <img alt={name} src={network.logoUrl} />
                   </Avatar>
-                  {network.name}
+                  {name}
                 </Button>
               </Link>
             </List.Item>

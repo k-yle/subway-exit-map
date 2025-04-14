@@ -4,7 +4,7 @@ import { Avatar, Button, List, Typography } from '@arco-design/web-react';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
-import { t } from '../i18n';
+import { getName, t } from '../i18n';
 
 export const RoutesByNetwork: React.FC = () => {
   const data = useContext(DataContext);
@@ -15,14 +15,16 @@ export const RoutesByNetwork: React.FC = () => {
 
   if (!network || !routes) return null;
 
+  const wikipedia = getName(network.wikipedia);
+
   return (
     <div className="main">
       <Link to="/routes">{t('generic.back')}</Link>
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
-          <img alt={network.name} src={network.logoUrl} />
+          <img alt={getName(network.name)} src={network.logoUrl} />
         </Avatar>
-        {network.name}
+        {getName(network.name)}
       </Typography.Title>
       <List
         dataSource={Object.entries(routes).sort(([, a], [, b]) =>
@@ -66,11 +68,11 @@ export const RoutesByNetwork: React.FC = () => {
             >
               Wikidata
             </a>
-            {network.wikipedia && (
+            {wikipedia && (
               <>
                 {' | '}
                 <a
-                  href={`https://en.wikipedia.org/wiki/${network.wikipedia}`}
+                  href={`https://en.wikipedia.org/wiki/${wikipedia}`}
                   target="_blank"
                   rel="noreferrer"
                 >

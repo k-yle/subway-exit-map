@@ -1,8 +1,0 @@
-name = "best-carriage"
-compatibility_date = "2024-05-05"
-kv_namespaces = [
-    { binding = "KV_STORE", id = "5445b144a0674b648dcad748d073b248" }
-]
-rules = [
-  { type = "Text", globs = ["**/*.overpassql"], fallthrough = true }
-]

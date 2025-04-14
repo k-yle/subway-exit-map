@@ -14,11 +14,11 @@ import notAccessibleBlack from '../components/icons/NotAccessibleBlack.svg';
 import { SettingsContext } from '../context/settings';
 import { Settings } from '../components/Settings';
 import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
-import { locale, t } from '../i18n';
+import { type I18nComp, getName, locale, t } from '../i18n';
 import { copyrightFooter } from '../components/text';
 import { TrainsetInfo } from './TrainsetInfo';
 
-const noop = <T,>(x: T) => x;
+const noop: I18nComp = (x) => x;
 
 const inaccessible = (
   <img
@@ -94,12 +94,14 @@ export const RoutesInfo: React.FC = () => {
 
   if (!route || !variant || !network) return null;
 
+  const wikipedia = getName(route.wikidata?.wikipedia || {});
+
   return (
     <div className="main">
       <Link to={`/routes/${qId}/${shieldKey}`}>{t('generic.back')}</Link>
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
-          <img alt={network.name} src={network.logoUrl} />
+          <img alt={getName(network.name)} src={network.logoUrl} />
         </Avatar>
         <RouteShield route={route.shield} />
         {variant.tags.via
@@ -178,13 +180,13 @@ export const RoutesInfo: React.FC = () => {
               {stop && 'name' in stop ? (
                 <Typography.Text disabled className="not-button">
                   {prefix}
-                  {stop.name} {suffix}
+                  {getName(stop.name)} {suffix}
                 </Typography.Text>
               ) : stop && station ? (
                 <Link to={`/${station.gtfsId}`}>
                   <Button type="text">
                     {prefix}
-                    {station.name}
+                    {getName(station.name)}
                     {suffix}
                     {stop.availableLabel && <Tag>{stop.availableLabel}</Tag>}
                     {{ yes: '🔒', no: '🔓', partial: '🔏' }[station.fareGates!]}
@@ -258,11 +260,11 @@ export const RoutesInfo: React.FC = () => {
                 </a>
               </>
             )}
-            {route.wikidata?.wikipedia && (
+            {wikipedia && (
               <>
                 {' | '}
                 <a
-                  href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
+                  href={`https://en.wikipedia.org/wiki/${wikipedia}`}
                   target="_blank"
                   rel="noreferrer"
                 >

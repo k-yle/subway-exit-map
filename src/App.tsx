@@ -3,11 +3,12 @@ import Timeago from 'react-timeago-i18n';
 import { Avatar, Button, Select } from '@arco-design/web-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ItemId } from 'wikibase-sdk';
+import { distanceBetween } from '../script/_helpers/geo';
 import type { Data, Station } from './types.def';
 import { RenderDiagram } from './components/RenderDiagram';
 import { Settings } from './components/Settings';
 import { DataContext } from './context/data';
-import { bold, locale, t } from './i18n';
+import { bold, getName, locale, t } from './i18n';
 
 import './main.css';
 import { copyrightFooter } from './components/text';
@@ -91,7 +92,10 @@ const MainLayout: React.FC<{
   );
 };
 
+let homePromise: Promise<{ lat: number; lon: number }>;
+
 export const Home: React.FC = () => {
+  // TODO: get fromLocalStorage
   const [selectedNetwork, setSelectedNetwork] = useState<ItemId | ''>('');
 
   const selectedId = useParams().stationId;
@@ -101,13 +105,32 @@ export const Home: React.FC = () => {
 
   useEffect(() => {
     // if there is no network, set it to the network of the current stop
-    // or default to the first network (alphabetically)
-    if (data && !selectedNetwork) {
-      const station = data.stations.find((s) => s.gtfsId === selectedId);
-      const defaultNetwork =
-        data.networks.find((n) => n.country === data.country) ||
-        data.networks[0];
-      setSelectedNetwork(station ? station.networks[0] : defaultNetwork.qId);
+    // or default to the closest network to the user.
+    if (!selectedNetwork) {
+      homePromise ||= fetch('https://3.kyle.kiwi').then((r) => r.json());
+      if (data) {
+        const station = data.stations.find((s) => s.gtfsId === selectedId);
+        if (station) {
+          setSelectedNetwork(station.networks[0]);
+        } else {
+          homePromise
+            .then((home) => {
+              const closest = data.networks
+                .map((network) => ({
+                  network,
+                  distance: distanceBetween(
+                    home.lat,
+                    home.lon,
+                    network.centre.lat,
+                    network.centre.lon,
+                  ),
+                }))
+                .sort((a, b) => a.distance - b.distance)[0];
+              setSelectedNetwork(closest.network.qId);
+            })
+            .catch(console.error);
+        }
+      }
     }
   }, [data, selectedNetwork, selectedId]);
 
@@ -138,11 +161,11 @@ export const Home: React.FC = () => {
           <Select.Option key={network.qId} value={network.qId}>
             {network.logoUrl && (
               <Avatar size={24}>
-                <img alt={network.name} src={network.logoUrl} />
+                <img alt={getName(network.name)} src={network.logoUrl} />
               </Avatar>
             )}
             &nbsp;
-            {network.name}
+            {getName(network.name)}
           </Select.Option>
         ))}
       </Select>
@@ -165,15 +188,18 @@ export const Home: React.FC = () => {
             (station) =>
               selectedNetwork && station.networks.includes(selectedNetwork),
           )
-          .map((station) => (
-            <Select.Option
-              key={station.gtfsId}
-              value={station.gtfsId}
-              data-name={station.name}
-            >
-              {station.name}
-            </Select.Option>
-          ))}
+          .map((station) => {
+            const name = getName(station.name);
+            return (
+              <Select.Option
+                key={station.gtfsId}
+                value={station.gtfsId}
+                data-name={name}
+              >
+                {name}
+              </Select.Option>
+            );
+          })}
       </Select>
       <br />
       {!!selectedId && (

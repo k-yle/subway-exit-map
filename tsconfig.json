@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "es2023"],
+    "module": "es2020",
+    "lib": ["dom", "esnext"],
     "typeRoots": ["./src/global.d.ts"],
     "strict": true,
     "noEmit": true,
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
     "jsx": "react-jsx"
   },
-  "exclude": ["functions/**/*"],
-  "include": ["src"]
+  "include": ["src", "script"]
 }

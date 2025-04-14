@@ -1,4 +1,4 @@
-import { orFormatter, t } from '../i18n';
+import { getName, orFormatter, t } from '../i18n';
 import type { Trainset } from '../types.def';
 
 export const TrainsetInfo: React.FC<{ trainsets: Trainset[] }> = ({
@@ -11,12 +11,13 @@ export const TrainsetInfo: React.FC<{ trainsets: Trainset[] }> = ({
     .map((part) => {
       if (part.type === 'literal') return part.value;
       const trainset = trainsets[+part.value];
+      const wikipedia = getName(trainset.wikipedia);
       return (
         <a
           key={trainset.wikidata}
           href={
-            trainset.wikipedia
-              ? `https://en.wikipedia.org/wiki/${trainset.wikipedia}`
+            wikipedia
+              ? `https://en.wikipedia.org/wiki/${wikipedia}`
               : `https://www.wikidata.org/wiki/${trainset.wikidata}`
           }
           target="_blank"

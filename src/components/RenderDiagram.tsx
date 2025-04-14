@@ -5,7 +5,7 @@ import { Button, List, Modal } from '@arco-design/web-react';
 import { Link } from 'react-router-dom';
 import type { Carriage, Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
-import { bold, formatList, locale, t } from '../i18n';
+import { bold, formatList, getName, locale, t } from '../i18n';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { PlatformName } from './PlatformName';
@@ -90,7 +90,7 @@ export const RenderDiagram: React.FC<{
                     />
                   ),
                 }),
-            stationName: station.name,
+            stationName: getName(station.name),
             timeAgo: (
               <TimeAgo key={1} date={stop.lastUpdate.date} locale={locale} />
             ),
@@ -121,12 +121,12 @@ export const RenderDiagram: React.FC<{
               render={(route, index) => (
                 <List.Item key={index}>
                   <Link
-                    to={`/routes/${route.qId}/${route.shieldKey}/${route.osmId}`}
+                    to={`/routes/${route.qId[0]}/${route.shieldKey}/${route.osmId}`}
                   >
                     <Button type="text">
-                      <RouteShield key={0} route={route} />{' '}
+                      <RouteShield route={route} />{' '}
                       {t('RenderDiagram.route', {
-                        to: route.to?.join(' & '),
+                        to: formatList(route.to || []),
                       })}
                     </Button>
                   </Link>
@@ -280,10 +280,10 @@ export const RenderDiagram: React.FC<{
             >
               {stop.platform
                 ? t('RenderDiagram.platform-name', {
-                    station: stop.disambiguationName || station.name,
+                    station: getName(stop.disambiguationName || station.name),
                     platform: stop.platform,
                   })
-                : station.name}{' '}
+                : getName(station.name)}{' '}
               {stop.description && `(${stop.description}) `}
               {stop.inaccessible && (
                 <img

@@ -1,5 +1,6 @@
 import { type IntlShape, createIntl, createIntlCache } from '@formatjs/intl';
 import { translations } from './translations/index';
+import type { MultiLingualNames } from './types.def';
 
 export type SupportedLanguage = keyof typeof translations;
 
@@ -24,9 +25,10 @@ document.querySelector('html')!.setAttribute('lang', locale);
 const cache = createIntlCache();
 let intl: IntlShape;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- literally anything is allowed
-export const t = (id: string, values?: Record<string, any>) =>
-  intl.formatMessage({ id }, values);
+export const t = (
+  id: string,
+  values?: Record<string, React.ReactNode | I18nComp>,
+) => intl.formatMessage({ id }, values as never);
 
 export const i18nReady = (async () => {
   const { default: messages } = await translations[locale]();
@@ -55,4 +57,21 @@ export const orFormatter = new Intl.ListFormat([formatterLocale], {
   style: 'short',
 });
 
-export const bold = (str: string) => <b key={0}>{str}</b>;
+export type I18nComp = (str: string) => React.ReactNode;
+export const bold: I18nComp = (str) => <b key={0}>{str}</b>;
+
+export const getName = (names: MultiLingualNames): string | undefined => {
+  for (const lang of navigator.languages) {
+    const value = names[lang] || names[lang.split('-')[0]];
+    if (value) return value;
+  }
+
+  // if there's no match, use the generic `name` tag
+  if (names['']) return names[''];
+
+  // still no match, so default to english
+  if (names.en) return names.en;
+
+  // still no match, so return any language
+  return Object.values(names)[0];
+};

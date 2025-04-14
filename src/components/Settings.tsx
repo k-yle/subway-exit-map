@@ -22,7 +22,6 @@ export const Settings: React.FC = () => {
         visible={isOpen}
         onOk={() => setIsOpen(false)}
         onCancel={() => setIsOpen(false)}
-        autoFocus={false}
         focusLock
         hideCancel
         okText={t('generic.close')}

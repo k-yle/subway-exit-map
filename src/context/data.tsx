@@ -6,7 +6,12 @@ import {
   useState,
 } from 'react';
 import type { Data } from '../types.def.js';
-import { t } from '../i18n.js';
+import { getName, t } from '../i18n.js';
+
+const dataUrl =
+  window.location.hostname === 'localhost'
+    ? '/data/api.json'
+    : 'https://kyle.kiwi/subway-exit-map/api.json';
 
 export const DataContext = createContext<Data>(undefined as never);
 DataContext.displayName = 'DataContext';
@@ -23,7 +28,17 @@ export const DataWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const doFetch = useCallback(async () => {
     setIsLoading(true);
     try {
-      const newData = await fetch('/api?extended=true').then((r) => r.json());
+      const newData: Data = await fetch(dataUrl).then((r) => r.json());
+
+      // sorting has to happen on the client side, since it depends
+      // on the user's locale
+      newData.stations = newData.stations.sort((a, b) =>
+        (getName(a.name) || '').localeCompare(getName(b.name) || ''),
+      );
+      newData.networks = newData.networks.sort((a, b) =>
+        (getName(a.name) || '').localeCompare(getName(b.name) || ''),
+      );
+
       setData(newData);
       localStorage.carriages = JSON.stringify(newData);
     } catch (ex) {

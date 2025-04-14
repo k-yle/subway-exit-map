@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { AdjacentStop } from '../types.def';
-import { orFormatter } from '../i18n';
+import { getName, orFormatter } from '../i18n';
 
 export const RenderAdjacentStops: React.FC<{
   label: React.ReactNode;
@@ -25,16 +25,15 @@ export const RenderAdjacentStops: React.FC<{
           if (part.type === 'literal') return part.value;
           const stop = stops[+part.value];
           return (
-            <Fragment
-              key={`${stop.gtfsId}-${stop.stationName}-${stop.platform}`}
-            >
+            <Fragment key={stop.nodeId}>
               {stop.gtfsId ? (
+                // TODO: why the fake anchor ??
                 <a href={`#${stop.gtfsId}`} onClick={onClick(stop)}>
-                  {stop.stationName} {stop.platform}
+                  {getName(stop.stationName)} {stop.platform}
                 </a>
               ) : (
                 <>
-                  {stop.stationName} {stop.platform}
+                  {getName(stop.stationName)} {stop.platform}
                 </>
               )}
             </Fragment>

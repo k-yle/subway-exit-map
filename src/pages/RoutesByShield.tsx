@@ -4,7 +4,7 @@ import { Avatar, Button, List, Typography } from '@arco-design/web-react';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
-import { t } from '../i18n';
+import { getName, t } from '../i18n';
 import { TrainsetInfo } from './TrainsetInfo';
 
 export const RoutesByShield: React.FC = () => {
@@ -17,13 +17,15 @@ export const RoutesByShield: React.FC = () => {
 
   if (!network || !route) return null;
 
+  const wikipedia = getName(route.wikidata?.wikipedia || {});
+
   return (
     <div className="main">
       <Link to={`/routes/${qId}`}>{t('generic.back')}</Link>
 
       <Typography.Title heading={3} className="verticalCentre">
         <Avatar size={32}>
-          <img alt={network.name} src={network.logoUrl} />
+          <img alt={getName(network.name)} src={network.logoUrl} />
         </Avatar>
         <RouteShield route={route.shield} />
         {route.wikidata?.name}
@@ -60,11 +62,11 @@ export const RoutesByShield: React.FC = () => {
                 >
                   Wikidata
                 </a>
-                {route.wikidata?.wikipedia && (
+                {wikipedia && (
                   <>
                     {' | '}
                     <a
-                      href={`https://en.wikipedia.org/wiki/${route.wikidata.wikipedia}`}
+                      href={`https://en.wikipedia.org/wiki/${wikipedia}`}
                       target="_blank"
                       rel="noreferrer"
                     >

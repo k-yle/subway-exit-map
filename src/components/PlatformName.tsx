@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import type { Stop } from '../types.def';
 import { uniqBy } from '../helpers/objects';
 import { SettingsContext } from '../context/settings';
-import { t } from '../i18n';
+import { formatList, t } from '../i18n';
 import { RouteShield } from './RouteShield';
 
 export const PlatformName: React.FC<{
@@ -26,26 +26,29 @@ export const PlatformName: React.FC<{
 
   return (
     <>
-      {Object.entries(stop.routes).map(([to, routes]) => (
-        <small
-          key={to}
-          className={clsx(routes[0].type === 'from' && 'italics')}
-        >
-          {routes[0].type === 'from' && t('RoutesInfo.exit_only')}{' '}
-          {routes.map((route) => (
-            <RouteShield key={JSON.stringify(route)} route={route} />
-          ))}{' '}
-          {
+      {Object.entries(stop.routes).map(([key, routes]) => {
+        const to = formatList(routes[0].to || []);
+        return (
+          <small
+            key={key}
+            className={clsx(routes[0].type === 'from' && 'italics')}
+          >
+            {routes[0].type === 'from' && t('RoutesInfo.exit_only')}{' '}
+            {routes.map((route) => (
+              <RouteShield key={JSON.stringify(route)} route={route} />
+            ))}{' '}
             {
-              to: t('generic.to_lower'),
-              from: t('generic.from_lower'),
-              both: t('generic.to-from'),
-            }[routes[0].type]
-          }{' '}
-          {to}
-          <br />
-        </small>
-      ))}
+              {
+                to: t('generic.to_lower'),
+                from: t('generic.from_lower'),
+                both: t('generic.to-from'),
+              }[routes[0].type]
+            }{' '}
+            {to}
+            <br />
+          </small>
+        );
+      })}
       {settings.showPassThroughRoutes && stop.passThroughRoutes && (
         <small className="strikeThrough">
           {stop.passThroughRoutes.map((route) => {

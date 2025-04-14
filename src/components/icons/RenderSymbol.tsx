@@ -19,7 +19,12 @@ export const RenderSymbol: React.FC<{
   }
 
   // standard symbol
-  const url = data.supportedSymbols[symbol];
+  let url = data.supportedSymbols.generic[symbol];
+  for (const network of networks) {
+    const localUrl = data.supportedSymbols[network]?.[symbol];
+    url = localUrl;
+  }
+
   if (url) {
     return (
       <img
