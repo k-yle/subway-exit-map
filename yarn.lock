@@ -3341,6 +3341,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"get-region@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "get-region@npm:0.0.0"
+  checksum: 10c0/1e05181bb7de5dd0a977ee2a798447c36b646e7a6aa00cace44bffd1ccabbea72c9155a6e3a6fe6851a30a3e707fb55ead041c4592790b5776d0afad4c49f1dd
+  languageName: node
+  linkType: hard
+
 "get-stream@npm:^8.0.1":
   version: 8.0.1
   resolution: "get-stream@npm:8.0.1"
@@ -5264,6 +5271,7 @@ __metadata:
     clsx: "npm:^2.1.0"
     eslint: "npm:^9.9.0"
     eslint-config-kyle: "npm:^25.0.0-beta2"
+    get-region: "npm:^0.0.0"
     osm-api: "npm:^2.0.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"

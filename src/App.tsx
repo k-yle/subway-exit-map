@@ -3,7 +3,7 @@ import Timeago from 'react-timeago-i18n';
 import { Avatar, Button, Select } from '@arco-design/web-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import type { ItemId } from 'wikibase-sdk';
-import { distanceBetween } from '../script/_helpers/geo';
+import region from 'get-region';
 import type { Data, Station } from './types.def';
 import { RenderDiagram } from './components/RenderDiagram';
 import { Settings } from './components/Settings';
@@ -92,11 +92,14 @@ const MainLayout: React.FC<{
   );
 };
 
-let homePromise: Promise<{ lat: number; lon: number }>;
-
 export const Home: React.FC = () => {
-  // TODO: get fromLocalStorage
-  const [selectedNetwork, setSelectedNetwork] = useState<ItemId | ''>('');
+  const [selectedNetwork, setSelectedNetwork] = useState<ItemId | ''>(
+    localStorage.selectedNetwork,
+  );
+
+  useEffect(() => {
+    localStorage.selectedNetwork = selectedNetwork;
+  }, [selectedNetwork]);
 
   const selectedId = useParams().stationId;
   const navigate = useNavigate();
@@ -106,30 +109,20 @@ export const Home: React.FC = () => {
   useEffect(() => {
     // if there is no network, set it to the network of the current stop
     // or default to the closest network to the user.
-    if (!selectedNetwork) {
-      homePromise ||= fetch('https://3.kyle.kiwi').then((r) => r.json());
-      if (data) {
-        const station = data.stations.find((s) => s.gtfsId === selectedId);
-        if (station) {
-          setSelectedNetwork(station.networks[0]);
-        } else {
-          homePromise
-            .then((home) => {
-              const closest = data.networks
-                .map((network) => ({
-                  network,
-                  distance: distanceBetween(
-                    home.lat,
-                    home.lon,
-                    network.centre.lat,
-                    network.centre.lon,
-                  ),
-                }))
-                .sort((a, b) => a.distance - b.distance)[0];
-              setSelectedNetwork(closest.network.qId);
-            })
-            .catch(console.error);
-        }
+    if (!selectedNetwork && data) {
+      const station = data.stations.find((s) => s.gtfsId === selectedId);
+      if (station) {
+        setSelectedNetwork(station.networks[0]);
+      } else {
+        // no selected station, and no network saved in localStorage.
+        // so this is probably their first visit. Default to a network
+        // from the user's country, if there is one.
+        const closest =
+          data.networks.find((network) =>
+            region.country.includes(network.country || 'AU'),
+          ) || data.networks[0];
+
+        setSelectedNetwork(closest.qId);
       }
     }
   }, [data, selectedNetwork, selectedId]);
