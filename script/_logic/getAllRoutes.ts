@@ -150,7 +150,7 @@ export function getAllRoutes(
         tags: {
           from: route.tags.from,
           to: route.tags.to,
-          via: route.tags.via,
+          via: route.tags.via?.split(';'),
         },
         lastUpdate: {
           date: route.timestamp,

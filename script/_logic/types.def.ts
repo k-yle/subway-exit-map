@@ -162,7 +162,11 @@ export type Data = {
         wikidata: RouteWikiInfo | undefined;
         variants: {
           [osmId: string]: {
-            tags: Record<'from' | 'to' | 'via', string | undefined>;
+            tags: {
+              from: string | undefined;
+              to: string | undefined;
+              via: string[] | undefined;
+            };
             lastUpdate: Stop['lastUpdate'];
             stops: {
               /** undefined if we have no exit: data for this stop */

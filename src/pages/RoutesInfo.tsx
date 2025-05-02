@@ -14,7 +14,7 @@ import notAccessibleBlack from '../components/icons/NotAccessibleBlack.svg';
 import { SettingsContext } from '../context/settings';
 import { Settings } from '../components/Settings';
 import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
-import { type I18nComp, getName, locale, t } from '../i18n';
+import { type I18nComp, formatList, getName, locale, t } from '../i18n';
 import { copyrightFooter } from '../components/text';
 import { TrainsetInfo } from './TrainsetInfo';
 
@@ -106,8 +106,11 @@ export const RoutesInfo: React.FC = () => {
           </Avatar>
         )}
         <RouteShield route={route.shield} />
-        {variant.tags.via
-          ? t('RoutesByShield.label.from-to-via', variant.tags)
+        {variant.tags.via?.length
+          ? t('RoutesByShield.label.from-to-via', {
+              ...variant.tags,
+              via: formatList(variant.tags.via),
+            })
           : t('RoutesByShield.label.from-to', variant.tags)}
       </Typography.Title>
       {route.wikidata?.trainsets && (

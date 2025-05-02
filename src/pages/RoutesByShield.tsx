@@ -4,7 +4,7 @@ import { Avatar, Button, List, Typography } from '@arco-design/web-react';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
-import { getName, t } from '../i18n';
+import { formatList, getName, t } from '../i18n';
 import { TrainsetInfo } from './TrainsetInfo';
 
 export const RoutesByShield: React.FC = () => {
@@ -42,8 +42,11 @@ export const RoutesByShield: React.FC = () => {
             <List.Item key={key}>
               <Link to={`/routes/${qId}/${shieldKey}/${key}`}>
                 <Button type="text">
-                  {value.tags.via
-                    ? t('RoutesByShield.label.from-to-via', value.tags)
+                  {value.tags.via?.length
+                    ? t('RoutesByShield.label.from-to-via', {
+                        ...value.tags,
+                        via: formatList(value.tags.via),
+                      })
                     : t('RoutesByShield.label.from-to', value.tags)}
                 </Button>
               </Link>
