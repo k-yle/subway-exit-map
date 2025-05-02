@@ -100,9 +100,11 @@ export const RoutesInfo: React.FC = () => {
     <div className="main">
       <Link to={`/routes/${qId}/${shieldKey}`}>{t('generic.back')}</Link>
       <Typography.Title heading={3} className="verticalCentre">
-        <Avatar size={32}>
-          <img alt={getName(network.name)} src={network.logoUrl} />
-        </Avatar>
+        {network.logoUrl && (
+          <Avatar size={32}>
+            <img alt={getName(network.name)} src={network.logoUrl} />
+          </Avatar>
+        )}
         <RouteShield route={route.shield} />
         {variant.tags.via
           ? t('RoutesByShield.label.from-to-via', variant.tags)

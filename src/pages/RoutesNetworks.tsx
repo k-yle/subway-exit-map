@@ -18,9 +18,11 @@ export const RoutesNetworks: React.FC = () => {
             <List.Item key={network.qId}>
               <Link to={`/routes/${network.qId}`}>
                 <Button type="text">
-                  <Avatar size={24}>
-                    <img alt={name} src={network.logoUrl} />
-                  </Avatar>
+                  {network.logoUrl && (
+                    <Avatar size={24}>
+                      <img alt={name} src={network.logoUrl} />
+                    </Avatar>
+                  )}
                   {name}
                 </Button>
               </Link>

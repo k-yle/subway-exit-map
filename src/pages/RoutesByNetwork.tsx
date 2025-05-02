@@ -21,9 +21,11 @@ export const RoutesByNetwork: React.FC = () => {
     <div className="main">
       <Link to="/routes">{t('generic.back')}</Link>
       <Typography.Title heading={3} className="verticalCentre">
-        <Avatar size={32}>
-          <img alt={getName(network.name)} src={network.logoUrl} />
-        </Avatar>
+        {network.logoUrl && (
+          <Avatar size={32}>
+            <img alt={getName(network.name)} src={network.logoUrl} />
+          </Avatar>
+        )}
         {getName(network.name)}
       </Typography.Title>
       <List
