@@ -110,6 +110,21 @@ div.last {
   &.last.unavailable:before {
     border-left: 13px solid #e8e8e8;
   }
+
+  & > .doors {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0px 4px; /* so that start/end aren't hard up against the edge of the carriage */
+    & > span {
+      width: 6px;
+      height: 0.5em;
+      opacity: 0.2;
+      background-color: #fff;
+    }
+  }
 }
 
 div.gap,

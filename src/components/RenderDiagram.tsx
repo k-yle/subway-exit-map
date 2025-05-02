@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import type { Carriage, Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { bold, formatList, getName, locale, t } from '../i18n';
+import { uniqBy } from '../helpers/objects';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { PlatformName } from './PlatformName';
@@ -66,6 +67,23 @@ export const RenderDiagram: React.FC<{
   );
 
   const flatRoutes = Object.values(stop.routes).flat();
+
+  const doorInfo = uniqBy(
+    flatRoutes
+      .map((r) => {
+        if (r.qId.length !== 1) return undefined; // does not support routes with multiple networks
+        const trainsets =
+          data.routes[r.qId[0]][r.shieldKey].wikidata?.trainsets;
+
+        // this only works if exactly 1 type of trainset is used on this route
+        if (!trainsets || trainsets.length !== 1) return undefined;
+        return trainsets[0].doors;
+      })
+      .filter((x) => !!x),
+    (x) => `${x.alignment}|${x.quantity}`,
+  );
+  // if there are multiple different layouts, render nothing
+  if (doorInfo.length !== 1) doorInfo.splice(0);
 
   return (
     <>
@@ -255,7 +273,21 @@ export const RenderDiagram: React.FC<{
                         'unavailable',
                     )}
                   >
-                    {carriage.type === 'gap' ? '\u00A0' : carriage.ref}
+                    <label>
+                      {carriage.type === 'gap' ? '\u00A0' : carriage.ref}
+                    </label>
+                    {carriage.type !== 'gap' && doorInfo[0] && (
+                      <div
+                        className="doors"
+                        style={{ justifyContent: doorInfo[0].alignment }}
+                      >
+                        {Array.from({ length: doorInfo[0].quantity }).map(
+                          (_, index) => (
+                            <span key={index}>&nbsp;</span>
+                          ),
+                        )}
+                      </div>
+                    )}
                   </div>
                 </td>
               );

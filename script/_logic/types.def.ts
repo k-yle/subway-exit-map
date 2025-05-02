@@ -45,6 +45,7 @@ export type RouteThatStopsHere = RouteShield & {
   /** @internal */
   to?: string[];
   type: 'to' | 'from' | 'both';
+  /** ID of the network(s) */
   qId: ItemId[];
   shieldKey: string;
   osmId: number;
@@ -129,6 +130,11 @@ export type Trainset = {
   wikipedia: MultiLingualNames;
   carriages: number[] | undefined;
   regularity: Regularity;
+  doors?: {
+    /** number of doors per carriage */
+    quantity: number;
+    alignment: React.CSSProperties['justifyContent'];
+  };
 };
 
 export type RouteWikiInfo = {

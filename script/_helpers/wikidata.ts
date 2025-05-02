@@ -10,11 +10,15 @@ export enum P {
   Stability = 'P2668',
   Vehicle = 'P3438',
   Logo1 = 'P8972',
+  HasPart = 'P527',
+  Quantity = 'P1114',
+  Css = 'P10177',
 }
 
 export enum Q {
   Carriage = 'Q753779',
   Unstable = 'Q24025284',
+  Door = 'Q36794',
 }
 
 const RANK_MAP: Record<Rank, number> = {

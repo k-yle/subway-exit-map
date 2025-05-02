@@ -1,4 +1,5 @@
 import type { Item, ItemId } from 'wikibase-sdk';
+import type { Property as Css } from 'csstype';
 import { getNetworks } from '../_helpers/override.js';
 import { getShieldKeyHashed } from '../_helpers/hash.js';
 import { getLocalRef, getNames } from '../_helpers/osm.js';
@@ -14,6 +15,50 @@ import {
   type Wikidata,
 } from './types.def.js';
 import { getRouteShield } from './groupRoutesThatStopHere.js';
+
+/** valid values for `justify-content` */
+const FLEXBOX: string[] = [
+  'start',
+  'center',
+  'end',
+  'space-between',
+  'space-around',
+  'space-evenly',
+] satisfies Css.JustifyContent[];
+
+/**
+ * the trainset can have "HasPart=Door" to define the number of
+ * doors per carriage, and their alignment along the long edge
+ * of the carriage.
+ */
+function getDoorInfo(trainset: Item): Trainset['doors'] {
+  const door = trainset.claims?.[P.HasPart]?.find(
+    (part) =>
+      typeof part.mainsnak.datavalue?.value === 'object' &&
+      'id' in part.mainsnak.datavalue.value &&
+      part.mainsnak.datavalue.value.id === Q.Door,
+  );
+
+  const doorQty = door?.qualifiers?.[P.Quantity]?.[0].datavalue?.value;
+  const doorAlignment = door?.qualifiers?.[P.Css]?.[0].datavalue?.value;
+
+  if (
+    typeof doorQty !== 'object' ||
+    !('amount' in doorQty) ||
+    Number.isNaN(+doorQty.amount) ||
+    !+doorQty.amount
+  ) {
+    return undefined;
+  }
+
+  if (typeof doorAlignment !== 'string') return undefined;
+  if (!FLEXBOX.includes(doorAlignment)) return undefined;
+
+  return {
+    quantity: +doorQty.amount,
+    alignment: <Css.JustifyContent>doorAlignment,
+  };
+}
 
 export function getAllRoutes(
   osm: OsmFeatures,
@@ -95,6 +140,7 @@ export function getAllRoutes(
                   ? Regularity.usually
                   : Regularity.always,
               carriages,
+              doors: getDoorInfo(trainset),
             };
           }),
         };
