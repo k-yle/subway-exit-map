@@ -64,8 +64,8 @@ export function groupRoutesThatStopHere(
       const identicalPairIndex = unique.findIndex(
         (b) =>
           b !== a &&
-          JSON.stringify(omit(b, ['type'])) ===
-            JSON.stringify(omit(a, ['type'])),
+          JSON.stringify(omit(b, ['type', 'osmId'])) ===
+            JSON.stringify(omit(a, ['type', 'osmId'])),
       );
       if (identicalPairIndex !== -1) {
         // delete `b` & mark `a` as both
@@ -106,7 +106,7 @@ export function groupRoutesThatStopHere(
         const routes = unsorted.sort((a, b) =>
           (a.ref || '').localeCompare(b.ref || ''),
         );
-        // eslint-disable-next-line no-useless-assignment -- bug in the rule
+
         const to = routes
           .flatMap((r) => r.to!)
           .filter(uniq)

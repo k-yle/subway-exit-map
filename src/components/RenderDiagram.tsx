@@ -283,6 +283,7 @@ export const RenderDiagram: React.FC<{
                       >
                         {Array.from({ length: doorInfo[0].quantity }).map(
                           (_, index) => (
+                            // eslint-disable-next-line react/no-array-index-key
                             <span key={index}>&nbsp;</span>
                           ),
                         )}
