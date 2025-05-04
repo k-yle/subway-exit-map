@@ -75,3 +75,11 @@ export const getName = (names: MultiLingualNames): string | undefined => {
   // still no match, so return any language
   return Object.values(names)[0];
 };
+
+/** removes trivial differences, used when comparing two strings */
+export function normaliseString(str: string) {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replaceAll(/\p{Diacritic}/gu, '');
+}

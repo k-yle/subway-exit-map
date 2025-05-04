@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "es2020",
+    "target": "esnext",
     "lib": ["dom", "esnext"],
     "typeRoots": ["./src/global.d.ts"],
     "strict": true,

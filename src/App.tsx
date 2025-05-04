@@ -8,7 +8,7 @@ import type { Data, Station } from './types.def';
 import { RenderDiagram } from './components/RenderDiagram';
 import { Settings } from './components/Settings';
 import { DataContext } from './context/data';
-import { bold, getName, locale, t } from './i18n';
+import { bold, getName, locale, normaliseString, t } from './i18n';
 
 import './main.css';
 import { copyrightFooter } from './components/text';
@@ -165,9 +165,9 @@ export const Home: React.FC = () => {
       <Select
         showSearch
         filterOption={(inputValue, option) =>
-          option.props['data-name']
-            ?.toLowerCase()
-            .includes(inputValue.toLowerCase())
+          normaliseString(option.props['data-name'] || '').includes(
+            normaliseString(inputValue),
+          )
         }
         onSearch={(v) => v}
         value={selectedId}
@@ -187,7 +187,7 @@ export const Home: React.FC = () => {
               <Select.Option
                 key={station.gtfsId}
                 value={station.gtfsId}
-                data-name={name}
+                data-name={Object.values(station.name).join('|')}
               >
                 {name}
               </Select.Option>
