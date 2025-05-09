@@ -40,7 +40,9 @@ function getDoorInfo(trainset: Item): Trainset['doors'] {
   );
 
   const doorQty = door?.qualifiers?.[P.Quantity]?.[0].datavalue?.value;
-  const doorAlignment = door?.qualifiers?.[P.Css]?.[0].datavalue?.value;
+  const doorAlignment = door?.qualifiers?.[P.Css]?.[0].datavalue?.value
+    ?.toString()
+    .split('#')[1];
 
   if (
     typeof doorQty !== 'object' ||
