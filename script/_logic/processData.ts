@@ -20,10 +20,10 @@ import {
   getRouteShield,
   groupRoutesThatStopHere,
 } from './groupRoutesThatStopHere.js';
-import { flipFunctions } from './flipping/index.js';
 import { getTravellingDirection } from './getTravellingDirection.js';
 import { getAllRoutes } from './getAllRoutes.js';
 import { parseStopAreaGroups } from './stopAreaGroups.js';
+import { flipByTrackDirection } from './flipping/flipByTrackDirection.js';
 
 export function processData({
   osm: osmArray,
@@ -106,10 +106,15 @@ export function processData({
                 ),
             );
 
-            // assume that a stop_position node is never at a 3-way junction,
-            // so we just find the first track that includes this node.
-            const track = Object.values(osm.way).find((feature) =>
-              feature.nodes.includes(node.id),
+            /**
+             * A stop_position node could be at a vertex where two tracks join,
+             * or even at a 3-way junction (although this is very unlikely).
+             * In any case, we need to find every track that includes this node.
+             */
+            const trackIds = new Set(
+              Object.values(osm.way)
+                .filter((feature) => feature.nodes.includes(node.id))
+                .map((w) => w.id),
             );
 
             const routes = groupRoutesThatStopHere(routesThatStopHere, node);
@@ -118,7 +123,7 @@ export function processData({
             );
 
             const routesThatPassThroughWithoutStopping = uniqBy(
-              track
+              trackIds.size
                 ? Object.values(osm.relation)
                     .filter(
                       (feature) =>
@@ -126,7 +131,7 @@ export function processData({
                         // check that it's not already in routesThatStopHere
                         !routesThatStopHere.some((r) => r.id === feature.id) &&
                         feature.members.some(
-                          (m) => m.type === 'way' && m.ref === track.id,
+                          (m) => m.type === 'way' && trackIds.has(m.ref),
                         ),
                     )
                     .map((r) => {
@@ -156,7 +161,24 @@ export function processData({
             const nextStops = new Set<number>();
 
             for (const route of routesThatStopHere) {
-              if (!track) continue;
+              const wayMembers = new Set(
+                route.members.filter((m) => m.type === 'way').map((m) => m.ref),
+              );
+
+              // if the stopping location is the vertex between two tracks,
+              // there could be multiple tracks, but only one is in the route
+              // relation. So find the first track which is actually in the relation.
+              const trackId = trackIds
+                .intersection(wayMembers)
+                .values()
+                .next().value;
+
+              if (!trackId) {
+                warnings.push(
+                  `r${route.id} includes n${node.id}, but not that node's track/s (w${[...trackIds]})`,
+                );
+                continue;
+              }
 
               for (const network of getNetworks(route.tags!)) {
                 if (!station.networks.includes(network)) {
@@ -176,7 +198,7 @@ export function processData({
 
               const travellingDirectionAlongTrack = getTravellingDirection(
                 route,
-                track,
+                osm.way[trackId],
                 osm,
                 warnings,
               );
@@ -306,16 +328,12 @@ export function processData({
     const stopsArray = station.stops;
     // nothing to flip at stations with only 1 platform
     if (stopsArray.length > 1) {
-      // try several different algorithms to figure out
+      // figure out
       // which stops (if any) should be flipped
-      for (const f of flipFunctions) {
-        const stopsToFlip = f(stopsArray, osm, station, warnings);
-        if (stopsToFlip) {
-          station.flipAlgorithm = f.name;
-          for (const [index, stop] of stopsArray.entries()) {
-            stop.flip = stopsToFlip[index];
-          }
-          break;
+      const stopsToFlip = flipByTrackDirection(stopsArray, osm);
+      if (stopsToFlip) {
+        for (const [index, stop] of stopsArray.entries()) {
+          stop.flip = stopsToFlip[index];
         }
       }
     }
@@ -376,6 +394,8 @@ export function processData({
     wikidata,
     stationsByStopId,
   );
+
+  for (const warning of warnings) console.warn('(!)', warning);
 
   return {
     warnings,

@@ -11,6 +11,10 @@ export function getTravellingDirection(
     (m) => m.type === 'way' && m.ref === track.id,
   );
 
+  if (indexOfTrackInThisRoute === -1) {
+    throw new Error('invariant: the track must be in the relation');
+  }
+
   const nextTrackId = route.members[indexOfTrackInThisRoute + 1]?.ref;
   const nextTrack = data.way[nextTrackId];
 
@@ -47,6 +51,11 @@ export function getTravellingDirection(
     return 'forward';
   }
 
-  warnings.push(`w${track.id} is this only track in route r${route.id}`);
+  // the overpass query should have fetched any tracks connected to this one.
+  // if not, the physcial geometry disagrees with the relation's order.
+  warnings.push(
+    `The next/prev tracks within r${route.id} are ostensibly w${nextTrackId} & w${lastTrackId}, ` +
+      `but neither was downloaded. The relation is likely not sorted.`,
+  );
   return 'both_ways';
 }

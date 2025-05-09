@@ -1,28 +1,10 @@
 import type { OsmNode } from 'osm-api';
 import { getBearingBetweenCoords } from '../../_helpers/geo.js';
 import { splitInHalf } from '../../_helpers/cluster.js';
-import type { FlipFunction } from './index.js';
+import type { OsmFeatures, Stop } from '../types.def.js';
 
-export const flipByTrackDirection: FlipFunction = (
-  stops,
-  allData,
-  station,
-  warnings,
-) => {
+export const flipByTrackDirection = (stops: Stop[], allData: OsmFeatures) => {
   const bearings: number[] = [];
-
-  const anyBiDiWithNoPreferredDirection = stops.filter(
-    (stop) => stop.direction === 'both_ways' && !!stop.carriages.length,
-  );
-  if (anyBiDiWithNoPreferredDirection.length) {
-    // to fix this, stop_positions on bidirectional tracks need
-    // to have exit:carriages:[forward/backward] tagged. This
-    // tells us what the preffered direction is.
-    warnings.push(
-      `Ambiguous track direction at r${station.relationId} (${station.name.en}) ${anyBiDiWithNoPreferredDirection.map((stop) => stop.nodeId)}`,
-    );
-    return undefined;
-  }
 
   for (const stop of stops) {
     if (!stop.carriages.length) continue;
@@ -56,8 +38,7 @@ export const flipByTrackDirection: FlipFunction = (
     if (!nextNode && !lastNode) {
       // this should be impossible, since a way
       // must have at least 2 nodes.
-      warnings.push(`Couldn't find next nor last node for n${stop.nodeId}`);
-      return undefined;
+      throw new Error(`Couldn't find next nor last node for n${stop.nodeId}`);
     }
 
     // swap argument order if using the lastNode
@@ -77,9 +58,7 @@ export const flipByTrackDirection: FlipFunction = (
 
     // At this point, we know that the track is unidirectional, and we've been assuming
     // fwd=the oneway direction. But it could have oneway=-1, so check for that.
-    bearings.push(
-      bearingAssumingFwd + (stop.direction === 'backward' ? 180 : 0),
-    );
+    bearings.push(bearingAssumingFwd);
   }
 
   return splitInHalf(bearings);

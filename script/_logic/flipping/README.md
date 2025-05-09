@@ -15,24 +15,13 @@ Island Platform
 
 Here, we should flip platform 2 & 4 so that they're in the opposite direction to platform 1 & 3.
 
-There are several possible methods:
+#### Implementation
 
-1.  Align matching destinations on the same side
+- For every `stop_position` node, find the next node along the track.
+- Calculate the bearing between the `stop_position` and the next node, which is the same as the bearing of the track (unless the platform is built on a curve). In most cases, the (normalised) bearings will be close to either 0° or 180°, even for curved platforms<sup>†</sup>
+- Group the bearings using [k-means clustering](https://en.wikipedia.org/wiki/K-means_clustering), into two distinct groups.
+- Flip every stop in one of the two groups.
 
-    **Prerequisites:** Every platform must have scheduled services.
+#### Flaws
 
-    **Flaws:**
-
-2.  Use the track geometry
-
-    **Prerequisites:** The tracks must be tagged as [oneway](https://osm.wiki/Key:railway:preferred_direction).
-
-    **Flaws:** Requires us to download track geometry near stations, and fails if the station has platforms at angles other than 0° and 180°.
-
-3.  Use the stop position location relative to the centroid of the station.
-
-    **Prerequisites:** All tracks must be unidirectional.
-
-    **Flaws:** It's only a coincidence that most stop positions are mapped at the front of the platform. It fails if stop positions are mapped at the centre of the platform, and there is no way of knowing if the result is bogus because of this.
-
-We try all 3 approaches in the foregoing order.
+† = This approach is less reliable at stations where the platforms that are not all parralel, such as [Berlin Hbf](https://osm.org/relation/910651) or Sydney's [Martin Place](https://osm.org/relation/9769474). If the tracks were perfectly perpendicular, then this algorithm would produce unexpected results. But at the time of writing, this algorithm works for all 980 stops where we have data.

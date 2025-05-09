@@ -5,7 +5,6 @@ import type {
   Carriage,
   ExitSide,
   ExitType,
-  FwdBwdBoth,
   OsmFeatures,
   Stop,
 } from './types.def.js';
@@ -34,10 +33,7 @@ const noToUndefined = <T extends string>(
 export function createExitMap(
   node: OsmNode,
   allData: OsmFeatures,
-): Pick<
-  Stop,
-  'exitSide' | 'carriages' | 'direction' | 'biDiMode' | 'shortPlatform'
-> {
+): Pick<Stop, 'exitSide' | 'carriages' | 'biDiMode' | 'shortPlatform'> {
   const tags = node.tags!;
 
   const suffix = tags['exit:carriages:forward']
@@ -57,7 +53,7 @@ export function createExitMap(
       .map((s) => s.toLowerCase()) || [];
 
   if (!exitType.length) {
-    return { carriages: [], direction: 'both_ways', exitSide: undefined };
+    return { carriages: [], exitSide: undefined };
   }
 
   const lengths = new Set([
@@ -96,9 +92,7 @@ export function createExitMap(
     throw new Error('Node is not part of a track');
   }
   const biDiMode = getBiDiMode(track, allData);
-
-  const trackDirection = getTrackDirection(track.tags);
-  const direction = <FwdBwdBoth | 'unknown'>suffix?.slice(1) || trackDirection;
+  const direction = getTrackDirection(track.tags);
 
   // we do NOT copy exitType, since that would be wrong.
   fillBlanksForColSpan(
@@ -123,9 +117,9 @@ export function createExitMap(
         type: flag
           ? 'gap'
           : index === firstIndex
-            ? 'first'
+            ? 'loco'
             : index === exitType.length - 1 && biDiMode === 'regular'
-              ? 'last'
+              ? 'loco'
               : 'middle',
         ref: index + 1 - firstIndex,
       };
@@ -146,17 +140,28 @@ export function createExitMap(
   }
 
   let exitSide = <ExitSide>tags.side;
-  if (direction === 'both_ways' && biDiMode === 'regular') exitSide = undefined;
+
+  // track is bidirectional, so there's no meaningful way of telling the
+  // user to "exit on the left", because that depends on which direction
+  // they're travelling. So delete the `side` data in this situation
+  if (
+    (direction === 'both_ways' || direction === 'unknown') &&
+    biDiMode === 'regular'
+  ) {
+    exitSide = undefined;
+  }
+
   if (direction === 'backward') {
     if (exitSide === 'left') exitSide = 'right';
     if (exitSide === 'right') exitSide = 'left';
   }
 
+  /** :backwards just adds complexity, it's easier if the data is always ordered forwards */
+  if (suffix === ':backward') carriages.reverse();
+
   return {
     exitSide,
     carriages,
-    // for backwards compatibility with the frontend
-    direction: direction === 'unknown' ? 'both_ways' : direction,
     biDiMode,
     shortPlatform: available.shortPlatform,
   };

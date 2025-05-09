@@ -3,10 +3,11 @@ import clsx from 'clsx';
 import TimeAgo from 'react-timeago-i18n';
 import { Button, List, Modal } from '@arco-design/web-react';
 import { Link } from 'react-router-dom';
-import type { Carriage, Data, Station, Stop } from '../types.def';
+import type { Data, Station, Stop } from '../types.def';
 import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { bold, formatList, getName, locale, t } from '../i18n';
 import { uniqBy } from '../helpers/objects';
+import { carTypeToCss } from '../helpers/carType';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { PlatformName } from './PlatformName';
@@ -21,13 +22,7 @@ export const RenderDiagram: React.FC<{
 }> = ({ data, station, stop }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const carriages = stop.flip
-    ? stop.carriages
-    : [...stop.carriages].reverse().map((car): Carriage => {
-        if (car.type === 'first') return { ...car, type: 'last' };
-        if (car.type === 'last') return { ...car, type: 'first' };
-        return car;
-      });
+  const carriages = stop.flip ? stop.carriages : [...stop.carriages].reverse();
 
   const colSpans = useMemo(
     () =>
@@ -261,12 +256,12 @@ export const RenderDiagram: React.FC<{
             <td>
               {(stop.flip || stop.biDiMode === 'regular') && <Arrow flip />}
             </td>
-            {carriages.map((carriage) => {
+            {carriages.map((carriage, carIndex) => {
               return (
                 <td key={carriage.ref}>
                   <div
                     className={clsx(
-                      carriage.type,
+                      carTypeToCss(carIndex, carriages),
                       'isBest' in carriage && carriage.isBest && 'best',
                       'unavailable' in carriage &&
                         carriage.unavailable &&

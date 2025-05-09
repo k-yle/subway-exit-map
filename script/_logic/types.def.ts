@@ -20,7 +20,7 @@ export type ExitType =
   | 'yes';
 
 export type Carriage = {
-  type: 'first' | 'middle' | 'last' | 'gap';
+  type: 'loco' | 'middle' | 'gap';
   ref: number;
   isBest?: true;
   unavailable?: true;
@@ -62,7 +62,6 @@ export type Stop = {
   lat: number;
   lon: number;
 
-  direction: FwdBwdBoth;
   exitSide: ExitSide;
   carriages: Carriage[];
 
@@ -123,7 +122,6 @@ export type Station = {
   fareGates: FareGates | undefined;
   fareGatesNote: string | undefined;
   stops: Stop[];
-  flipAlgorithm?: string;
 };
 
 export type Trainset = {
