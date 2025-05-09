@@ -2,6 +2,7 @@
 
 ![](https://github.com/k-yle/subway-exit-map/actions/workflows/ci.yml/badge.svg)
 ![](https://github.com/k-yle/subway-exit-map/actions/workflows/cron.yml/badge.svg)
+![Lines of code](https://sloc.xyz/github/k-yle/subway-exit-map)
 
 🚇🛗 Some subway or train platforms only have an exit on one end of the platform, which means people might need to walk a long distance down the platform if they arrive in the wrong carriage.
 
