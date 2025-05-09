@@ -36,7 +36,7 @@ export function createExitMap(
   allData: OsmFeatures,
 ): Pick<
   Stop,
-  'exitSide' | 'carriages' | 'direction' | 'biDiMode' | 'availableLabel'
+  'exitSide' | 'carriages' | 'direction' | 'biDiMode' | 'shortPlatform'
 > {
   const tags = node.tags!;
 
@@ -158,6 +158,6 @@ export function createExitMap(
     // for backwards compatibility with the frontend
     direction: direction === 'unknown' ? 'both_ways' : direction,
     biDiMode,
-    availableLabel: available.label,
+    shortPlatform: available.shortPlatform,
   };
 }

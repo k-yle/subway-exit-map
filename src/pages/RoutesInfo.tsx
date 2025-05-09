@@ -193,7 +193,18 @@ export const RoutesInfo: React.FC = () => {
                     {prefix}
                     {getName(station.name)}
                     {suffix}
-                    {stop.availableLabel && <Tag>{stop.availableLabel}</Tag>}
+                    {stop.shortPlatform && (
+                      <Tag>
+                        {t('ShortPlatform.label', {
+                          n: stop.shortPlatform.count,
+                          alignment: {
+                            first: t('ShortPlatform.align.first'),
+                            middle: t('ShortPlatform.align.middle'),
+                            last: t('ShortPlatform.align.last'),
+                          }[stop.shortPlatform.alignment],
+                        })}
+                      </Tag>
+                    )}
                     {{ yes: '🔒', no: '🔓', partial: '🔏' }[station.fareGates!]}
                     {stop.inaccessible && inaccessible}
                     <div>

@@ -7,6 +7,8 @@ export type FwdBwdBoth = 'forward' | 'backward' | 'both_ways';
 
 export type ExitSide = 'left' | 'right' | 'both' | undefined;
 
+export type Alignment = 'first' | 'middle' | 'last';
+
 export type ExitType =
   | 'stairs'
   | 'steps'
@@ -82,7 +84,7 @@ export type Stop = {
    * - `undefined` means unidirectional.
    */
   biDiMode?: 'regular' | 'occasional' | 'unknown';
-  availableLabel?: string | undefined;
+  shortPlatform?: { alignment: Alignment; count: number };
   lastUpdate: {
     user: string;
     date: string;

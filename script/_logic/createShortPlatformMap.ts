@@ -1,13 +1,22 @@
+import type { Alignment, Stop } from './types.def';
+
+const isValid = (str: string): str is Alignment =>
+  ['first', 'middle', 'last'].includes(str);
+
 export function createShortPlatformMap(
   accessTag: string | undefined,
   cars: number,
-) {
-  const empty = { label: undefined, array: [] };
+): {
+  array: ('yes' | 'no')[];
+  shortPlatform: Stop['shortPlatform'];
+} {
+  const empty = { shortPlatform: undefined, array: [] };
   if (!accessTag) return empty;
 
   const [alignment, _count] = accessTag.split(';');
 
   if (!alignment || !_count) return empty;
+  if (!isValid(alignment)) return empty;
 
   const count = +_count;
   if (Number.isNaN(count)) return empty;
@@ -30,13 +39,12 @@ export function createShortPlatformMap(
           return cars - index <= count;
         }
         default: {
+          alignment satisfies never;
           return true;
         }
       }
     })
     .map((bool) => (bool ? 'yes' : 'no'));
 
-  const label = alignment[0].toUpperCase() + alignment.slice(1);
-  // TODO: i18n
-  return { array, label: `${label} ${count} car${count === 1 ? '' : 's'}` };
+  return { array, shortPlatform: { alignment, count } };
 }
