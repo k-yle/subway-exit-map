@@ -32,6 +32,10 @@ export function processData({
 }: RawInput): Data {
   const warnings: string[] = [];
   const stations: Station[] = [];
+  const stopLinkage = new Map<
+    Stop,
+    { lastStops: Set<number>; nextStops: Set<number> }
+  >();
 
   // convert to an object
   const osm: OsmFeatures = { node: {}, way: {}, relation: {} };
@@ -189,7 +193,7 @@ export function processData({
               }
             }
 
-            station.stops.push({
+            const stop = {
               nodeId: node.id,
               gtfsId: node.tags?.ref || `${node.id}`,
               platform: getLocalRef(node.tags, station.networks),
@@ -217,10 +221,11 @@ export function processData({
                 disambiguationName: getNames(trainStationFromOwn?.tags),
               }),
 
-              // typecast is a hack, we fix this later
-              lastStop: <never[]>[...lastStops],
-              nextStop: <never[]>[...nextStops],
-            });
+              lastStop: [],
+              nextStop: [],
+            };
+            station.stops.push(stop);
+            stopLinkage.set(stop, { lastStops, nextStops });
           } else {
             // we haven't downloaded this node
             // because no routes (from our network) stop here
@@ -289,11 +294,12 @@ export function processData({
   };
   for (const station of stations) {
     for (const stop of station.stops) {
-      stop.lastStop = stop.lastStop
-        .map((id) => nIdToObject(<never>id, station.networks))
+      const { lastStops, nextStops } = stopLinkage.get(stop)!;
+      stop.lastStop = [...lastStops]
+        .map((id) => nIdToObject(id, station.networks))
         .filter(isTruthy);
-      stop.nextStop = stop.nextStop
-        .map((id) => nIdToObject(<never>id, station.networks))
+      stop.nextStop = [...nextStops]
+        .map((id) => nIdToObject(id, station.networks))
         .filter(isTruthy);
     }
 
