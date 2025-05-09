@@ -7,9 +7,9 @@ import type { Data } from '../_logic/types.def';
  * where the data model is not flexible enough.
  */
 export const BEST_OVERRIDE: Record<string, number[]> = {
-  2000391: [1, 4, 7], // SYD - Town Hall 1
-  2000392: [1, 4, 7], // SYD - Town Hall 2
-  2000393: [2, 4, 5, 8], // SYD - Town Hall 3
+  6553012232: [1, 4, 7], // SYD - Town Hall 1
+  6553012233: [1, 4, 7], // SYD - Town Hall 2
+  6553012234: [2, 4, 5, 8], // SYD - Town Hall 3
 };
 
 export const NETWORK_OVERRIDE: Record<ItemId, ItemId> = {
