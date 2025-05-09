@@ -6,7 +6,6 @@ import { getLocalRef, getNames } from '../_helpers/osm.js';
 import { P, Q, getItemName, getItemWikipedia } from '../_helpers/wikidata.js';
 import {
   type Data,
-  type ExitSide,
   type OsmFeatures,
   Regularity,
   type Station,
@@ -169,10 +168,7 @@ export function getAllRoutes(
               if (node) {
                 nodesWithNoData[node.id] = {
                   name: getNames(node.tags),
-                  // TODO: the side could be wrong, because we don't know
-                  // which way the train travels down the track. Currently
-                  // it assumes forwards.
-                  exitSide: <ExitSide>node.tags?.side,
+                  exitSide: undefined,
                   platform: getLocalRef(node.tags, [network]),
                 };
               }
