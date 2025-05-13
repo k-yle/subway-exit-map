@@ -15,9 +15,12 @@ export enum P {
   Stability = 'P2668',
   Vehicle = 'P3438',
   Logo1 = 'P8972',
+  Uses = 'P2283',
   HasPart = 'P527',
   Quantity = 'P1114',
   Css = 'P10177',
+  AppliesToPart = 'P518',
+  FirstNumber = 'P1545',
 }
 
 export enum Q {
@@ -25,6 +28,8 @@ export enum Q {
   Unstable = 'Q24025284',
   Door = 'Q36794',
   TrainDoor = 'Q117075694',
+  PlatformScreenDoor = 'Q570730',
+  NumericalDigit = 'Q82990',
 }
 
 const RANK_MAP: Record<Rank, number> = {

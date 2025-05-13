@@ -125,6 +125,12 @@ div.last {
       background-color: #fff;
     }
   }
+  & > .doorNumbers {
+    display: flex;
+    padding: 0px 4px; /* to align the labels with the doors (above) */
+    font-size: 9px;
+    height: 1.3rem; /* keep the original height despite the smaller font size */
+  }
 }
 
 div.gap,

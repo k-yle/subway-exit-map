@@ -1,7 +1,13 @@
 import type { Item, ItemId } from 'wikibase-sdk';
 import { iso1A2Code } from '@rapideditor/country-coder';
 import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
-import { P, getItemWikipedia, sortByRank } from '../_helpers/wikidata.js';
+import {
+  P,
+  Q,
+  equalsQId,
+  getItemWikipedia,
+  sortByRank,
+} from '../_helpers/wikidata.js';
 import { ICONS, getNetworks } from '../_helpers/override.js';
 import { getShieldKey } from '../_helpers/hash.js';
 import { getLocalRef, getNames, getRef, isStation } from '../_helpers/osm.js';
@@ -371,6 +377,21 @@ export function processData({
       const geoCoords =
         item.claims[P.GeoCoordinates]?.sort(sortByRank)[0]?.mainsnak.datavalue;
 
+      const PlatformScreenDoor = item.claims[P.Uses]?.find(
+        (claim) =>
+          claim.mainsnak.datatype === 'wikibase-item' &&
+          equalsQId(claim.mainsnak.datavalue, Q.PlatformScreenDoor),
+      );
+      const hasDoorNumbers = PlatformScreenDoor?.qualifiers?.[P.Uses]?.some(
+        (qualifier) =>
+          qualifier.datatype === 'wikibase-item' &&
+          equalsQId(qualifier.datavalue, Q.NumericalDigit),
+      );
+      const firstDoorNumber = +(
+        PlatformScreenDoor?.qualifiers?.[P.FirstNumber]?.[0].datavalue?.value ||
+        1
+      );
+
       const names: MultiLingualNames = {};
       for (const lang in item.labels) {
         const value = item.labels[lang]?.value;
@@ -386,6 +407,7 @@ export function processData({
           geoCoords?.type === 'globecoordinate'
             ? { lat: geoCoords.value.latitude, lon: geoCoords.value.longitude }
             : { lat: -1, lon: -1 },
+        doorNumbers: hasDoorNumbers ? firstDoorNumber : undefined,
       };
     });
 

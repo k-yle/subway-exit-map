@@ -154,6 +154,12 @@ export type Data = {
     wikipedia: MultiLingualNames;
     country: string | undefined;
     centre: { lat: number; lon: number };
+    /**
+     * if undefined, the system does not use numbered platform screen doors.
+     * if a number, then that's the number of the first door, starting from
+     * the front.
+     */
+    doorNumbers?: number;
   }[];
   routes: {
     [network: ItemId]: {

@@ -24,6 +24,8 @@ export const RenderDiagram: React.FC<{
 
   const carriages = stop.flip ? stop.carriages : [...stop.carriages].reverse();
 
+  const isFrontOnLeft = carriages.find((c) => c.type !== 'gap')?.ref === 1;
+
   const colSpans = useMemo(
     () =>
       countAdjacentEqual(
@@ -77,6 +79,15 @@ export const RenderDiagram: React.FC<{
   );
   // if there are multiple different layouts, render nothing
   if (doorInfo.length !== 1) doorInfo.splice(0);
+
+  const networksForStop = new Set(
+    Object.values(stop.routes)
+      .flat()
+      .flatMap((route) => route.qId),
+  );
+  const networkQId =
+    networksForStop.size === 1 ? [...networksForStop][0] : undefined;
+  const { doorNumbers } = data.networks.find((n) => n.qId === networkQId) || {};
 
   return (
     <>
@@ -266,9 +277,34 @@ export const RenderDiagram: React.FC<{
                         'unavailable',
                     )}
                   >
-                    <label>
-                      {carriage.type === 'gap' ? '\u00A0' : carriage.ref}
-                    </label>
+                    {doorInfo[0] &&
+                    doorNumbers !== undefined &&
+                    carriage.type !== 'gap' ? (
+                      <label
+                        className="doorNumbers"
+                        style={{ justifyContent: doorInfo[0].alignment }}
+                      >
+                        {Array.from({ length: doorInfo[0].quantity }).map(
+                          (_, index, { length }) => {
+                            const base =
+                              doorNumbers - 1 + (carriage.ref - 1) * length;
+                            const doorNumber = isFrontOnLeft
+                              ? base + index + 1
+                              : base - index + length;
+
+                            return (
+                              // eslint-disable-next-line react/no-array-index-key
+                              <span key={index}>{doorNumber}</span>
+                            );
+                          },
+                        )}
+                      </label>
+                    ) : (
+                      <label>
+                        {carriage.type === 'gap' ? '\u00A0' : carriage.ref}
+                      </label>
+                    )}
+
                     {carriage.type !== 'gap' && doorInfo[0] && (
                       <div
                         className="doors"
