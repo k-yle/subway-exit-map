@@ -215,7 +215,7 @@ export function processData({
               }
             }
 
-            const stop = {
+            const stop: Stop = {
               nodeId: node.id,
               gtfsId: node.tags?.ref || `${node.id}`,
               platform: getLocalRef(node.tags, station.networks),

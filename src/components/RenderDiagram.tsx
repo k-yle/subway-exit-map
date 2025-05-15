@@ -65,14 +65,12 @@ export const RenderDiagram: React.FC<{
 
   const doorInfo = uniqBy(
     flatRoutes
-      .map((r) => {
+      .flatMap((r) => {
         if (r.qId.length !== 1) return undefined; // does not support routes with multiple networks
         const trainsets =
           data.routes[r.qId[0]][r.shieldKey].wikidata?.trainsets;
 
-        // this only works if exactly 1 type of trainset is used on this route
-        if (!trainsets || trainsets.length !== 1) return undefined;
-        return trainsets[0].doors;
+        return trainsets?.map((train) => train.doors);
       })
       .filter((x) => !!x),
     (x) => `${x.alignment}|${x.quantity}`,

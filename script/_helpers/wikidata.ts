@@ -1,4 +1,9 @@
-import type { Item } from 'wikibase-sdk';
+import type {
+  Item,
+  ItemId,
+  SnakDataValue,
+  WikibaseEntityIdSnakDataValue,
+} from 'wikibase-sdk';
 import type { MultiLingualNames, Rank } from '../_logic/types.def.js';
 
 export enum P {
@@ -19,12 +24,24 @@ export enum Q {
   Carriage = 'Q753779',
   Unstable = 'Q24025284',
   Door = 'Q36794',
+  TrainDoor = 'Q117075694',
 }
 
 const RANK_MAP: Record<Rank, number> = {
   normal: 0,
   deprecated: -1,
   preferred: +1,
+};
+
+export const equalsQId = (
+  snak: SnakDataValue | undefined,
+  qId: ItemId,
+): snak is WikibaseEntityIdSnakDataValue => {
+  return (
+    typeof snak?.value === 'object' &&
+    'id' in snak.value &&
+    snak.value.id === qId
+  );
 };
 
 export const sortByRank = (a: { rank: Rank }, b: { rank: Rank }) =>

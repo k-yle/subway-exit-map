@@ -3,7 +3,13 @@ import type { Property as Css } from 'csstype';
 import { getNetworks } from '../_helpers/override.js';
 import { getShieldKeyHashed } from '../_helpers/hash.js';
 import { getLocalRef, getNames } from '../_helpers/osm.js';
-import { P, Q, getItemName, getItemWikipedia } from '../_helpers/wikidata.js';
+import {
+  P,
+  Q,
+  equalsQId,
+  getItemName,
+  getItemWikipedia,
+} from '../_helpers/wikidata.js';
 import {
   type Data,
   type OsmFeatures,
@@ -33,9 +39,8 @@ const FLEXBOX: string[] = [
 function getDoorInfo(trainset: Item): Trainset['doors'] {
   const door = trainset.claims?.[P.HasPart]?.find(
     (part) =>
-      typeof part.mainsnak.datavalue?.value === 'object' &&
-      'id' in part.mainsnak.datavalue.value &&
-      part.mainsnak.datavalue.value.id === Q.Door,
+      equalsQId(part.mainsnak.datavalue, Q.Door) ||
+      equalsQId(part.mainsnak.datavalue, Q.TrainDoor),
   );
 
   const doorQty = door?.qualifiers?.[P.Quantity]?.[0].datavalue?.value;
