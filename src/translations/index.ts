@@ -9,4 +9,5 @@ export type TranslationFile = {
 export const translations = {
   en: () => import('./en.json'),
   de: () => import('./de.json'),
+  zh: () => import('./zh.json'),
 } satisfies Record<string, () => Promise<TranslationFile>>;
