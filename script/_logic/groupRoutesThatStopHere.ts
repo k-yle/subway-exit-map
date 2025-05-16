@@ -3,10 +3,17 @@ import { groupBy, omit, uniq, uniqBy } from '../_helpers/objects.js';
 import { getConstrastingTextColour } from '../_helpers/style.js';
 import { getShieldKey, getShieldKeyHashed } from '../_helpers/hash.js';
 import { getNetworks } from '../_helpers/override.js';
-import type { RouteShield, RouteThatStopsHere, Stop } from './types.def.js';
+import type {
+  RouteShield,
+  RouteThatStopsHere,
+  Shape,
+  Stop,
+} from './types.def.js';
+
+const DEST_DELIMITER = '𖠕';
 
 /** most routes don't have a `shape` tag yet, so we can guess the shape */
-const inferShape = (tags: Tags) => {
+const inferShape = (tags: Tags): Shape => {
   if (tags.ref?.startsWith('<')) return 'diamond'; // NYC express trains
   if (tags.network?.includes('NYC')) return 'circle';
   return 'rectangular';
@@ -20,7 +27,7 @@ export function getRouteShield(tags: Tags): RouteShield {
       bg: colour,
       fg: getConstrastingTextColour(colour.replace('#', '')),
     },
-    shape: tags!.shape || inferShape(tags!),
+    shape: <Shape>tags!.shape || inferShape(tags!),
   };
 }
 
@@ -45,9 +52,17 @@ export function groupRoutesThatStopHere(
       const isTerminating = role === 'stop_exit_only' || !hasNextStop;
 
       const shield = getRouteShield(r.tags!);
+
+      const from = [r.tags!.from, r.tags!['from:ref']]
+        .filter(Boolean)
+        .join(DEST_DELIMITER);
+      const to = [r.tags!.to, r.tags!['to:ref']]
+        .filter(Boolean)
+        .join(DEST_DELIMITER);
+
       const item: RouteThatStopsHere = {
         ...shield,
-        to: [(isTerminating ? r.tags!.from : r.tags!.to) || 'Unknown'],
+        to: [(isTerminating ? from : to) || 'Unknown'],
         type: isTerminating ? 'from' : 'to',
         shieldKey: getShieldKeyHashed(shield),
         qId: getNetworks(r.tags!)!,

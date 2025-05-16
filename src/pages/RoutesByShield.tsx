@@ -42,12 +42,30 @@ export const RoutesByShield: React.FC = () => {
             <List.Item key={key}>
               <Link to={`/routes/${qId}/${shieldKey}/${key}`}>
                 <Button type="text">
+                  {value.tags.fromRef && (
+                    <RouteShield
+                      route={{
+                        colour: route.shield.colour,
+                        shape: 'circle',
+                        ref: value.tags.fromRef,
+                      }}
+                    />
+                  )}
                   {value.tags.via?.length
                     ? t('RoutesByShield.label.from-to-via', {
                         ...value.tags,
                         via: formatList(value.tags.via),
                       })
                     : t('RoutesByShield.label.from-to', value.tags)}
+                  {value.tags.toRef && (
+                    <RouteShield
+                      route={{
+                        colour: route.shield.colour,
+                        shape: 'circle',
+                        ref: value.tags.toRef,
+                      }}
+                    />
+                  )}
                 </Button>
               </Link>
             </List.Item>

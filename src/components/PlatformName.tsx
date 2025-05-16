@@ -6,6 +6,8 @@ import { SettingsContext } from '../context/settings';
 import { formatList, t } from '../i18n';
 import { RouteShield } from './RouteShield';
 
+export const DEST_DELIMITER = '𖠕';
+
 export const PlatformName: React.FC<{
   stop: Stop;
   includeDestinations: boolean;
@@ -27,7 +29,15 @@ export const PlatformName: React.FC<{
   return (
     <>
       {Object.entries(stop.routes).map(([key, routes]) => {
-        const to = formatList(routes[0].to || []);
+        const to = formatList(
+          routes[0].to?.map((name) => name.split(DEST_DELIMITER)[0]) || [],
+        );
+        const toRefs = new Set(
+          routes[0].to?.map((name) => name.split(DEST_DELIMITER)[1] || '') ||
+            [],
+        );
+        toRefs.delete('');
+
         return (
           <small
             key={key}
@@ -45,6 +55,16 @@ export const PlatformName: React.FC<{
               }[routes[0].type]
             }{' '}
             {to}
+            {[...toRefs].map((toRef) => (
+              <RouteShield
+                key={toRef}
+                route={{
+                  colour: routes[0].colour,
+                  shape: 'circle',
+                  ref: toRef,
+                }}
+              />
+            ))}
             <br />
           </small>
         );

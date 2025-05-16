@@ -10,7 +10,7 @@ import { uniqBy } from '../helpers/objects';
 import { carTypeToCss } from '../helpers/carType';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
-import { PlatformName } from './PlatformName';
+import { DEST_DELIMITER, PlatformName } from './PlatformName';
 import notAccessible from './icons/NotAccessible.svg';
 import { RouteShield } from './RouteShield';
 import { RenderSymbol } from './icons/RenderSymbol';
@@ -140,20 +140,40 @@ export const RenderDiagram: React.FC<{
           {!!flatRoutes.length && (
             <List
               dataSource={flatRoutes}
-              render={(route, index) => (
-                <List.Item key={index}>
-                  <Link
-                    to={`/routes/${route.qId[0]}/${route.shieldKey}/${route.osmId}`}
-                  >
-                    <Button type="text">
-                      <RouteShield route={route} />{' '}
-                      {t('RenderDiagram.route', {
-                        to: formatList(route.to || []),
-                      })}
-                    </Button>
-                  </Link>
-                </List.Item>
-              )}
+              render={(route, index) => {
+                const toName = formatList(
+                  route.to?.map((name) => name.split(DEST_DELIMITER)[0]) || [],
+                );
+                const toRefs = new Set(
+                  route.to?.map(
+                    (name) => name.split(DEST_DELIMITER)[1] || '',
+                  ) || [],
+                );
+                toRefs.delete('');
+
+                return (
+                  <List.Item key={index}>
+                    <Link
+                      to={`/routes/${route.qId[0]}/${route.shieldKey}/${route.osmId}`}
+                    >
+                      <Button type="text">
+                        <RouteShield route={route} />{' '}
+                        {t('RenderDiagram.route', { to: toName })}
+                        {[...toRefs].map((toRef) => (
+                          <RouteShield
+                            key={toRef}
+                            route={{
+                              colour: route.colour,
+                              shape: 'circle',
+                              ref: toRef,
+                            }}
+                          />
+                        ))}
+                      </Button>
+                    </Link>
+                  </List.Item>
+                );
+              }}
             />
           )}
         </Modal>

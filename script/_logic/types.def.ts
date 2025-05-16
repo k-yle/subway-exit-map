@@ -37,10 +37,12 @@ export type AdjacentStop = {
   platform: string | undefined;
 };
 
+export type Shape = 'circle' | 'rectangular' | 'diamond';
+
 export type RouteShield = {
   ref: string;
   colour: { bg: string; fg: string };
-  shape: string;
+  shape: Shape;
 };
 
 export type RouteThatStopsHere = RouteShield & {
@@ -170,7 +172,9 @@ export type Data = {
           [osmId: string]: {
             tags: {
               from: string | undefined;
+              fromRef: string | undefined;
               to: string | undefined;
+              toRef: string | undefined;
               via: string[] | undefined;
             };
             lastUpdate: Stop['lastUpdate'];

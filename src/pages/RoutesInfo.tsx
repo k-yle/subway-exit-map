@@ -28,6 +28,12 @@ const inaccessible = (
   />
 );
 
+const SIDE_ICONS = {
+  left: <IconCaretLeft />,
+  right: <IconCaretRight />,
+  both: <IconCode />,
+};
+
 export const RoutesInfo: React.FC = () => {
   const qId = useParams<{ qId: ItemId }>().qId!;
   const shieldKey = useParams().shieldKey!;
@@ -147,11 +153,29 @@ export const RoutesInfo: React.FC = () => {
             );
           }
 
-          const prefix = {
-            left: <IconCaretLeft />,
-            right: <IconCaretRight />,
-            both: <IconCode />,
-          }[stop.exitSide!];
+          const prefix = (
+            <>
+              {SIDE_ICONS[stop.exitSide!]}
+              {!index && variant.tags.fromRef && (
+                <RouteShield
+                  route={{
+                    colour: route.shield.colour,
+                    shape: 'circle',
+                    ref: variant.tags.fromRef,
+                  }}
+                />
+              )}
+              {index === variant.stops.length - 1 && variant.tags.toRef && (
+                <RouteShield
+                  route={{
+                    colour: route.shield.colour,
+                    shape: 'circle',
+                    ref: variant.tags.toRef,
+                  }}
+                />
+              )}
+            </>
+          );
           const suffix = (
             <>
               {stop?.platform}

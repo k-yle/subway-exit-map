@@ -155,7 +155,9 @@ export function getAllRoutes(
       routes[network][shieldKey].variants[route.id] = {
         tags: {
           from: route.tags.from,
+          fromRef: route.tags['from:ref'],
           to: route.tags.to,
+          toRef: route.tags['to:ref'],
           via: route.tags.via?.split(';'),
         },
         lastUpdate: {
