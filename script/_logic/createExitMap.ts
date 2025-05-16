@@ -146,7 +146,8 @@ export function createExitMap(
   // they're travelling. So delete the `side` data in this situation
   if (
     (direction === 'both_ways' || direction === 'unknown') &&
-    biDiMode === 'regular'
+    biDiMode === 'regular' &&
+    exitSide !== 'both' // except if `both`, then the track direction doesn't matter
   ) {
     exitSide = undefined;
   }

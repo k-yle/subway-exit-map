@@ -234,6 +234,8 @@ export const RenderDiagram: React.FC<{
                     t('RenderDiagram.route', {
                       to: formatList(carriage.exitTo),
                     })}
+                  {/* so that the dotted line appears if there is a exit number but no exit name */}
+                  {!carriage.exitTo && carriage.exitNumber && '\u00A0'}
                 </td>
               );
             })}
