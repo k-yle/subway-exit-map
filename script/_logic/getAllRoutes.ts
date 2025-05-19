@@ -20,6 +20,7 @@ import {
   type Wikidata,
 } from './types.def.js';
 import { getRouteShield } from './groupRoutesThatStopHere.js';
+import type { RouteShapes } from './getRouteShapes.js';
 
 /** valid values for `justify-content` */
 const FLEXBOX: string[] = [
@@ -70,6 +71,7 @@ export function getAllRoutes(
   osm: OsmFeatures,
   wikidata: Wikidata,
   stationsByStopId: Record<number, [Station, Stop]>,
+  routeShapes: RouteShapes,
 ) {
   const nodesWithNoData: Data['nodesWithNoData'] = {};
   const routes: Data['routes'] = {};
@@ -84,7 +86,7 @@ export function getAllRoutes(
     }
 
     const networks = getNetworks(route.tags)!;
-    const shield = getRouteShield(route.tags);
+    const shield = getRouteShield(route.tags, routeShapes);
     const shieldKey = getShieldKeyHashed(shield);
     for (const network of networks) {
       routes[network] ||= {};

@@ -1,25 +1,18 @@
 import type { OsmNode, OsmRelation, Tags } from 'osm-api';
+import type { ItemId } from 'wikibase-sdk';
 import { groupBy, omit, uniq, uniqBy } from '../_helpers/objects.js';
 import { getConstrastingTextColour } from '../_helpers/style.js';
 import { getShieldKey, getShieldKeyHashed } from '../_helpers/hash.js';
 import { getNetworks } from '../_helpers/override.js';
-import type {
-  RouteShield,
-  RouteThatStopsHere,
-  Shape,
-  Stop,
-} from './types.def.js';
+import type { RouteShield, RouteThatStopsHere, Stop } from './types.def.js';
+import type { RouteShapes } from './getRouteShapes.js';
 
 const DEST_DELIMITER = '𖠕';
 
-/** most routes don't have a `shape` tag yet, so we can guess the shape */
-const inferShape = (tags: Tags): Shape => {
-  if (tags.ref?.startsWith('<')) return 'diamond'; // NYC express trains
-  if (tags.network?.includes('NYC')) return 'circle';
-  return 'rectangular';
-};
-
-export function getRouteShield(tags: Tags): RouteShield {
+export function getRouteShield(
+  tags: Tags,
+  routeShapes: RouteShapes,
+): RouteShield {
   const colour = tags!.colour || '#333333';
   return {
     ref: tags!.ref,
@@ -27,13 +20,14 @@ export function getRouteShield(tags: Tags): RouteShield {
       bg: colour,
       fg: getConstrastingTextColour(colour.replace('#', '')),
     },
-    shape: <Shape>tags!.shape || inferShape(tags!),
+    shape: routeShapes[<ItemId>tags!.wikidata] || 'rectangular',
   };
 }
 
 export function groupRoutesThatStopHere(
   relations: OsmRelation[],
   node: OsmNode,
+  routeShapes: RouteShapes,
 ): Stop['routes'] {
   const unique = uniqBy(
     relations.map((r) => {
@@ -51,7 +45,7 @@ export function groupRoutesThatStopHere(
       const { role } = r.members[memberIndex];
       const isTerminating = role === 'stop_exit_only' || !hasNextStop;
 
-      const shield = getRouteShield(r.tags!);
+      const shield = getRouteShield(r.tags!, routeShapes);
 
       const from = [r.tags!.from, r.tags!['from:ref']]
         .filter(Boolean)

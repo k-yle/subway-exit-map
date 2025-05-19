@@ -40,7 +40,7 @@ const runTest = (...arguments_: Parameters<typeof groupRoutesThatStopHere>) => {
 
 describe('groupRoutesThatStopHere', () => {
   it('can group 1 route, 2 destinations', () => {
-    expect(runTest([mockData[0], mockData[1]], stop)).toStrictEqual({
+    expect(runTest([mockData[0], mockData[1]], stop, {})).toStrictEqual({
       'Bankstown | Tallawong': [
         {
           ...common,
@@ -53,7 +53,7 @@ describe('groupRoutesThatStopHere', () => {
   });
 
   it('can group 2 routes, 1 destination', () => {
-    expect(runTest([mockData[1], mockData[3]], stop)).toStrictEqual({
+    expect(runTest([mockData[1], mockData[3]], stop, {})).toStrictEqual({
       Bankstown: [
         { ...common, ref: 'M1', to: ['Bankstown'], type: 'to' },
         { ...common, ref: 'T3', to: ['Bankstown'], type: 'to' },
@@ -62,7 +62,7 @@ describe('groupRoutesThatStopHere', () => {
   });
 
   it('does not group 2 routes, 2 destinations', () => {
-    expect(runTest([mockData[0], mockData[3]], stop)).toStrictEqual({
+    expect(runTest([mockData[0], mockData[3]], stop, {})).toStrictEqual({
       Bankstown: [{ ...common, ref: 'T3', to: ['Bankstown'], type: 'to' }],
       Tallawong: [{ ...common, ref: 'M1', to: ['Tallawong'], type: 'to' }],
     });
@@ -71,7 +71,7 @@ describe('groupRoutesThatStopHere', () => {
   it('can group a mix of routes & destinations', () => {
     // it could have but the two M1s together, or the 2 Bankstowns.
     // doesn't really matter which way it does it.
-    expect(runTest(mockData, stop)).toStrictEqual({
+    expect(runTest(mockData, stop, {})).toStrictEqual({
       Bankstown: [
         { ...common, ref: 'M1', to: ['Bankstown'], type: 'to' },
         { ...common, ref: 'T3', to: ['Bankstown'], type: 'to' },
@@ -105,9 +105,13 @@ describe('groupRoutesThatStopHere', () => {
 
     it('handles a bidirectional platform at the terminus of 1 route', () => {
       expect(
-        runTest(fourbyFour.slice(0, 2), <OsmNode>{
-          id: 1,
-        }),
+        runTest(
+          fourbyFour.slice(0, 2),
+          <OsmNode>{
+            id: 1,
+          },
+          {},
+        ),
       ).toStrictEqual({
         // this is good, since we are at #1, we do not expect to see #1 in the data
         '#2': [{ ...common, ref: 'M1', to: ['#2'], type: 'both' }],
@@ -115,7 +119,7 @@ describe('groupRoutesThatStopHere', () => {
     });
 
     it('handles a bidirectional platform at the terminus of 2 routes with the same ref but diff destinations', () => {
-      expect(runTest(fourbyFour, <OsmNode>{ id: 1 })).toStrictEqual({
+      expect(runTest(fourbyFour, <OsmNode>{ id: 1 }, {})).toStrictEqual({
         // this is good, since we are at #1, we do not expect to see #1 in the data
         '#2 | #3': [{ ...common, ref: 'M1', to: ['#2', '#3'], type: 'both' }],
       });
@@ -123,9 +127,13 @@ describe('groupRoutesThatStopHere', () => {
 
     it('handles a bidirectional platform midway along 1 route', () => {
       expect(
-        runTest(fourbyFour.slice(0, 2), <OsmNode>{
-          id: 1.5,
-        }),
+        runTest(
+          fourbyFour.slice(0, 2),
+          <OsmNode>{
+            id: 1.5,
+          },
+          {},
+        ),
       ).toStrictEqual({
         // we are at #1.5, so we expect to see #1 and #2 in the destinations
         '#1 | #2': [{ ...common, ref: 'M1', to: ['#2', '#1'], type: 'to' }],
@@ -133,7 +141,7 @@ describe('groupRoutesThatStopHere', () => {
     });
 
     it('handles a bidirectional platform midway along 2 routes with the same ref but diff destinations', () => {
-      expect(runTest(fourbyFour, <OsmNode>{ id: 1.5 })).toStrictEqual({
+      expect(runTest(fourbyFour, <OsmNode>{ id: 1.5 }, {})).toStrictEqual({
         // we are at #1.5, so we expect to see #1 and #2 in the destinations
         '#1 | #2 | #3': [
           { ...common, ref: 'M1', to: ['#2', '#1', '#3'], type: 'to' },

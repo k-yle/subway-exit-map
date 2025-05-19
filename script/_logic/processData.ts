@@ -1,6 +1,6 @@
 import type { Item, ItemId } from 'wikibase-sdk';
 import { iso1A2Code } from '@rapideditor/country-coder';
-import { isTruthy, uniq, uniqBy } from '../_helpers/objects.js';
+import { isTruthy, take, uniq, uniqBy } from '../_helpers/objects.js';
 import {
   P,
   Q,
@@ -30,6 +30,7 @@ import { getTravellingDirection } from './getTravellingDirection.js';
 import { getAllRoutes } from './getAllRoutes.js';
 import { parseStopAreaGroups } from './stopAreaGroups.js';
 import { flipByTrackDirection } from './flipping/flipByTrackDirection.js';
+import { getRouteShapes } from './getRouteShapes.js';
 
 export function processData({
   osm: osmArray,
@@ -48,6 +49,8 @@ export function processData({
   for (const feature of osmArray) osm[feature.type][feature.id] = feature;
 
   const stopAreaGroups = parseStopAreaGroups(osm);
+
+  const routeShapes = getRouteShapes(wikidata);
 
   // find all stop_area relations first
   for (const relation of Object.values(osm.relation)) {
@@ -123,7 +126,11 @@ export function processData({
                 .map((w) => w.id),
             );
 
-            const routes = groupRoutesThatStopHere(routesThatStopHere, node);
+            const routes = groupRoutesThatStopHere(
+              routesThatStopHere,
+              node,
+              routeShapes,
+            );
             const shieldKeys = new Set(
               Object.values(routes).flat().map(getShieldKey),
             );
@@ -141,7 +148,7 @@ export function processData({
                         ),
                     )
                     .map((r) => {
-                      const shield = getRouteShield(r.tags!);
+                      const shield = getRouteShield(r.tags!, routeShapes);
                       const key = getShieldKey(shield);
                       if (shieldKeys.has(key)) {
                         // if this non-stopping route has exactly the same ref
@@ -174,10 +181,7 @@ export function processData({
               // if the stopping location is the vertex between two tracks,
               // there could be multiple tracks, but only one is in the route
               // relation. So find the first track which is actually in the relation.
-              const trackId = trackIds
-                .intersection(wayMembers)
-                .values()
-                .next().value;
+              const trackId = take(trackIds.intersection(wayMembers));
 
               if (!trackId) {
                 warnings.push(
@@ -415,6 +419,7 @@ export function processData({
     osm,
     wikidata,
     stationsByStopId,
+    routeShapes,
   );
 
   for (const warning of warnings) console.warn('(!)', warning);

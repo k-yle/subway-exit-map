@@ -4,7 +4,7 @@ import type {
   SnakDataValue,
   WikibaseEntityIdSnakDataValue,
 } from 'wikibase-sdk';
-import type { MultiLingualNames, Rank } from '../_logic/types.def.js';
+import type { MultiLingualNames, Rank, Shape } from '../_logic/types.def.js';
 
 export enum P {
   Country = 'P17',
@@ -21,6 +21,7 @@ export enum P {
   Css = 'P10177',
   AppliesToPart = 'P518',
   FirstNumber = 'P1545',
+  Shape = 'P1419',
 }
 
 export enum Q {
@@ -30,7 +31,13 @@ export enum Q {
   TrainDoor = 'Q117075694',
   PlatformScreenDoor = 'Q570730',
   NumericalDigit = 'Q82990',
+  RouteShield = 'Q5759965',
 }
+
+export const WIKIDATA_SHAPES: Record<ItemId, Shape> = {
+  Q17278: 'circle',
+  Q41159: 'diamond',
+};
 
 const RANK_MAP: Record<Rank, number> = {
   normal: 0,
@@ -38,15 +45,17 @@ const RANK_MAP: Record<Rank, number> = {
   preferred: +1,
 };
 
+export const isQId = (
+  snak: SnakDataValue | undefined,
+): snak is WikibaseEntityIdSnakDataValue => {
+  return typeof snak?.value === 'object' && 'id' in snak.value;
+};
+
 export const equalsQId = (
   snak: SnakDataValue | undefined,
   qId: ItemId,
 ): snak is WikibaseEntityIdSnakDataValue => {
-  return (
-    typeof snak?.value === 'object' &&
-    'id' in snak.value &&
-    snak.value.id === qId
-  );
+  return isQId(snak) && snak.value.id === qId;
 };
 
 export const sortByRank = (a: { rank: Rank }, b: { rank: Rank }) =>

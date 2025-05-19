@@ -37,3 +37,10 @@ export function* createChunks<T>(array: T[], n: number) {
     yield array.slice(index, index + n);
   }
 }
+
+/**
+ * gets the first item from a set. more efficient that
+ * spreading the entire thing into an array
+ */
+export const take = <T>(set: Set<T>): T | undefined =>
+  set.values().next().value;

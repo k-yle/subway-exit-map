@@ -54,7 +54,6 @@
     { "key": "from", "object_types": ["relation"] },
     { "key": "from:ref", "object_types": ["relation"] },
     { "key": "via", "object_types": ["relation"] },
-    { "key": "shape", "object_types": ["relation"] },
     { "key": "public_transport", "object_types": ["relation"] },
     { "key": "network:wikidata", "object_types": ["relation"] }
   ]
