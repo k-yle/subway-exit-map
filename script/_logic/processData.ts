@@ -373,7 +373,7 @@ export function processData({
           ?.value;
 
       const logoUrl = bestLogo
-        ? `http://commons.wikimedia.org/wiki/Special:FilePath/${bestLogo}`
+        ? `https://commons.wikimedia.org/wiki/Special:FilePath/${bestLogo}`
         : fbUsername
           ? `https://graph.facebook.com/${fbUsername}/picture?type=large`
           : undefined;
