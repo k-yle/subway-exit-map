@@ -161,6 +161,7 @@ export function getAllRoutes(
           to: route.tags.to,
           toRef: route.tags['to:ref'],
           via: route.tags.via?.split(';'),
+          direction: route.tags.direction,
         },
         lastUpdate: {
           date: route.timestamp,

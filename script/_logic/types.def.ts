@@ -176,6 +176,7 @@ export type Data = {
               to: string | undefined;
               toRef: string | undefined;
               via: string[] | undefined;
+              direction: string | undefined;
             };
             lastUpdate: Stop['lastUpdate'];
             stops: {

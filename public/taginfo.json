@@ -49,6 +49,17 @@
     { "key": "fare_gates", "object_types": ["node", "area"] },
     { "key": "fare_gates:note", "object_types": ["node", "area"] },
 
+    { "key": "direction", "object_types": ["relation"], "value": "north" },
+    { "key": "direction", "object_types": ["relation"], "value": "south" },
+    { "key": "direction", "object_types": ["relation"], "value": "east" },
+    { "key": "direction", "object_types": ["relation"], "value": "west" },
+    { "key": "direction", "object_types": ["relation"], "value": "clockwise" },
+    {
+      "key": "direction",
+      "object_types": ["relation"],
+      "value": "anticlockwise"
+    },
+
     { "key": "to", "object_types": ["relation"] },
     { "key": "to:ref", "object_types": ["relation"] },
     { "key": "from", "object_types": ["relation"] },

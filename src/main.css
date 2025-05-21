@@ -291,3 +291,13 @@ table.legend td {
     flex-basis: 100%;
   }
 }
+
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.subtitle {
+  font-size: smaller;
+  color: #0009;
+}

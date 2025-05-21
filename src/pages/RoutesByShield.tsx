@@ -5,6 +5,7 @@ import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
 import { formatList, getName, t } from '../i18n';
+import { DIRECTIONS, type Direction } from '../helpers/directions';
 import { TrainsetInfo } from './TrainsetInfo';
 
 export const RoutesByShield: React.FC = () => {
@@ -42,30 +43,37 @@ export const RoutesByShield: React.FC = () => {
             <List.Item key={key}>
               <Link to={`/routes/${qId}/${shieldKey}/${key}`}>
                 <Button type="text">
-                  {value.tags.fromRef && (
-                    <RouteShield
-                      route={{
-                        colour: route.shield.colour,
-                        shape: 'circle',
-                        ref: value.tags.fromRef,
-                      }}
-                    />
-                  )}
-                  {value.tags.via?.length
-                    ? t('RoutesByShield.label.from-to-via', {
-                        ...value.tags,
-                        via: formatList(value.tags.via),
-                      })
-                    : t('RoutesByShield.label.from-to', value.tags)}
-                  {value.tags.toRef && (
-                    <RouteShield
-                      route={{
-                        colour: route.shield.colour,
-                        shape: 'circle',
-                        ref: value.tags.toRef,
-                      }}
-                    />
-                  )}
+                  <div className="flex">
+                    <div>
+                      {value.tags.fromRef && (
+                        <RouteShield
+                          route={{
+                            colour: route.shield.colour,
+                            shape: 'circle',
+                            ref: value.tags.fromRef,
+                          }}
+                        />
+                      )}
+                      {value.tags.via?.length
+                        ? t('RoutesByShield.label.from-to-via', {
+                            ...value.tags,
+                            via: formatList(value.tags.via),
+                          })
+                        : t('RoutesByShield.label.from-to', value.tags)}
+                      {value.tags.toRef && (
+                        <RouteShield
+                          route={{
+                            colour: route.shield.colour,
+                            shape: 'circle',
+                            ref: value.tags.toRef,
+                          }}
+                        />
+                      )}
+                    </div>
+                    <div className="subtitle">
+                      {DIRECTIONS[value.tags.direction as Direction]}
+                    </div>
+                  </div>
                 </Button>
               </Link>
             </List.Item>

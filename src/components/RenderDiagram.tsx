@@ -8,6 +8,7 @@ import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { bold, formatList, getName, locale, t } from '../i18n';
 import { uniqBy } from '../helpers/objects';
 import { carTypeToCss } from '../helpers/carType';
+import { DIRECTIONS, type Direction } from '../helpers/directions';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { DEST_DELIMITER, PlatformName } from './PlatformName';
@@ -109,6 +110,7 @@ export const RenderDiagram: React.FC<{
                       key={0}
                       stop={stop}
                       includeDestinations={false}
+                      data={data}
                     />
                   ),
                 }),
@@ -151,24 +153,37 @@ export const RenderDiagram: React.FC<{
                 );
                 toRefs.delete('');
 
+                const routeDetails =
+                  data.routes[route.qId[0]][route.shieldKey].variants[
+                    route.osmId
+                  ];
+
+                const direction =
+                  DIRECTIONS[routeDetails.tags.direction as Direction] || '';
+
                 return (
                   <List.Item key={index}>
                     <Link
                       to={`/routes/${route.qId[0]}/${route.shieldKey}/${route.osmId}`}
                     >
                       <Button type="text">
-                        <RouteShield route={route} />{' '}
-                        {t('RenderDiagram.route', { to: toName })}
-                        {[...toRefs].map((toRef) => (
-                          <RouteShield
-                            key={toRef}
-                            route={{
-                              colour: route.colour,
-                              shape: 'circle',
-                              ref: toRef,
-                            }}
-                          />
-                        ))}
+                        <div className="flex">
+                          <div>
+                            <RouteShield route={route} />{' '}
+                            {t('RenderDiagram.route', { to: toName })}
+                            {[...toRefs].map((toRef) => (
+                              <RouteShield
+                                key={toRef}
+                                route={{
+                                  colour: route.colour,
+                                  shape: 'circle',
+                                  ref: toRef,
+                                }}
+                              />
+                            ))}
+                          </div>
+                          <div className="subtitle">{direction}</div>
+                        </div>
                       </Button>
                     </Link>
                   </List.Item>
@@ -377,7 +392,7 @@ export const RenderDiagram: React.FC<{
                 />
               )}
               <br />
-              <PlatformName stop={stop} includeDestinations />
+              <PlatformName stop={stop} includeDestinations data={data} />
             </td>
             {!!carsOffPlatformRight && <td colSpan={carsOffPlatformRight} />}
             <td>{stop.flip ? from : to}</td>

@@ -1,9 +1,10 @@
 import { Fragment, useContext } from 'react';
 import clsx from 'clsx';
-import type { Stop } from '../types.def';
+import type { Data, Stop } from '../types.def';
 import { uniqBy } from '../helpers/objects';
 import { SettingsContext } from '../context/settings';
 import { formatList, t } from '../i18n';
+import { DIRECTION_ICONS, type Direction } from '../helpers/directions';
 import { RouteShield } from './RouteShield';
 
 export const DEST_DELIMITER = '𖠕';
@@ -11,7 +12,8 @@ export const DEST_DELIMITER = '𖠕';
 export const PlatformName: React.FC<{
   stop: Stop;
   includeDestinations: boolean;
-}> = ({ stop, includeDestinations }) => {
+  data: Data;
+}> = ({ stop, includeDestinations, data }) => {
   const { settings } = useContext(SettingsContext);
 
   if (!includeDestinations) {
@@ -38,6 +40,23 @@ export const PlatformName: React.FC<{
         );
         toRefs.delete('');
 
+        const routeDetails = routes.map(
+          (r) => data.routes[r.qId[0]][r.shieldKey].variants[r.osmId],
+        );
+
+        const directions = new Set(routeDetails.map((r) => r.tags.direction));
+        // only show the direction if there is exactly one common value
+        const direction =
+          (directions.size === 1 &&
+            DIRECTION_ICONS[[...directions][0] as Direction]) ||
+          '';
+
+        const toOrFrom = {
+          to: t('generic.to_lower'),
+          from: t('generic.from_lower'),
+          both: t('generic.to-from'),
+        }[routes[0].type];
+
         return (
           <small
             key={key}
@@ -47,14 +66,7 @@ export const PlatformName: React.FC<{
             {routes.map((route) => (
               <RouteShield key={JSON.stringify(route)} route={route} />
             ))}{' '}
-            {
-              {
-                to: t('generic.to_lower'),
-                from: t('generic.from_lower'),
-                both: t('generic.to-from'),
-              }[routes[0].type]
-            }{' '}
-            {to}
+            {direction} {toOrFrom} {to}
             {[...toRefs].map((toRef) => (
               <RouteShield
                 key={toRef}

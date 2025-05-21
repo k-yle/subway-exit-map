@@ -41,7 +41,6 @@ export const TrainsetInfo: React.FC<{ trainsets: Trainset[] }> = ({
       {isInconsistent
         ? t('TrainsetInfo.inconsistent', { list })
         : t('TrainsetInfo.consistent', { list })}
-      {}
     </div>
   );
 };
