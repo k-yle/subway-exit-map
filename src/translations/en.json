@@ -55,6 +55,7 @@
   "generic.back": "Back",
   "generic.both_sides": "left & right",
   "generic.close": "Close",
+  "generic.exit-range": "{from}–{to}",
   "generic.from": "From",
   "generic.from_lower": "from",
   "generic.inaccessible": "Platform is not wheelchair accessible",

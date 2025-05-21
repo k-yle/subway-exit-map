@@ -9,6 +9,7 @@ import { bold, formatList, getName, locale, t } from '../i18n';
 import { uniqBy } from '../helpers/objects';
 import { carTypeToCss } from '../helpers/carType';
 import { DIRECTIONS, type Direction } from '../helpers/directions';
+import { groupExitRefs } from '../helpers/groupExitRefs';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { DEST_DELIMITER, PlatformName } from './PlatformName';
@@ -216,7 +217,16 @@ export const RenderDiagram: React.FC<{
                   {carriage.exitNumber && (
                     <span>
                       {t('RenderDiagram.exit-number', {
-                        ref: formatList(carriage.exitNumber),
+                        ref: formatList(
+                          groupExitRefs(carriage.exitNumber).map((item) =>
+                            typeof item === 'string'
+                              ? item
+                              : t('generic.exit-range', {
+                                  from: item[0],
+                                  to: item[1],
+                                }),
+                          ),
+                        ),
                       })}
                     </span>
                   )}

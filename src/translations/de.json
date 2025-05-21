@@ -55,6 +55,7 @@
   "generic.back": "Zurück",
   "generic.both_sides": "links und rechts",
   "generic.close": "Schließen",
+  "generic.exit-range": "{from}–{to}",
   "generic.from": "Von",
   "generic.from_lower": "von",
   "generic.inaccessible": "Der Bahnsteig ist nicht für Rollstuhlfahrer zugänglich",

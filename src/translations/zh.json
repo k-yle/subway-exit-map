@@ -55,6 +55,7 @@
   "generic.back": "后退",
   "generic.both_sides": "左右",
   "generic.close": "关闭",
+  "generic.exit-range": "{from}～{to}",
   "generic.from": "从",
   "generic.from_lower": "从",
   "generic.inaccessible": "平台无法访问轮椅",
