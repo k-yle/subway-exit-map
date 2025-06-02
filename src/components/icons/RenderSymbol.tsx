@@ -22,7 +22,7 @@ export const RenderSymbol: React.FC<{
   let url = data.supportedSymbols.generic[symbol];
   for (const network of networks) {
     const localUrl = data.supportedSymbols[network]?.[symbol];
-    url = localUrl;
+    if (localUrl) url = localUrl;
   }
 
   if (url) {
