@@ -74,6 +74,9 @@ export function processData({
       if (!station) {
         const fareGates = trainStationFeature.tags.fare_gates;
         const fareGatesNote = trainStationFeature.tags['fare_gates:note'];
+
+        const stationQIds = getNetworks(trainStationFeature.tags);
+
         station = {
           relationId: relation.id,
           gtfsId,
@@ -81,7 +84,7 @@ export function processData({
           fareGates:
             fareGates in FareGates ? (fareGates as FareGates) : undefined,
           fareGatesNote,
-          networks: [],
+          networks: stationQIds, // the network tag from all routes is also added later
           stops: [],
         };
         stations.push(station);

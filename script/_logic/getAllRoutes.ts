@@ -99,7 +99,7 @@ export function getAllRoutes(
       if (route.tags.wikidata) {
         const item = <Item>wikidata[<ItemId>route.tags.wikidata];
         const networkItem = <Item | undefined>(
-          wikidata[<ItemId>route.tags['network:wikidata']]
+          wikidata[getNetworks(route.tags)[0]]
         );
         if (!item) {
           throw new Error(`No data for ${route.tags.wikidata}`);

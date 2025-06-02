@@ -16,8 +16,9 @@ export const NETWORK_OVERRIDE: Record<ItemId, ItemId> = {
   Q6955406: 'Q7660181', // NSW TrainLink -> Sydney Trains
 };
 
-export const getNetworks = (tags: Tags): ItemId[] => {
-  const qIds = <ItemId[] | undefined>tags['network:wikidata']?.split(';') || [];
+export const getNetworks = (tags: Tags | undefined): ItemId[] => {
+  const qIds =
+    <ItemId[] | undefined>tags?.['network:wikidata']?.split(';') || [];
   return qIds.map((qId) => NETWORK_OVERRIDE[qId] || qId);
 };
 

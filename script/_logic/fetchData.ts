@@ -5,6 +5,7 @@ import type { OsmFeature } from 'osm-api';
 import type { Item, ItemId, parse } from 'wikibase-sdk';
 import { createChunks, isTruthy } from '../_helpers/objects.js';
 import { P } from '../_helpers/wikidata.js';
+import { getNetworks } from '../_helpers/override.js';
 import type { RawInput, Wikidata } from './types.def.js';
 
 export const TMP_FILE = join(tmpdir(), 'exitsTmp.json');
@@ -53,10 +54,7 @@ export async function fetchData(userAgent: string): Promise<RawInput> {
 
   const networkQIds = osmElements
     .filter((entity) => entity.type === 'relation')
-    .flatMap(
-      (entity) =>
-        <ItemId | undefined>entity.tags?.['network:wikidata']?.split(';'),
-    )
+    .flatMap((entity) => getNetworks(entity.tags))
     .filter(isTruthy);
 
   const routeQIds = osmElements
