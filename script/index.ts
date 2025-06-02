@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
-import taginfo from '../public/taginfo.json';
+import taginfo from '../taginfo.template.json';
 import { fetchData } from './_logic/fetchData.js';
 import { processData } from './_logic/processData.js';
 import { generateReadmeMap } from './build/generateReadmeMap';
