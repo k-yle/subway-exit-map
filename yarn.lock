@@ -4569,13 +4569,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"osm-api@npm:^2.0.0":
-  version: 2.5.0
-  resolution: "osm-api@npm:2.5.0"
+"osm-api@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "osm-api@npm:2.7.0"
   dependencies:
     "@types/geojson": "npm:^7946.0.13"
     fast-xml-parser: "npm:^4.4.1"
-  checksum: 10c0/9ff20ba2393a5085e4d7f6471e7f4f754051352d66ccb8ce9f3e9d711a24a99a4e278d8a6a923e516fe93425b808683bfdc5baee58b790b45ce83e96732319a8
+  checksum: 10c0/6db813d795029a6163464b2495f27caa4c41a53353d1569acafca2c9754d723b34fed41016de031e9a8f35f9a79d86d9e3a2f68dcb19bd960ada4dcd97c94a35
   languageName: node
   linkType: hard
 
@@ -5272,11 +5272,12 @@ __metadata:
     eslint: "npm:^9.9.0"
     eslint-config-kyle: "npm:^25.0.0-beta2"
     get-region: "npm:^0.0.0"
-    osm-api: "npm:^2.0.0"
+    osm-api: "npm:^2.7.0"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
     react-router-dom: "npm:^6.24.1"
     react-timeago-i18n: "npm:^2.0.0"
+    runtime-union: "npm:^0.0.0"
     tsx: "npm:^4.19.3"
     typescript: "npm:^5.2.2"
     vite: "npm:^5.0.12"
@@ -5291,6 +5292,15 @@ __metadata:
   dependencies:
     queue-microtask: "npm:^1.2.2"
   checksum: 10c0/200b5ab25b5b8b7113f9901bfe3afc347e19bb7475b267d55ad0eb86a62a46d77510cb0f232507c9e5d497ebda569a08a9867d0d14f57a82ad5564d991588b39
+  languageName: node
+  linkType: hard
+
+"runtime-union@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "runtime-union@npm:0.0.0"
+  peerDependencies:
+    typescript: "*"
+  checksum: 10c0/e36f99ed1b0dd7c6d0f10f481e2f3c75f4e546a7d3e1a0396f9493e1ea551fec5244ffdd58bd3e8926fc20b4a920d4f66ddc3aba7b0c311a8158367c96b8b1fa
   languageName: node
   linkType: hard
 

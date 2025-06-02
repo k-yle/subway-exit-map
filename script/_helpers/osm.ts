@@ -1,9 +1,13 @@
 import type { OsmFeature, Tags } from 'osm-api';
 import type { ItemId } from 'wikibase-sdk';
-import type { FwdBwdBoth } from '../_logic/types.def.js';
+import type {
+  FwdBwdBoth,
+  Key,
+  MultiLingualNames,
+} from '../_logic/types.def.js';
 import { CITIES_WITHOUT_LOCAL_REF } from './override.js';
 
-const ONEWAY_TAGS: Record<string, Record<string, FwdBwdBoth>> = {
+const ONEWAY_TAGS: Partial<Record<Key, Record<string, FwdBwdBoth>>> = {
   oneway: {
     yes: 'forward',
     '-1': 'backward',
@@ -29,7 +33,7 @@ export const getTrackDirection = (
 ): FwdBwdBoth | 'unknown' => {
   return (
     Object.entries(tags || {})
-      .map(([key, value]) => ONEWAY_TAGS[key]?.[value])
+      .map(([key, value]) => ONEWAY_TAGS[<Key>key]?.[value])
       .find(Boolean) || 'unknown'
   );
 };
@@ -50,7 +54,7 @@ export const getLocalRef = (tags: Tags | undefined, networks: ItemId[]) => {
 export const getRef = (tags: Tags | undefined) => tags?.ref || tags?.uic_ref;
 
 /** converts OSM tags to an object containing just the names per language */
-export const getNames = (tags: Tags | undefined): Tags => {
+export const getNames = (tags: Tags | undefined): MultiLingualNames => {
   const out = Object.fromEntries(
     Object.entries(tags || {})
       .filter(([k]) => k.startsWith('name:'))

@@ -3,6 +3,7 @@ import { FALSY, getTrackDirection } from '../_helpers/osm.js';
 import { BEST_OVERRIDE } from '../_helpers/override.js';
 import type {
   Carriage,
+  DirectionSuffix,
   ExitSide,
   ExitType,
   OsmFeatures,
@@ -36,7 +37,7 @@ export function createExitMap(
 ): Pick<Stop, 'exitSide' | 'carriages' | 'biDiMode' | 'shortPlatform'> {
   const tags = node.tags!;
 
-  const suffix = tags['exit:carriages:forward']
+  const suffix: DirectionSuffix = tags['exit:carriages:forward']
     ? ':forward'
     : tags['exit:carriages:backward']
       ? ':backward'

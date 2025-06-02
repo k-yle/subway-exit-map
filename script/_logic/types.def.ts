@@ -1,13 +1,61 @@
-import type { OsmFeature, OsmNode, OsmRelation, OsmWay, Tags } from 'osm-api';
+import type { OsmFeature, OsmNode, OsmRelation, OsmWay } from 'osm-api';
 import type { ItemId, parse } from 'wikibase-sdk';
 
-export type MultiLingualNames = Tags;
+export type MultiLingualNames = Record<string, string>;
 
 export type FwdBwdBoth = 'forward' | 'backward' | 'both_ways';
 
 export type ExitSide = 'left' | 'right' | 'both' | undefined;
 
 export type Alignment = 'first' | 'middle' | 'last';
+
+export type DirectionSuffix = '' | ':forward' | ':backward';
+
+/**
+ * An enum of (almost) every OSM key that is consumed by this app. Some
+ * dynamic usage patterns like `name:*`, `*:forwards` can't be included,
+ * but this cover almost everything.
+ *
+ * This is used to auto-generate the taginfo file.
+ */
+export type Key =
+  | 'local_ref'
+  | 'ref'
+  | 'ref:colour'
+  | 'colour'
+  | 'uic_ref'
+  | 'name'
+  | 'public_transport'
+  | 'oneway'
+  | 'railway:preferred_direction'
+  | 'railway:bidirectional'
+  | 'wikidata'
+  | 'network:wikidata'
+  | 'route'
+  | 'from'
+  | 'to'
+  | 'via'
+  | 'to:ref'
+  | 'from:ref'
+  | 'direction'
+  | 'wheelchair'
+  | 'description'
+  | 'fare_gates'
+  | 'fare_gates:note'
+  | 'side'
+  | `access:carriages${DirectionSuffix}`
+  | `exit:carriages${DirectionSuffix}`
+  | `destination:carriages${DirectionSuffix}`
+  | `destination:ref:carriages${DirectionSuffix}`
+  | `destination:symbol:carriages${DirectionSuffix}`;
+
+declare global {
+  namespace OsmApi {
+    interface Keys {
+      keys: Key;
+    }
+  }
+}
 
 export type ExitType =
   | 'stairs'
@@ -200,7 +248,7 @@ export type Data = {
   };
   nodesWithNoData: {
     [nodeId: number]: Pick<Stop, 'exitSide' | 'platform'> & {
-      name: Tags;
+      name: MultiLingualNames;
     };
   };
   supportedSymbols: {

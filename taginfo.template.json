@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/taginfo/taginfo-projects/master/taginfo-project-schema.json",
   "data_format": 1,
-  "data_url": "https://exits.to/taginfo.json",
-  "data_updated": "20240515T000000Z",
+  "data_url": "https://exits.to/taginfo.generated.json",
+  "data_updated": "20000000T000000Z",
   "project": {
     "name": "Subway Exit Map",
     "description": "Used for rendering a map of exits on subway/train platforms",
@@ -13,60 +13,6 @@
     "contact_email": "message @kylenz on OpenStreetMap"
   },
   "tags": [
-    { "key": "exit:carriages", "object_types": ["node"] },
-    { "key": "exit:carriages:forward", "object_types": ["node"] },
-    { "key": "exit:carriages:backward", "object_types": ["node"] },
-
-    { "key": "destination:carriages", "object_types": ["node"] },
-    { "key": "destination:carriages:forward", "object_types": ["node"] },
-    { "key": "destination:carriages:backward", "object_types": ["node"] },
-
-    { "key": "destination:ref:carriages", "object_types": ["node"] },
-    { "key": "destination:ref:carriages:forward", "object_types": ["node"] },
-    { "key": "destination:ref:carriages:backward", "object_types": ["node"] },
-
-    { "key": "destination:symbol:carriages", "object_types": ["node"] },
-    { "key": "destination:symbol:carriages:forward", "object_types": ["node"] },
-    {
-      "key": "destination:symbol:carriages:backward",
-      "object_types": ["node"]
-    },
-
-    { "key": "access:carriages", "object_types": ["node"] },
-    { "key": "access:carriages:forward", "object_types": ["node"] },
-    { "key": "access:carriages:backward", "object_types": ["node"] },
-
-    { "key": "railway:preferred_direction", "object_types": ["way"] },
-    { "key": "railway:bidirectional", "object_types": ["way"] },
-    { "key": "oneway", "object_types": ["way"] },
-
-    { "key": "local_ref", "object_types": ["node"] },
-
-    { "key": "side", "object_types": ["node"] },
-    { "key": "ref", "object_types": ["node", "area", "relation"] },
-    { "key": "ref:colour", "object_types": ["node", "area"] },
-    { "key": "uic_ref", "object_types": ["node", "area"] },
-    { "key": "wheelchair", "object_types": ["node", "area"] },
-    { "key": "fare_gates", "object_types": ["node", "area"] },
-    { "key": "fare_gates:note", "object_types": ["node", "area"] },
-
-    { "key": "direction", "object_types": ["relation"], "value": "north" },
-    { "key": "direction", "object_types": ["relation"], "value": "south" },
-    { "key": "direction", "object_types": ["relation"], "value": "east" },
-    { "key": "direction", "object_types": ["relation"], "value": "west" },
-    { "key": "direction", "object_types": ["relation"], "value": "clockwise" },
-    {
-      "key": "direction",
-      "object_types": ["relation"],
-      "value": "anticlockwise"
-    },
-
-    { "key": "to", "object_types": ["relation"] },
-    { "key": "to:ref", "object_types": ["relation"] },
-    { "key": "from", "object_types": ["relation"] },
-    { "key": "from:ref", "object_types": ["relation"] },
-    { "key": "via", "object_types": ["relation"] },
-    { "key": "public_transport", "object_types": ["relation"] },
-    { "key": "network:wikidata", "object_types": ["relation"] }
+    { "key": "❕this is a template file, the build script adds the values❕" }
   ]
 }
