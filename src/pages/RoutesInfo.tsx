@@ -1,16 +1,13 @@
 import { Fragment, useContext, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Avatar, Button, List, Tag, Typography } from '@arco-design/web-react';
-import {
-  IconCaretLeft,
-  IconCaretRight,
-  IconCode,
-} from '@arco-design/web-react/icon';
+import { IconCaretLeft, IconCaretRight } from '@arco-design/web-react/icon';
 import TimeAgo from 'react-timeago-i18n';
 import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
 import notAccessibleBlack from '../components/icons/NotAccessibleBlack.svg';
+import iconCaretBothSides from '../components/icons/BothSides.svg';
 import { SettingsContext } from '../context/settings';
 import { Settings } from '../components/Settings';
 import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
@@ -32,7 +29,7 @@ const inaccessible = (
 const SIDE_ICONS = {
   left: <IconCaretLeft />,
   right: <IconCaretRight />,
-  both: <IconCode />,
+  both: <img src={iconCaretBothSides} alt="" className="arco-icon" />,
 };
 
 export const RoutesInfo: React.FC = () => {
@@ -61,11 +58,12 @@ export const RoutesInfo: React.FC = () => {
       .filter((s) => allStopIds.has(s.nodeId));
 
     const hasSides = allStops.some((s) => s.exitSide);
+    const hasBoth = allStops.some((s) => s.exitSide === 'both');
     const hasFareGates = allStations.some((s) => s.fareGates);
 
     return [
       {
-        icon: <IconCaretLeft />,
+        icon: SIDE_ICONS.left,
         label: t('RenderDiagram.exit-side', {
           side: t('generic.left'),
           bold: noop,
@@ -73,12 +71,20 @@ export const RoutesInfo: React.FC = () => {
         if: hasSides,
       },
       {
-        icon: <IconCaretRight />,
+        icon: SIDE_ICONS.right,
         label: t('RenderDiagram.exit-side', {
           side: t('generic.right'),
           bold: noop,
         }),
         if: hasSides,
+      },
+      {
+        icon: SIDE_ICONS.both,
+        label: t('RenderDiagram.exit-side', {
+          side: t('generic.both_sides'),
+          bold: noop,
+        }),
+        if: hasBoth,
       },
       {
         icon: inaccessible,
