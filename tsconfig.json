@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "downlevelIteration": true,
     "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
     "jsx": "react-jsx"
   },
   "include": ["src", "script"]

@@ -40,7 +40,6 @@ export const DataWrapper: React.FC<PropsWithChildren> = ({ children }) => {
       );
 
       setData(newData);
-      localStorage.carriages = JSON.stringify(newData);
     } catch (ex) {
       console.error(ex);
       setError(ex instanceof Error ? ex : new Error(ex as string));
@@ -49,11 +48,6 @@ export const DataWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    try {
-      setData(JSON.parse(localStorage.carriages));
-    } catch {
-      // no problem, we will fetch it anyway
-    }
     doFetch();
   }, [doFetch]);
 

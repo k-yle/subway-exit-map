@@ -35,8 +35,8 @@ const SIDE_ICONS = {
 
 export const RoutesInfo: React.FC = () => {
   const qId = useParams<{ qId: ItemId }>().qId!;
-  const shieldKey = useParams().shieldKey!;
-  const relationId = useParams().relationId!;
+  const shieldKey = useParams<'shieldKey'>().shieldKey!;
+  const relationId = useParams<'relationId'>().relationId!;
 
   const data = useContext(DataContext);
   const { settings } = useContext(SettingsContext);

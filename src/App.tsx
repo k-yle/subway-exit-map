@@ -13,6 +13,7 @@ import { bold, getName, locale, normaliseString, t } from './i18n';
 import './main.css';
 import { copyrightFooter } from './components/text';
 import { StationIcon } from './components/StationIcon';
+import { LOCAL_STORAGE_KEYS } from './helpers/const';
 
 const empty = (
   <div style={{ padding: '2px 8px' }}>{t('generic.no-results')}</div>
@@ -95,14 +96,14 @@ const MainLayout: React.FC<{
 
 export const Home: React.FC = () => {
   const [selectedNetwork, setSelectedNetwork] = useState<ItemId | ''>(
-    localStorage.selectedNetwork,
+    localStorage[LOCAL_STORAGE_KEYS.network],
   );
 
   useEffect(() => {
-    localStorage.selectedNetwork = selectedNetwork;
+    localStorage[LOCAL_STORAGE_KEYS.network] = selectedNetwork;
   }, [selectedNetwork]);
 
-  const selectedId = useParams().stationId;
+  const selectedId = useParams<'stationId'>().stationId;
   const navigate = useNavigate();
 
   const data = useContext(DataContext);

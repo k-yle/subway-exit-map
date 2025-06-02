@@ -1,12 +1,16 @@
 import { type IntlShape, createIntl, createIntlCache } from '@formatjs/intl';
 import { translations } from './translations/index';
 import type { MultiLingualNames } from './types.def';
+import { LOCAL_STORAGE_KEYS } from './helpers/const';
 
 export type SupportedLanguage = keyof typeof translations;
 
+const FALLBACK_LANG = 'en';
+
 export function getDefaultLanguage(): SupportedLanguage {
   // if the user chose a language last time, use it
-  if (localStorage.lang) return localStorage.lang;
+  const pref = localStorage[LOCAL_STORAGE_KEYS.lang];
+  if (pref) return pref;
 
   // otherwise, find the first supported language
   return (
@@ -71,7 +75,7 @@ export const getName = (names: MultiLingualNames): string | undefined => {
   if (names['']) return names[''];
 
   // still no match, so default to english
-  if (names.en) return names.en;
+  if (names[FALLBACK_LANG]) return names[FALLBACK_LANG];
 
   // still no match, so return any language
   return Object.values(names)[0];

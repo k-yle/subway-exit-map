@@ -11,7 +11,7 @@ import { TrainsetInfo } from './TrainsetInfo';
 export const RoutesByShield: React.FC = () => {
   const data = useContext(DataContext);
   const qId = useParams<{ qId: ItemId }>().qId!;
-  const shieldKey = useParams().shieldKey!;
+  const shieldKey = useParams<'shieldKey'>().shieldKey!;
 
   const network = data.networks.find((n) => n.qId === qId);
   const route = data.routes[qId]?.[shieldKey];

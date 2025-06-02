@@ -6,8 +6,7 @@ import {
   useState,
 } from 'react';
 import type { Settings } from '../types.def';
-
-const KEY = 'carriageSettings';
+import { LOCAL_STORAGE_KEYS } from '../helpers/const';
 
 export const SettingsContext = createContext<{
   settings: Settings;
@@ -18,14 +17,14 @@ SettingsContext.displayName = 'SettingsContext';
 export const SettingsWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const [settings, setSettings] = useState<Settings>(() => {
     try {
-      return JSON.parse(localStorage[KEY]);
+      return JSON.parse(localStorage[LOCAL_STORAGE_KEYS.settings]);
     } catch {
       return {};
     }
   });
 
   useEffect(() => {
-    localStorage.carriageSettings = JSON.stringify(settings);
+    localStorage[LOCAL_STORAGE_KEYS.settings] = JSON.stringify(settings);
   }, [settings]);
 
   const context = useMemo(() => ({ settings, setSettings }), [settings]);
