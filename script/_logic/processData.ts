@@ -52,6 +52,20 @@ export function processData({
 
   const routeShapes = getRouteShapes(wikidata);
 
+  const networksWithStationCodes = new Set(
+    Object.values(wikidata)
+      .filter((item) =>
+        (<Item>item).claims?.[P.Uses]?.some(
+          (claim) =>
+            equalsQId(claim.mainsnak.datavalue, Q.AlphanumericCode) &&
+            claim.qualifiers?.[P.AppliesToPart].some((part) =>
+              equalsQId(part.datavalue, Q.Station),
+            ),
+        ),
+      )
+      .map((item) => item.id),
+  );
+
   // find all stop_area relations first
   for (const relation of Object.values(osm.relation)) {
     if (relation.tags?.public_transport === 'stop_area') {
@@ -77,6 +91,9 @@ export function processData({
 
         const stationQIds = getNetworks(trainStationFeature.tags);
 
+        const refs = trainStationFeature.tags.ref?.split(';');
+        const refColours = trainStationFeature.tags['ref:colour']?.split(';');
+
         station = {
           relationId: relation.id,
           gtfsId,
@@ -84,6 +101,16 @@ export function processData({
           fareGates:
             fareGates in FareGates ? (fareGates as FareGates) : undefined,
           fareGatesNote,
+          icon:
+            networksWithStationCodes.intersection(new Set(stationQIds)).size &&
+            refs &&
+            refColours
+              ? refs.map((value, index) => ({
+                  value,
+                  colour: refColours[index],
+                }))
+              : undefined,
+
           networks: stationQIds, // the network tag from all routes is also added later
           stops: [],
         };

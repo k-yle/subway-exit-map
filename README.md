@@ -74,6 +74,8 @@ namespace scope_of_this_app {
         P2283 Uses→Q570730 Platform Screen Doors
         ⤷ P2283 Uses→Q82990 Numbered Doors
         ⤷ P1545 First Door Numbered
+        P2283 Uses→Q3504901 Alphanumeric Code
+        ⤷ P518 For→Q12819564 Stations
         P154 Logo
         P8972 Logo Small
         P2013 Facebook Username

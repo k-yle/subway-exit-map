@@ -44,6 +44,7 @@
 
     { "key": "side", "object_types": ["node"] },
     { "key": "ref", "object_types": ["node", "area", "relation"] },
+    { "key": "ref:colour", "object_types": ["node", "area"] },
     { "key": "uic_ref", "object_types": ["node", "area"] },
     { "key": "wheelchair", "object_types": ["node", "area"] },
     { "key": "fare_gates", "object_types": ["node", "area"] },

@@ -14,6 +14,7 @@ import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
 import { type I18nComp, formatList, getName, locale, t } from '../i18n';
 import { copyrightFooter } from '../components/text';
 import { DIRECTIONS, type Direction } from '../helpers/directions';
+import { StationIcon } from '../components/StationIcon';
 import { TrainsetInfo } from './TrainsetInfo';
 
 const noop: I18nComp = (x) => x;
@@ -242,11 +243,15 @@ export const RoutesInfo: React.FC = () => {
                     )}
                     {{ yes: '🔒', no: '🔓', partial: '🔏' }[station.fareGates!]}
                     {stop.inaccessible && inaccessible}
-                    <div>
-                      {connectingRoutes.map(([key, shield]) => (
-                        <RouteShield key={key} route={shield.shield} />
-                      ))}
-                    </div>
+                    {station.icon ? (
+                      <StationIcon icon={station.icon} />
+                    ) : (
+                      <div>
+                        {connectingRoutes.map(([key, shield]) => (
+                          <RouteShield key={key} route={shield.shield} />
+                        ))}
+                      </div>
+                    )}
                     <MiniTrainDiagram carriages={stop.carriages} />
                   </Button>
                 </Link>

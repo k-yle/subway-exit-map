@@ -120,6 +120,13 @@ export type Station = {
   relationId: number;
   gtfsId: string;
   name: MultiLingualNames;
+  /**
+   * if the network has well-signposted codes for each station,
+   * then this property will contain the value to show for the
+   * station's shield. Supports an array for complex cases like
+   * https://en.wikipedia.org/wiki/Template:SMRT_code
+   */
+  icon: { value: string; colour: string | undefined }[] | undefined;
   networks: ItemId[];
   fareGates: FareGates | undefined;
   fareGatesNote: string | undefined;

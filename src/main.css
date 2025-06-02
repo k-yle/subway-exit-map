@@ -195,6 +195,10 @@ tr.exitSymbolRow > td {
   justify-content: center;
   align-items: center;
 }
+.flexEdges {
+  display: flex;
+  justify-content: space-between;
+}
 
 .shield {
   padding: 2px 4px;
@@ -300,4 +304,20 @@ table.legend td {
 .subtitle {
   font-size: smaller;
   color: #0009;
+}
+
+.StationIcon {
+  display: inline-block;
+  overflow: hidden;
+  & > span {
+    font-weight: bold;
+    color: #fff;
+    padding: 0 4px;
+    &:first-child {
+      border-radius: 7px 0 0 7px;
+    }
+    &:last-child {
+      border-radius: 0 7px 7px 0;
+    }
+  }
 }

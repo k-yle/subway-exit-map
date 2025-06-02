@@ -32,6 +32,8 @@ export enum Q {
   PlatformScreenDoor = 'Q570730',
   NumericalDigit = 'Q82990',
   RouteShield = 'Q5759965',
+  AlphanumericCode = 'Q3504901',
+  Station = 'Q12819564',
 }
 
 export const WIKIDATA_SHAPES: Record<ItemId, Shape> = {

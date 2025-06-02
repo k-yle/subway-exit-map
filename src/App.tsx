@@ -12,6 +12,7 @@ import { bold, getName, locale, normaliseString, t } from './i18n';
 
 import './main.css';
 import { copyrightFooter } from './components/text';
+import { StationIcon } from './components/StationIcon';
 
 const empty = (
   <div style={{ padding: '2px 8px' }}>{t('generic.no-results')}</div>
@@ -189,7 +190,15 @@ export const Home: React.FC = () => {
                 value={station.gtfsId}
                 data-name={Object.values(station.name).join('|')}
               >
-                {name}
+                <div className="flexEdges">
+                  <span>{name}</span>
+                  {station.icon && (
+                    <StationIcon
+                      icon={station.icon}
+                      style={{ marginRight: 8 }}
+                    />
+                  )}
+                </div>
               </Select.Option>
             );
           })}
