@@ -9,7 +9,7 @@ export const flipByTrackDirection = (stops: Stop[], allData: OsmFeatures) => {
   for (const stop of stops) {
     if (!stop.carriages.length) continue;
 
-    const stopNode = allData.node[stop.nodeId];
+    const stopNode = allData.node[stop.nodeId]!;
 
     /**
      * there could be multiple, if the track is split

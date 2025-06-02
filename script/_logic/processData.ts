@@ -58,7 +58,7 @@ export function processData({
         (<Item>item).claims?.[P.Uses]?.some(
           (claim) =>
             equalsQId(claim.mainsnak.datavalue, Q.AlphanumericCode) &&
-            claim.qualifiers?.[P.AppliesToPart].some((part) =>
+            claim.qualifiers?.[P.AppliesToPart]?.some((part) =>
               equalsQId(part.datavalue, Q.Station),
             ),
         ),
@@ -99,7 +99,9 @@ export function processData({
           gtfsId,
           name: getNames(trainStationFeature.tags),
           fareGates:
-            fareGates in FareGates ? (fareGates as FareGates) : undefined,
+            fareGates && fareGates in FareGates
+              ? (fareGates as FareGates)
+              : undefined,
           fareGatesNote,
           icon:
             networksWithStationCodes.intersection(new Set(stationQIds)).size &&
@@ -238,7 +240,7 @@ export function processData({
 
               const travellingDirectionAlongTrack = getTravellingDirection(
                 route,
-                osm.way[trackId],
+                osm.way[trackId]!,
                 osm,
                 warnings,
               );
@@ -422,8 +424,8 @@ export function processData({
           equalsQId(qualifier.datavalue, Q.NumericalDigit),
       );
       const firstDoorNumber = +(
-        PlatformScreenDoor?.qualifiers?.[P.FirstNumber]?.[0].datavalue?.value ||
-        1
+        PlatformScreenDoor?.qualifiers?.[P.FirstNumber]?.[0]?.datavalue
+          ?.value || 1
       );
 
       const names: MultiLingualNames = {};

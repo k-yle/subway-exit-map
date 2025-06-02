@@ -16,7 +16,7 @@ export const RenderAdjacentStops: React.FC<{
         .formatToParts(stops.map((_, index) => `${index}`))
         .map((part) => {
           if (part.type === 'literal') return part.value;
-          const stop = stops[+part.value];
+          const stop = stops[+part.value]!;
           return (
             <Fragment key={stop.nodeId}>
               {stop.gtfsId ? (

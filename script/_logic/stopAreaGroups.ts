@@ -26,7 +26,7 @@ export function parseStopAreaGroups(data: OsmFeatures) {
       const allStations = stopAreas
         .flatMap((stopArea) => {
           return stopArea.members
-            .map((member) => data[member.type][member.ref])
+            .map((member) => data[member.type][member.ref]!)
             .filter(isStation);
         })
         .filter(uniq);
@@ -35,7 +35,7 @@ export function parseStopAreaGroups(data: OsmFeatures) {
         // multiple stations with data, so find the best one
 
         // ensure that we get a deterministic result
-        const bestStation = allStations.sort((a, b) => a.id - b.id)[0];
+        const bestStation = allStations.sort((a, b) => a.id - b.id)[0]!;
 
         for (const member of stopAreas) {
           if (member.type === 'relation') {

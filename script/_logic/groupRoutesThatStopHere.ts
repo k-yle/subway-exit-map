@@ -15,7 +15,7 @@ export function getRouteShield(
 ): RouteShield {
   const colour = tags!.colour || '#333333';
   return {
-    ref: tags!.ref,
+    ref: tags!.ref!,
     colour: {
       bg: colour,
       fg: getConstrastingTextColour(colour.replace('#', '')),
@@ -42,7 +42,7 @@ export function groupRoutesThatStopHere(
         .slice(memberIndex + 1)
         .some((m) => m.role.startsWith('stop'));
 
-      const { role } = r.members[memberIndex];
+      const { role } = r.members[memberIndex]!;
       const isTerminating = role === 'stop_exit_only' || !hasNextStop;
 
       const shield = getRouteShield(r.tags!, routeShapes);
@@ -91,14 +91,14 @@ export function groupRoutesThatStopHere(
   const singles: Record<string, string> = {};
   for (const key in groupedByDestination) {
     if (
-      groupedByDestination[key].length === 1 &&
-      groupedByDestination[key][0].to![0].length < 20 // only group short destinations
+      groupedByDestination[key]!.length === 1 &&
+      groupedByDestination[key]![0]!.to![0]!.length < 20 // only group short destinations
     ) {
-      const [route] = groupedByDestination[key];
+      const route = groupedByDestination[key]![0]!;
       if (route.ref in singles) {
         // we've already seen a single route with this ref
-        const existingKey = singles[route.ref];
-        groupedByDestination[existingKey][0].to!.push(route.to![0]);
+        const existingKey = singles[route.ref]!;
+        groupedByDestination[existingKey]![0]!.to!.push(route.to![0]!);
         delete groupedByDestination[key];
       } else {
         // we haven't (yet) seen any other single routes with this ref
@@ -124,10 +124,10 @@ export function groupRoutesThatStopHere(
         return <const>[to, routes];
       })
       // order of rows when there are multiple routes & multiple destinations
-      .sort(([, [a]], [, [b]]) => {
-        if (a.type !== 'to') return 2;
-        if (b.type !== 'to') return -2;
-        return (a.ref || '').localeCompare(b.ref || '');
+      .sort(([, a], [, b]) => {
+        if (a[0]!.type !== 'to') return 2;
+        if (b[0]!.type !== 'to') return -2;
+        return (a[0]!.ref || '').localeCompare(b[0]!.ref || '');
       }),
   );
 }

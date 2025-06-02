@@ -32,19 +32,20 @@ export const PlatformName: React.FC<{
     <>
       {Object.entries(stop.routes).map(([key, routes]) => {
         const to = formatList(
-          routes[0].to?.map((name) => name.split(DEST_DELIMITER)[0]) || [],
+          routes[0]!.to?.map((name) => name.split(DEST_DELIMITER)[0]!) || [],
         );
         const toRefs = new Set(
-          routes[0].to?.map((name) => name.split(DEST_DELIMITER)[1] || '') ||
+          routes[0]!.to?.map((name) => name.split(DEST_DELIMITER)[1] || '') ||
             [],
         );
         toRefs.delete('');
 
         const routeDetails = routes.map(
-          (r) => data.routes[r.qId[0]][r.shieldKey].variants[r.osmId],
+          (r) => data.routes[r.qId[0]!]?.[r.shieldKey]?.variants[r.osmId],
         );
 
-        const directions = new Set(routeDetails.map((r) => r.tags.direction));
+        const directions = new Set(routeDetails.map((r) => r?.tags.direction));
+
         // only show the direction if there is exactly one common value
         const direction =
           (directions.size === 1 &&
@@ -55,14 +56,14 @@ export const PlatformName: React.FC<{
           to: t('generic.to_lower'),
           from: t('generic.from_lower'),
           both: t('generic.to-from'),
-        }[routes[0].type];
+        }[routes[0]!.type];
 
         return (
           <small
             key={key}
-            className={clsx(routes[0].type === 'from' && 'italics')}
+            className={clsx(routes[0]!.type === 'from' && 'italics')}
           >
-            {routes[0].type === 'from' && t('RoutesInfo.exit_only')}{' '}
+            {routes[0]!.type === 'from' && t('RoutesInfo.exit_only')}{' '}
             {routes.map((route) => (
               <RouteShield key={JSON.stringify(route)} route={route} />
             ))}{' '}
@@ -71,7 +72,7 @@ export const PlatformName: React.FC<{
               <RouteShield
                 key={toRef}
                 route={{
-                  colour: routes[0].colour,
+                  colour: routes[0]!.colour,
                   shape: 'circle',
                   ref: toRef,
                 }}

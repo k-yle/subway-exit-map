@@ -1,7 +1,7 @@
 import type { Carriage } from '../types.def';
 
 export function carTypeToCss(index: number, carriages: Carriage[]) {
-  const type = carriages[index].type;
+  const type = carriages[index]!.type;
 
   if (type === 'loco') {
     // this one needs to be replaced with `first` or `last`.

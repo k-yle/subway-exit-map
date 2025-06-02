@@ -27,12 +27,12 @@ const isEmpty = (str: string) => FALSY.has(str);
  */
 export function fillBlanksForColSpan(matrix: string[][]): void {
   if (!matrix.length) return;
-  const length = matrix[0].length;
+  const length = matrix[0]!.length;
 
   /* eslint-disable unicorn/prevent-abbreviations -- i & j are better than "jindex" */
   for (let i = 0; i < length - 1; i++) {
-    const thisColHasData = matrix.some((row) => !isEmpty(row[i]));
-    const isNextBlank = matrix.every((row) => isEmpty(row[i + 1]));
+    const thisColHasData = matrix.some((row) => !isEmpty(row[i]!));
+    const isNextBlank = matrix.every((row) => isEmpty(row[i + 1]!));
 
     if (thisColHasData && isNextBlank) {
       const nextNonEmptyIndex =
@@ -51,7 +51,7 @@ export function fillBlanksForColSpan(matrix: string[][]): void {
         if (isNextNonEmptyColumnEqual) {
           for (let j = i; j < nextNonEmptyIndex; j++) {
             for (const row of matrix) {
-              row[j] = row[i];
+              row[j] = row[i]!;
             }
           }
         }

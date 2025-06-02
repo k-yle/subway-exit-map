@@ -113,7 +113,7 @@ export const Home: React.FC = () => {
     if (!selectedNetwork && data) {
       const station = data.stations.find((s) => s.gtfsId === selectedId);
       if (station) {
-        setSelectedNetwork(station.networks[0]);
+        setSelectedNetwork(station.networks[0]!);
       } else {
         // no selected station, and no network saved in localStorage.
         // so this is probably their first visit. Default to a network
@@ -121,7 +121,7 @@ export const Home: React.FC = () => {
         const closest =
           data.networks.find((network) =>
             region.country.includes(network.country || 'AU'),
-          ) || data.networks[0];
+          ) || data.networks[0]!;
 
         setSelectedNetwork(closest.qId);
       }
@@ -133,7 +133,7 @@ export const Home: React.FC = () => {
     if (data && selectedId && selectedNetwork) {
       const station = data.stations.find((s) => s.gtfsId === selectedId);
       if (station && !station.networks.includes(selectedNetwork)) {
-        setSelectedNetwork(station.networks[0]);
+        setSelectedNetwork(station.networks[0]!);
       }
     }
   }, [data, selectedNetwork, selectedId]);

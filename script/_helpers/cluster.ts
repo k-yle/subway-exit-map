@@ -5,13 +5,13 @@ function assignToClusters(bearings: number[], centroids: number[]) {
   for (const point of bearings) {
     let [minIndex, minDistance] = [0, Infinity];
     for (let index = 0; index < centroids.length; index++) {
-      const distance = getAnglularDiff(point, centroids[index]);
+      const distance = getAnglularDiff(point, centroids[index]!);
       if (distance < minDistance) {
         minDistance = distance;
         minIndex = index;
       }
     }
-    clusters[minIndex].push(point);
+    clusters[minIndex]!.push(point);
   }
   return clusters;
 }
@@ -30,10 +30,10 @@ export function kMeanCluster(bearings: number[]): number[][] {
 export function splitInHalf(bearings: number[]): boolean[] {
   // exception: if all angles with within 10° of the first one,
   // then treat it as a single cluster
-  if (bearings.every((bearing) => Math.abs(bearing - bearings[0]) < 10)) {
+  if (bearings.every((bearing) => Math.abs(bearing - bearings[0]!) < 10)) {
     return bearings.map(() => true);
   }
 
   const clusters = kMeanCluster(bearings);
-  return bearings.map((bearing) => clusters[0].includes(bearing));
+  return bearings.map((bearing) => clusters[0]!.includes(bearing));
 }

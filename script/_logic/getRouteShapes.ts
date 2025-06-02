@@ -20,7 +20,7 @@ export function getRouteShapes(wikidata: Entities) {
     const shapes = new Set(
       shields
         .flatMap((shield) =>
-          shield.qualifiers?.[P.Shape].map((shape) => shape.datavalue),
+          shield.qualifiers?.[P.Shape]?.map((shape) => shape.datavalue),
         )
         .filter(isQId)
         .map((shape) => WIKIDATA_SHAPES[<never>shape.value.id])

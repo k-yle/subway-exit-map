@@ -40,7 +40,7 @@ const runTest = (...arguments_: Parameters<typeof groupRoutesThatStopHere>) => {
 
 describe('groupRoutesThatStopHere', () => {
   it('can group 1 route, 2 destinations', () => {
-    expect(runTest([mockData[0], mockData[1]], stop, {})).toStrictEqual({
+    expect(runTest([mockData[0]!, mockData[1]!], stop, {})).toStrictEqual({
       'Bankstown | Tallawong': [
         {
           ...common,
@@ -53,7 +53,7 @@ describe('groupRoutesThatStopHere', () => {
   });
 
   it('can group 2 routes, 1 destination', () => {
-    expect(runTest([mockData[1], mockData[3]], stop, {})).toStrictEqual({
+    expect(runTest([mockData[1]!, mockData[3]!], stop, {})).toStrictEqual({
       Bankstown: [
         { ...common, ref: 'M1', to: ['Bankstown'], type: 'to' },
         { ...common, ref: 'T3', to: ['Bankstown'], type: 'to' },
@@ -62,7 +62,7 @@ describe('groupRoutesThatStopHere', () => {
   });
 
   it('does not group 2 routes, 2 destinations', () => {
-    expect(runTest([mockData[0], mockData[3]], stop, {})).toStrictEqual({
+    expect(runTest([mockData[0]!, mockData[3]!], stop, {})).toStrictEqual({
       Bankstown: [{ ...common, ref: 'T3', to: ['Bankstown'], type: 'to' }],
       Tallawong: [{ ...common, ref: 'M1', to: ['Tallawong'], type: 'to' }],
     });

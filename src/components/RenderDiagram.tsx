@@ -72,7 +72,7 @@ export const RenderDiagram: React.FC<{
       .flatMap((r) => {
         if (r.qId.length !== 1) return undefined; // does not support routes with multiple networks
         const trainsets =
-          data.routes[r.qId[0]][r.shieldKey].wikidata?.trainsets;
+          data.routes[r.qId[0]!]?.[r.shieldKey]?.wikidata?.trainsets;
 
         return trainsets?.map((train) => train.doors);
       })
@@ -145,7 +145,7 @@ export const RenderDiagram: React.FC<{
               dataSource={flatRoutes}
               render={(route, index) => {
                 const toName = formatList(
-                  route.to?.map((name) => name.split(DEST_DELIMITER)[0]) || [],
+                  route.to?.map((name) => name.split(DEST_DELIMITER)[0]!) || [],
                 );
                 const toRefs = new Set(
                   route.to?.map(
@@ -155,9 +155,9 @@ export const RenderDiagram: React.FC<{
                 toRefs.delete('');
 
                 const routeDetails =
-                  data.routes[route.qId[0]][route.shieldKey].variants[
+                  data.routes[route.qId[0]!]![route.shieldKey]!.variants[
                     route.osmId
-                  ];
+                  ]!;
 
                 const direction =
                   DIRECTIONS[routeDetails.tags.direction as Direction] || '';

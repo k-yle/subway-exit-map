@@ -16,10 +16,10 @@ export function getTravellingDirection(
   }
 
   const nextTrackId = route.members[indexOfTrackInThisRoute + 1]?.ref;
-  const nextTrack = data.way[nextTrackId];
+  const nextTrack = data.way[nextTrackId!];
 
   const lastTrackId = route.members[indexOfTrackInThisRoute - 1]?.ref;
-  const lastTrack = data.way[lastTrackId];
+  const lastTrack = data.way[lastTrackId!];
 
   if (nextTrack) {
     if (

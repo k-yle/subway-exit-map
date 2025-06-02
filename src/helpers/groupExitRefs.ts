@@ -10,7 +10,8 @@ export function groupExitRefs(exitRefs: string[]) {
     .sort((a, b) => a.localeCompare(b))
     .reduce<Grouped>((newArray, item, index, oldArray) => {
       newArray.push(
-        !index || oldArray[index - 1].codePointAt(0)! - item.codePointAt(0)! + 1
+        !index ||
+          oldArray[index - 1]!.codePointAt(0)! - item.codePointAt(0)! + 1
           ? item
           : [newArray.pop()![0], item],
       );

@@ -9,7 +9,7 @@ export const RenderSymbol: React.FC<{
 }> = ({ symbol, data, networks }) => {
   /** all route shields from the networks at this station */
   const allShields = networks
-    .flatMap((network) => Object.values(data.routes[network]))
+    .flatMap((network) => Object.values(data.routes[network]!))
     .map((route) => route.shield);
 
   // shield of a local route
@@ -28,7 +28,7 @@ export const RenderSymbol: React.FC<{
   if (url) {
     return (
       <img
-        src={url.replaceAll('{qId}', networks[0])}
+        src={url.replaceAll('{qId}', networks[0]!)}
         alt={symbol}
         style={{ width: 20, height: 20, margin: 2 }}
       />

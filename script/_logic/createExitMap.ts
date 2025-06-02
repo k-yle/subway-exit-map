@@ -26,7 +26,7 @@ const noToUndefined = <T extends string>(
 ): T[] | undefined => {
   if (!item) return undefined;
 
-  const isFalsy = item.length === 1 && FALSY.has(item[0].toLowerCase());
+  const isFalsy = item.length === 1 && FALSY.has(item[0]!.toLowerCase());
   return isFalsy ? undefined : item;
 };
 
@@ -43,7 +43,7 @@ export function createExitMap(
       : '';
 
   const exitType =
-    tags[`exit:carriages${suffix}`]?.split('\n')[0].split('|') || [];
+    tags[`exit:carriages${suffix}`]?.split('\n')[0]?.split('|') || [];
   const exitTo = tags[`destination:carriages${suffix}`]?.split('|') || [];
   const exitNumber =
     tags[`destination:ref:carriages${suffix}`]?.split('|') || [];
@@ -103,15 +103,17 @@ export function createExitMap(
   const firstIndex = exitType.findIndex((car) => !car.endsWith('*'));
 
   for (let index = 0; index < exitType.length; index++) {
-    const flag = exitType[index].endsWith('*');
+    const flag = exitType[index]!.endsWith('*');
     {
       const exitType1 = noToUndefined(
-        <ExitType[]>exitType[index].replace(/\*$/, '').split(';'),
+        <ExitType[]>exitType[index]!.replace(/\*$/, '').split(';'),
       );
       const exitTo1 = noToUndefined(exitTo[index]?.split(';'));
       const exitNumber1 = noToUndefined(exitNumber[index]?.split(';'));
       const exitSymbols1 = noToUndefined(exitSymbols[index]?.split(';'));
-      const unavailable = FALSY.has(available.array[index]?.toLowerCase());
+      const unavailable = FALSY.has(
+        <string>available.array[index]?.toLowerCase(),
+      );
 
       const carriage: Carriage = {
         type: flag
@@ -125,7 +127,7 @@ export function createExitMap(
       };
 
       const isBest = BEST_OVERRIDE[node.id]
-        ? BEST_OVERRIDE[node.id].includes(carriage.ref)
+        ? BEST_OVERRIDE[node.id]!.includes(carriage.ref)
         : bestExitType && exitType1?.includes(bestExitType);
 
       if (isBest) carriage.isBest = true;

@@ -14,7 +14,8 @@ export function getDefaultLanguage(): SupportedLanguage {
       // strip out the country code to get just the language
       .map((fullLocale) => fullLocale.split('-')[0])
       // if the user has multiple system languages, find the first one we support
-      .find((lang): lang is SupportedLanguage => lang in translations) || 'en'
+      // eslint-disable-next-line @typescript-eslint/no-confusing-non-null-assertion
+      .find((lang): lang is SupportedLanguage => lang! in translations) || 'en'
   );
 }
 
@@ -62,7 +63,7 @@ export const bold: I18nComp = (str) => <b key={0}>{str}</b>;
 
 export const getName = (names: MultiLingualNames): string | undefined => {
   for (const lang of navigator.languages) {
-    const value = names[lang] || names[lang.split('-')[0]];
+    const value = names[lang] || names[lang.split('-')[0]!];
     if (value) return value;
   }
 

@@ -11,6 +11,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
+    "noUncheckedIndexedAccess": true,
     "jsx": "react-jsx"
   },
   "include": ["src", "script"]

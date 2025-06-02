@@ -14,7 +14,7 @@ export function countAdjacentEqual(array: string[]): number[] {
       // same as prev, so increment the last non-zero cell
       // also push a zero value to the output
       const lastNonNullIndex = result.findLastIndex(Boolean)!;
-      result[lastNonNullIndex]++;
+      result[lastNonNullIndex]!++;
       result.push(0);
     } else {
       // diff to previous

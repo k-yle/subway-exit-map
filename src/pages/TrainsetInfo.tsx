@@ -10,7 +10,7 @@ export const TrainsetInfo: React.FC<{ trainsets: Trainset[] }> = ({
     .formatToParts(trainsets.map((_, index) => `${index}`))
     .map((part) => {
       if (part.type === 'literal') return part.value;
-      const trainset = trainsets[+part.value];
+      const trainset = trainsets[+part.value]!;
       const wikipedia = getName(trainset.wikipedia);
       return (
         <a

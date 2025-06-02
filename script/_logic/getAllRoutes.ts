@@ -44,8 +44,8 @@ function getDoorInfo(trainset: Item): Trainset['doors'] {
       equalsQId(part.mainsnak.datavalue, Q.TrainDoor),
   );
 
-  const doorQty = door?.qualifiers?.[P.Quantity]?.[0].datavalue?.value;
-  const doorAlignment = door?.qualifiers?.[P.Css]?.[0].datavalue?.value
+  const doorQty = door?.qualifiers?.[P.Quantity]?.[0]?.datavalue?.value;
+  const doorAlignment = door?.qualifiers?.[P.Css]?.[0]?.datavalue?.value
     ?.toString()
     .split('#')[1];
 
@@ -99,7 +99,7 @@ export function getAllRoutes(
       if (route.tags.wikidata) {
         const item = <Item>wikidata[<ItemId>route.tags.wikidata];
         const networkItem = <Item | undefined>(
-          wikidata[getNetworks(route.tags)[0]]
+          wikidata[getNetworks(route.tags)[0]!]
         );
         if (!item) {
           throw new Error(`No data for ${route.tags.wikidata}`);
