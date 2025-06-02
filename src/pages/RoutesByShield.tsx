@@ -31,7 +31,7 @@ export const RoutesByShield: React.FC = () => {
           </Avatar>
         )}
         <RouteShield route={route.shield} />
-        {route.wikidata?.name}
+        {getName(route.wikidata?.names || {})}
       </Typography.Title>
       {route.wikidata?.trainsets && (
         <TrainsetInfo trainsets={route.wikidata.trainsets} />

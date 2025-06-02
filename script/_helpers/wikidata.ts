@@ -63,18 +63,25 @@ export const equalsQId = (
 export const sortByRank = (a: { rank: Rank }, b: { rank: Rank }) =>
   RANK_MAP[a.rank] - RANK_MAP[b.rank];
 
-export const getItemName = (item: Item) => {
-  const defaultName =
-    item.labels?.en?.value || Object.values(item.labels || {})[0]?.value || '';
-  const altNames = item.aliases?.en?.map((term) => term.value) || [];
+export const getItemNames = (item: Item): MultiLingualNames => {
+  const names: MultiLingualNames = {};
 
-  // ignore names that are less than 3 chars long
-  // but then pick the shortest remaining name
-  const all = [defaultName, ...altNames]
-    .filter((name) => name.length > 3)
-    .sort((a, b) => a.length - b.length);
+  for (const lang in item.labels) {
+    const defaultName =
+      item.labels?.[lang]?.value ||
+      Object.values(item.labels || {})[0]?.value ||
+      '';
+    const altNames = item.aliases?.[lang]?.map((term) => term.value) || [];
 
-  return all[0] || defaultName;
+    // ignore names that are less than 3 chars long
+    // but then pick the shortest remaining name
+    const all = [defaultName, ...altNames]
+      .filter((name) => name.length > 3)
+      .sort((a, b) => a.length - b.length);
+
+    names[lang] = all[0] || defaultName;
+  }
+  return names;
 };
 
 export const getItemWikipedia = (item: Item) => {

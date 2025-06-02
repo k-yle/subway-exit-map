@@ -24,7 +24,7 @@ export const TrainsetInfo: React.FC<{ trainsets: Trainset[] }> = ({
           rel="noreferrer"
         >
           {t('TrainsetInfo.list-item', {
-            name: trainset.name,
+            name: getName(trainset.names),
             length: trainset.carriages
               ? orFormatter.format(
                   trainset.carriages.map(

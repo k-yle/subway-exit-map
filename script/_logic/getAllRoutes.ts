@@ -7,7 +7,7 @@ import {
   P,
   Q,
   equalsQId,
-  getItemName,
+  getItemNames,
   getItemWikipedia,
 } from '../_helpers/wikidata.js';
 import {
@@ -106,7 +106,7 @@ export function getAllRoutes(
         }
 
         routes[network][shieldKey].wikidata ||= {
-          name: getItemName(item),
+          names: getItemNames(item),
           qId: item.id,
           wikipedia: getItemWikipedia(item),
           trainsets: (
@@ -140,7 +140,7 @@ export function getAllRoutes(
                 : undefined;
 
             return {
-              name: getItemName(trainset),
+              names: getItemNames(trainset),
               wikidata: trainsetQId,
               wikipedia: getItemWikipedia(trainset),
               regularity:

@@ -50,7 +50,7 @@ export const RoutesByNetwork: React.FC = () => {
                 <Button type="text">
                   <RouteShield route={value.shield} />{' '}
                   <div>
-                    {value.wikidata?.name ||
+                    {(value.wikidata && getName(value.wikidata?.names)) ||
                       desinations.flatMap((x) => [x, <br key={x} />])}
                   </div>
                 </Button>

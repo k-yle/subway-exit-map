@@ -182,7 +182,7 @@ export type Station = {
 };
 
 export type Trainset = {
-  name: string;
+  names: MultiLingualNames;
   wikidata: string;
   wikipedia: MultiLingualNames;
   carriages: number[] | undefined;
@@ -195,7 +195,7 @@ export type Trainset = {
 };
 
 export type RouteWikiInfo = {
-  name: string;
+  names: MultiLingualNames;
   qId: string;
   wikipedia: MultiLingualNames;
   trainsets: Trainset[] | undefined;
