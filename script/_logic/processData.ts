@@ -309,7 +309,10 @@ export function processData({
 
       const getSortKey = (stop: Stop) => {
         const prefix = stop.disambiguationName?.[''];
-        const platform = getPlatform(stop).padStart(longestPlatform, '0');
+        // if there are multiple refs, use the first one for sorting
+        const platform = getPlatform(stop)
+          .split(';')[0]!
+          .padStart(longestPlatform, '0');
         return prefix + platform;
       };
 
