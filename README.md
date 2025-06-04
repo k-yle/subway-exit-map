@@ -39,6 +39,8 @@ namespace scope_of_this_app {
         fare_gates
         network
         network:wikidata
+        ref
+        ref:colour
     }
     class OSM_stop["OSM stop_position"] {
         local_ref
