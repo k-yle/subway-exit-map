@@ -60,11 +60,11 @@ export function groupRoutesThatStopHere(
         type: isTerminating ? 'from' : 'to',
         shieldKey: getShieldKeyHashed(shield),
         qId: getNetworks(r.tags!)!,
-        osmId: r.id,
+        osmId: [r.id],
       };
       return item;
     }),
-    (x) => `${getShieldKey(x)}${x.type}${x.to?.join('|')}`,
+    (x) => `${getShieldKey(x)}|${x.type}|${x.to?.join('|')}|${x.osmId[0]}`,
   );
 
   // if the route starts and ends here, merge the two entries
@@ -76,10 +76,12 @@ export function groupRoutesThatStopHere(
           JSON.stringify(omit(b, ['type', 'osmId'])) ===
             JSON.stringify(omit(a, ['type', 'osmId'])),
       );
+      const b = unique[identicalPairIndex]!;
       if (identicalPairIndex !== -1) {
         // delete `b` & mark `a` as both
         unique.splice(identicalPairIndex, 1);
         a.type = 'both';
+        a.osmId.push(...b.osmId);
       }
     }
   }
@@ -99,6 +101,10 @@ export function groupRoutesThatStopHere(
         // we've already seen a single route with this ref
         const existingKey = singles[route.ref]!;
         groupedByDestination[existingKey]![0]!.to!.push(route.to![0]!);
+        groupedByDestination[existingKey]![0]!.osmId.push(
+          ...groupedByDestination[key]!.flatMap((x) => x.osmId),
+        );
+        groupedByDestination[existingKey]![0]!.osmId.sort();
         delete groupedByDestination[key];
       } else {
         // we haven't (yet) seen any other single routes with this ref

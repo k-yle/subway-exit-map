@@ -8,11 +8,14 @@ const common = {
 };
 
 const _mockData: Partial<OsmRelation>[] = [
-  { tags: { ref: 'M1', colour: 'teal', to: 'Tallawong', from: 'Bankstown' } },
-  { tags: { ref: 'M1', colour: 'teal', to: 'Bankstown' } },
-  { tags: { ref: 'M2', colour: 'teal', to: 'Bradfield' } },
-  { tags: { ref: 'T3', colour: 'teal', to: 'Bankstown' } },
-  { tags: { ref: 'M2', colour: 'teal', to: 'St Marys' } },
+  {
+    id: 1,
+    tags: { ref: 'M1', colour: 'teal', to: 'Tallawong', from: 'Bankstown' },
+  },
+  { id: 2, tags: { ref: 'M1', colour: 'teal', to: 'Bankstown' } },
+  { id: 3, tags: { ref: 'M2', colour: 'teal', to: 'Bradfield' } },
+  { id: 4, tags: { ref: 'T3', colour: 'teal', to: 'Bankstown' } },
+  { id: 5, tags: { ref: 'M2', colour: 'teal', to: 'St Marys' } },
 ];
 const mockData = _mockData.map(
   (r) =>
@@ -30,7 +33,7 @@ const stop = <OsmNode>{ id: 123 };
 const runTest = (...arguments_: Parameters<typeof groupRoutesThatStopHere>) => {
   const routes = groupRoutesThatStopHere(...arguments_);
   for (const r of Object.values(routes).flat()) {
-    const KEYS_TO_DELETE = <const>['osmId', 'qId', 'shieldKey'];
+    const KEYS_TO_DELETE = <const>['qId', 'shieldKey'];
     for (const key of KEYS_TO_DELETE) {
       delete r[key];
     }
@@ -47,6 +50,7 @@ describe('groupRoutesThatStopHere', () => {
           ref: 'M1',
           to: ['Tallawong', 'Bankstown'],
           type: 'to',
+          osmId: [1, 2],
         },
       ],
     });
@@ -55,16 +59,20 @@ describe('groupRoutesThatStopHere', () => {
   it('can group 2 routes, 1 destination', () => {
     expect(runTest([mockData[1]!, mockData[3]!], stop, {})).toStrictEqual({
       Bankstown: [
-        { ...common, ref: 'M1', to: ['Bankstown'], type: 'to' },
-        { ...common, ref: 'T3', to: ['Bankstown'], type: 'to' },
+        { ...common, ref: 'M1', to: ['Bankstown'], type: 'to', osmId: [2] },
+        { ...common, ref: 'T3', to: ['Bankstown'], type: 'to', osmId: [4] },
       ],
     });
   });
 
   it('does not group 2 routes, 2 destinations', () => {
     expect(runTest([mockData[0]!, mockData[3]!], stop, {})).toStrictEqual({
-      Bankstown: [{ ...common, ref: 'T3', to: ['Bankstown'], type: 'to' }],
-      Tallawong: [{ ...common, ref: 'M1', to: ['Tallawong'], type: 'to' }],
+      Bankstown: [
+        { ...common, ref: 'T3', to: ['Bankstown'], type: 'to', osmId: [4] },
+      ],
+      Tallawong: [
+        { ...common, ref: 'M1', to: ['Tallawong'], type: 'to', osmId: [1] },
+      ],
     });
   });
 
@@ -73,13 +81,21 @@ describe('groupRoutesThatStopHere', () => {
     // doesn't really matter which way it does it.
     expect(runTest(mockData, stop, {})).toStrictEqual({
       Bankstown: [
-        { ...common, ref: 'M1', to: ['Bankstown'], type: 'to' },
-        { ...common, ref: 'T3', to: ['Bankstown'], type: 'to' },
+        { ...common, ref: 'M1', to: ['Bankstown'], type: 'to', osmId: [2] },
+        { ...common, ref: 'T3', to: ['Bankstown'], type: 'to', osmId: [4] },
       ],
       'Bradfield | St Marys': [
-        { ...common, ref: 'M2', to: ['Bradfield', 'St Marys'], type: 'to' },
+        {
+          ...common,
+          ref: 'M2',
+          to: ['Bradfield', 'St Marys'],
+          type: 'to',
+          osmId: [3, 5],
+        },
       ],
-      Tallawong: [{ ...common, ref: 'M1', to: ['Tallawong'], type: 'to' }],
+      Tallawong: [
+        { ...common, ref: 'M1', to: ['Tallawong'], type: 'to', osmId: [1] },
+      ],
     });
   });
 
@@ -93,7 +109,8 @@ describe('groupRoutesThatStopHere', () => {
       { from: 1, to: 3 },
       { from: 3, to: 1 },
     ].map(
-      ({ from, to }) => <OsmRelation>(<Partial<OsmRelation>>{
+      ({ from, to }, index) => <OsmRelation>(<Partial<OsmRelation>>{
+          id: 100 + index,
           tags: { ref: 'M1', colour: 'teal', from: `#${from}`, to: `#${to}` },
           members: [
             { role: 'stop_entry_only', ref: from, type: 'node' },
@@ -114,14 +131,24 @@ describe('groupRoutesThatStopHere', () => {
         ),
       ).toStrictEqual({
         // this is good, since we are at #1, we do not expect to see #1 in the data
-        '#2': [{ ...common, ref: 'M1', to: ['#2'], type: 'both' }],
+        '#2': [
+          { ...common, ref: 'M1', to: ['#2'], type: 'both', osmId: [100, 101] },
+        ],
       });
     });
 
     it('handles a bidirectional platform at the terminus of 2 routes with the same ref but diff destinations', () => {
       expect(runTest(fourbyFour, <OsmNode>{ id: 1 }, {})).toStrictEqual({
         // this is good, since we are at #1, we do not expect to see #1 in the data
-        '#2 | #3': [{ ...common, ref: 'M1', to: ['#2', '#3'], type: 'both' }],
+        '#2 | #3': [
+          {
+            ...common,
+            ref: 'M1',
+            to: ['#2', '#3'],
+            type: 'both',
+            osmId: [100, 101, 102, 103],
+          },
+        ],
       });
     });
 
@@ -136,7 +163,15 @@ describe('groupRoutesThatStopHere', () => {
         ),
       ).toStrictEqual({
         // we are at #1.5, so we expect to see #1 and #2 in the destinations
-        '#1 | #2': [{ ...common, ref: 'M1', to: ['#2', '#1'], type: 'to' }],
+        '#1 | #2': [
+          {
+            ...common,
+            ref: 'M1',
+            to: ['#2', '#1'],
+            type: 'to',
+            osmId: [100, 101],
+          },
+        ],
       });
     });
 
@@ -144,7 +179,13 @@ describe('groupRoutesThatStopHere', () => {
       expect(runTest(fourbyFour, <OsmNode>{ id: 1.5 }, {})).toStrictEqual({
         // we are at #1.5, so we expect to see #1 and #2 in the destinations
         '#1 | #2 | #3': [
-          { ...common, ref: 'M1', to: ['#2', '#1', '#3'], type: 'to' },
+          {
+            ...common,
+            ref: 'M1',
+            to: ['#2', '#1', '#3'],
+            type: 'to',
+            osmId: [100, 101, 102, 103],
+          },
         ],
       });
     });

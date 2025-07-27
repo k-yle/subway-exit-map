@@ -10,6 +10,7 @@ import { uniqBy } from '../helpers/objects';
 import { carTypeToCss } from '../helpers/carType';
 import { DIRECTIONS } from '../helpers/directions';
 import { groupExitRefs } from '../helpers/groupExitRefs';
+import { getLocalisedRouteTags } from '../helpers/localisedRouteTags';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
 import { DEST_DELIMITER, PlatformName } from './PlatformName';
@@ -145,7 +146,7 @@ export const RenderDiagram: React.FC<{
               dataSource={flatRoutes}
               render={(route, index) => {
                 const toName = formatList(
-                  route.to?.map((name) => name.split(DEST_DELIMITER)[0]!) || [],
+                  getLocalisedRouteTags(data, route) || [],
                 );
                 const toRefs = new Set(
                   route.to?.map(
@@ -154,13 +155,20 @@ export const RenderDiagram: React.FC<{
                 );
                 toRefs.delete('');
 
-                const routeDetails =
-                  data.routes[route.qId[0]!]![route.shieldKey]!.variants[
+                const directions = [
+                  ...new Set(
                     route.osmId
-                  ]!;
+                      .map(
+                        (osmId) =>
+                          data.routes[route.qId[0]!]![route.shieldKey]!
+                            .variants[osmId]!,
+                      )
+                      .map((r) => r.tags.direction),
+                  ),
+                ];
 
                 const direction =
-                  DIRECTIONS[routeDetails.tags.direction!] || '';
+                  (directions[0] && DIRECTIONS[directions[0]]) || '';
 
                 return (
                   <List.Item key={index}>

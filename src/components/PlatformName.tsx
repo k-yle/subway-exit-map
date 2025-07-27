@@ -5,6 +5,7 @@ import { uniqBy } from '../helpers/objects';
 import { SettingsContext } from '../context/settings';
 import { formatList, t } from '../i18n';
 import { DIRECTION_ICONS } from '../helpers/directions';
+import { getLocalisedRouteTags } from '../helpers/localisedRouteTags';
 import { RouteShield } from './RouteShield';
 
 export const DEST_DELIMITER = '𖠕';
@@ -31,24 +32,28 @@ export const PlatformName: React.FC<{
   return (
     <>
       {Object.entries(stop.routes).map(([key, routes]) => {
-        const to = formatList(
-          routes[0]!.to?.map((name) => name.split(DEST_DELIMITER)[0]!) || [],
-        );
+        // we're assuming that the destination of every route is the same
+        const to = formatList(getLocalisedRouteTags(data, routes[0]!) || []);
+
         const toRefs = new Set(
           routes[0]!.to?.map((name) => name.split(DEST_DELIMITER)[1] || '') ||
             [],
         );
         toRefs.delete('');
 
-        const routeDetails = routes.map(
-          (r) => data.routes[r.qId[0]!]?.[r.shieldKey]?.variants[r.osmId],
+        const routeDetails = routes.flatMap((r) =>
+          r.osmId.map(
+            (osmId) => data.routes[r.qId[0]!]?.[r.shieldKey]?.variants[osmId],
+          ),
         );
 
-        const directions = new Set(routeDetails.map((r) => r?.tags.direction));
+        const directions = [
+          ...new Set(routeDetails.map((r) => r?.tags.direction)),
+        ];
 
         // only show the direction if there is exactly one common value
         const direction =
-          (directions.size === 1 && DIRECTION_ICONS[[...directions][0]!]) || '';
+          (directions.length === 1 && DIRECTION_ICONS[directions[0]!]) || '';
 
         const toOrFrom = {
           to: t('generic.to_lower'),

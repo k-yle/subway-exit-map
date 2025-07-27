@@ -108,7 +108,8 @@ export type RouteThatStopsHere = RouteShield & {
   /** ID of the network(s) */
   qId: ItemId[];
   shieldKey: string;
-  osmId: number;
+  /** for each to, the osmId will be different */
+  osmId: number[];
 };
 
 export type Stop = {
