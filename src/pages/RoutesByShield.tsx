@@ -5,7 +5,7 @@ import type { ItemId } from 'wikibase-sdk';
 import { DataContext } from '../context/data';
 import { RouteShield } from '../components/RouteShield';
 import { formatList, getName, t } from '../i18n';
-import { DIRECTIONS, type Direction } from '../helpers/directions';
+import { DIRECTIONS } from '../helpers/directions';
 import { TrainsetInfo } from './TrainsetInfo';
 
 export const RoutesByShield: React.FC = () => {
@@ -71,7 +71,7 @@ export const RoutesByShield: React.FC = () => {
                       )}
                     </div>
                     <div className="subtitle">
-                      {DIRECTIONS[value.tags.direction as Direction]}
+                      {DIRECTIONS[value.tags.direction!]}
                     </div>
                   </div>
                 </Button>

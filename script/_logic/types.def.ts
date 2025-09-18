@@ -11,6 +11,14 @@ export type Alignment = 'first' | 'middle' | 'last';
 
 export type DirectionSuffix = '' | ':forward' | ':backward';
 
+export type Direction =
+  | 'north'
+  | 'south'
+  | 'west'
+  | 'east'
+  | 'clockwise'
+  | 'anticlockwise';
+
 /**
  * An enum of (almost) every OSM key that is consumed by this app. Some
  * dynamic usage patterns like `name:*`, `*:forwards` can't be included,
@@ -231,7 +239,7 @@ export type Data = {
               to: string | undefined;
               toRef: string | undefined;
               via: string[] | undefined;
-              direction: string | undefined;
+              direction: Direction | undefined;
             };
             lastUpdate: Stop['lastUpdate'];
             stops: {

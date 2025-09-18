@@ -1,6 +1,7 @@
 import { t } from '../i18n';
+import type { Direction } from '../types.def';
 
-export const DIRECTIONS = {
+export const DIRECTIONS: Record<Direction, string> = {
   north: t('directions.north'),
   south: t('directions.south'),
   west: t('directions.west'),
@@ -8,8 +9,6 @@ export const DIRECTIONS = {
   clockwise: t('directions.clockwise'),
   anticlockwise: t('directions.anticlockwise'),
 };
-
-export type Direction = keyof typeof DIRECTIONS;
 
 /**
  * there's no intuitive icons for compass directions,

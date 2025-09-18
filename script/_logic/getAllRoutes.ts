@@ -12,6 +12,7 @@ import {
 } from '../_helpers/wikidata.js';
 import {
   type Data,
+  type Direction,
   type OsmFeatures,
   Regularity,
   type Station,
@@ -161,7 +162,7 @@ export function getAllRoutes(
           to: route.tags.to,
           toRef: route.tags['to:ref'],
           via: route.tags.via?.split(';'),
-          direction: route.tags.direction,
+          direction: <Direction | undefined>route.tags.direction,
         },
         lastUpdate: {
           date: route.timestamp,

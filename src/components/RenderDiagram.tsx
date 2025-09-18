@@ -8,7 +8,7 @@ import { countAdjacentEqual } from '../helpers/countAdjacentEqual';
 import { bold, formatList, getName, locale, t } from '../i18n';
 import { uniqBy } from '../helpers/objects';
 import { carTypeToCss } from '../helpers/carType';
-import { DIRECTIONS, type Direction } from '../helpers/directions';
+import { DIRECTIONS } from '../helpers/directions';
 import { groupExitRefs } from '../helpers/groupExitRefs';
 import { Arrow, Icon } from './Icon';
 import { RenderAdjacentStops } from './RenderAdjacentStops';
@@ -160,7 +160,7 @@ export const RenderDiagram: React.FC<{
                   ]!;
 
                 const direction =
-                  DIRECTIONS[routeDetails.tags.direction as Direction] || '';
+                  DIRECTIONS[routeDetails.tags.direction!] || '';
 
                 return (
                   <List.Item key={index}>

@@ -13,7 +13,7 @@ import { Settings } from '../components/Settings';
 import { MiniTrainDiagram } from '../components/MiniTrainDiagram';
 import { type I18nComp, formatList, getName, locale, t } from '../i18n';
 import { copyrightFooter } from '../components/text';
-import { DIRECTIONS, type Direction } from '../helpers/directions';
+import { DIRECTIONS } from '../helpers/directions';
 import { StationIcon } from '../components/StationIcon';
 import { TrainsetInfo } from './TrainsetInfo';
 
@@ -127,9 +127,7 @@ export const RoutesInfo: React.FC = () => {
             })
           : t('RoutesByShield.label.from-to', variant.tags)}
       </Typography.Title>
-      <div className="main subtitle">
-        {DIRECTIONS[variant.tags.direction as Direction]}
-      </div>
+      <div className="main subtitle">{DIRECTIONS[variant.tags.direction!]}</div>
 
       {route.wikidata?.trainsets && (
         <TrainsetInfo trainsets={route.wikidata.trainsets} />

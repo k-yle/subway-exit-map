@@ -4,7 +4,7 @@ import type { Data, Stop } from '../types.def';
 import { uniqBy } from '../helpers/objects';
 import { SettingsContext } from '../context/settings';
 import { formatList, t } from '../i18n';
-import { DIRECTION_ICONS, type Direction } from '../helpers/directions';
+import { DIRECTION_ICONS } from '../helpers/directions';
 import { RouteShield } from './RouteShield';
 
 export const DEST_DELIMITER = '𖠕';
@@ -48,9 +48,7 @@ export const PlatformName: React.FC<{
 
         // only show the direction if there is exactly one common value
         const direction =
-          (directions.size === 1 &&
-            DIRECTION_ICONS[[...directions][0] as Direction]) ||
-          '';
+          (directions.size === 1 && DIRECTION_ICONS[[...directions][0]!]) || '';
 
         const toOrFrom = {
           to: t('generic.to_lower'),
