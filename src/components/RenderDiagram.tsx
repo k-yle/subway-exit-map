@@ -119,16 +119,6 @@ export const RenderDiagram: React.FC<{
             timeAgo: (
               <TimeAgo key={1} date={stop.lastUpdate.date} locale={locale} />
             ),
-            user: (
-              <a
-                key={2}
-                href={`https://osm.org/user/${stop.lastUpdate.user}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {stop.lastUpdate.user}
-              </a>
-            ),
           })}
           <br />
           <a

@@ -128,7 +128,6 @@ export const RoutesInfo: React.FC = () => {
           : t('RoutesByShield.label.from-to', variant.tags)}
       </Typography.Title>
       <div className="main subtitle">{DIRECTIONS[variant.tags.direction!]}</div>
-
       {route.wikidata?.trainsets && (
         <TrainsetInfo trainsets={route.wikidata.trainsets} />
       )}
@@ -276,22 +275,10 @@ export const RoutesInfo: React.FC = () => {
       </table>
       <br />
       {t('RoutesInfo.footer', {
-        settings: <Settings key={0} />,
         timeAgo: (
           <TimeAgo key={1} date={variant.lastUpdate.date} locale={locale} />
         ),
-        user: (
-          <a
-            key={2}
-            href={`https://osm.org/user/${variant.lastUpdate.user}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {variant.lastUpdate.user}
-          </a>
-        ),
-      })}
-      <br />
+      })}{' '}
       {t('generic.view-on', {
         name: (
           <Fragment key={0}>
@@ -329,6 +316,8 @@ export const RoutesInfo: React.FC = () => {
           </Fragment>
         ),
       })}
+      <br />
+      <Settings key={0} />
       <br />
       <small>{copyrightFooter}</small>
     </div>
