@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
+import type { Schema } from 'taginfo-projects';
 import taginfo from '../taginfo.template.json';
 import { fetchData } from './_logic/fetchData.js';
 import { processData } from './_logic/processData.js';
@@ -21,7 +22,7 @@ async function main() {
     toClient.networks.map((n) => n.country).filter(isTruthy),
   );
   const svgMap = await generateReadmeMap(countryCodes);
-  await generateTaginfo(taginfo);
+  await generateTaginfo(<Schema>taginfo);
 
   await fs.mkdir(outFolder, { recursive: true });
   await fs.writeFile(

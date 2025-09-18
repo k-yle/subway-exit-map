@@ -25,6 +25,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
+    "@types/taginfo-projects": "github:taginfo/taginfo-projects#6daafd2e30a86a8bfb9615855af2c2d73bd98279",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^9.9.0",
     "eslint-config-kyle": "^25.0.0-beta2",

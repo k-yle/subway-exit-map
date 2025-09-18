@@ -1264,6 +1264,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/taginfo-projects@github:taginfo/taginfo-projects#6daafd2e30a86a8bfb9615855af2c2d73bd98279":
+  version: 0.0.0
+  resolution: "@types/taginfo-projects@https://github.com/taginfo/taginfo-projects.git#commit=6daafd2e30a86a8bfb9615855af2c2d73bd98279"
+  checksum: 10c0/074caa003cc2833e51cf0ada0286e96dce0779a804966af63922db2d8a3182837813f40e1adb3a32ba9dd0a3eaba7ec4f880f3c73ec6e99e7098130d0c3a22fd
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/eslint-plugin@npm:8.29.1":
   version: 8.29.1
   resolution: "@typescript-eslint/eslint-plugin@npm:8.29.1"
@@ -5267,6 +5274,7 @@ __metadata:
     "@types/node": "npm:^22.14.0"
     "@types/react": "npm:^18.2.48"
     "@types/react-dom": "npm:^18.2.18"
+    "@types/taginfo-projects": "github:taginfo/taginfo-projects#6daafd2e30a86a8bfb9615855af2c2d73bd98279"
     "@vitejs/plugin-react": "npm:^4.2.1"
     clsx: "npm:^2.1.0"
     eslint: "npm:^9.9.0"
