@@ -81,12 +81,17 @@ namespace scope_of_this_app {
         P154 Logo
         P8972 Logo Small
         P2013 Facebook Username
+        P1325 External Data
+        ⤷ P180 Depicts→Q1886349 Logo
         P8253 name-suggestion-index ID
     }
     class Commons:::wikidata {
         logo
     }
     class Facebook:::other {
+        logo
+    }
+    class ExternalWebsite:::other {
         logo
     }
     class NSI["NSI Entry"]:::other {
@@ -120,6 +125,7 @@ Q_network --> NSI : P8253 NSI ID
 Q_network --> Commons : P154 Logo
 Q_network --> Commons : P8972 Logo Small
 Q_network --> Facebook : P2013 Facebook Username
+Q_network --> ExternalWebsite : P1325 External Logo
 NSI --> Commons : commonsUrl
 NSI --> Facebook : facebookUrl
 OSM_route --> NSI : network

@@ -407,11 +407,21 @@ export function processData({
         item.claims[P.FacebookUsername]?.sort(sortByRank)[0]?.mainsnak.datavalue
           ?.value;
 
+      const externalLogo = item.claims[P.ExternalData]
+        ?.filter((claim) =>
+          claim.qualifiers?.[P.Depicts]?.some((snacc) =>
+            equalsQId(snacc.datavalue, Q.Logo),
+          ),
+        )
+        ?.sort(sortByRank)[0]?.mainsnak.datavalue?.value;
+
       const logoUrl = bestLogo
         ? `https://commons.wikimedia.org/wiki/Special:FilePath/${bestLogo}`
-        : fbUsername
-          ? `https://graph.facebook.com/${fbUsername}/picture?type=large`
-          : undefined;
+        : typeof externalLogo === 'string'
+          ? externalLogo
+          : fbUsername
+            ? `https://graph.facebook.com/${fbUsername}/picture?type=large`
+            : undefined;
 
       const geoCoords =
         item.claims[P.GeoCoordinates]?.sort(sortByRank)[0]?.mainsnak.datavalue;

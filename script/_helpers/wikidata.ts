@@ -22,6 +22,8 @@ export enum P {
   AppliesToPart = 'P518',
   FirstNumber = 'P1545',
   Shape = 'P1419',
+  ExternalData = 'P1325',
+  Depicts = 'P180',
 }
 
 export enum Q {
@@ -34,6 +36,7 @@ export enum Q {
   RouteShield = 'Q5759965',
   AlphanumericCode = 'Q3504901',
   Station = 'Q12819564',
+  Logo = 'Q1886349',
 }
 
 export const WIKIDATA_SHAPES: Record<ItemId, Shape> = {
